@@ -1,2 +1,19 @@
-# nkai-sample-codes
-Sample code using the NK-AI API.
+# Quickstarts
+
+### 사전 준비
+
+
+### 노드 등록
+
+
+### 채널 등록
+
+
+### ROI 생성
+
+
+### 비디오 분석 시작
+
+
+### 분석 결과 확인
+
