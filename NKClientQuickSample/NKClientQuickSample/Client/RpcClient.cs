@@ -3,7 +3,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NKClientQuickSample
+namespace NKClientQuickSample.Client
 {
     public class RpcClient
     {
@@ -80,8 +80,7 @@ namespace NKClientQuickSample
                         StringBuilder builder = new StringBuilder();
                         foreach (var evt in item.EventList)
                         {
-                            string res = $"ID({evt.Id}) Class({evt.Segmentation.Label})\r\n" 
-                                         + $"Annotaion({evt.Segmentation.Box})\r\n";
+                            string res = $"ID({evt.Id}) Class({evt.Segmentation.Label}) Annotaion({evt.Segmentation.Box})\r\n";
 
                             builder.Append(res);
                         }

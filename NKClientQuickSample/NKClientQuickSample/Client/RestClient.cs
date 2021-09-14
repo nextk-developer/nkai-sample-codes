@@ -4,7 +4,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace NKClientQuickSample
+namespace NKClientQuickSample.Client
 {
 
     public class RestClient
@@ -13,7 +13,7 @@ namespace NKClientQuickSample
         public event EventHandler<string> ResponseLastUidHandler;
         public void RequestTo(string baseURI, string json)
         {
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 try
                 {
