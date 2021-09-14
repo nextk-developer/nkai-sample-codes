@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31613.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKClientQuickSample", "NKClientQuickSample\NKClientQuickSample.csproj", "{BAC76775-1A33-4F56-AD6E-2386BA331FE6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD5B1FED-20C8-44FE-887C-13F234B4A4DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKProtobuf", "NKProtobuf\NKProtobuf.csproj", "{29908CDC-AEF9-4F04-917A-EF659DEDBE59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BAC76775-1A33-4F56-AD6E-2386BA331FE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAC76775-1A33-4F56-AD6E-2386BA331FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAC76775-1A33-4F56-AD6E-2386BA331FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAC76775-1A33-4F56-AD6E-2386BA331FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29908CDC-AEF9-4F04-917A-EF659DEDBE59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29908CDC-AEF9-4F04-917A-EF659DEDBE59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29908CDC-AEF9-4F04-917A-EF659DEDBE59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29908CDC-AEF9-4F04-917A-EF659DEDBE59}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A3A1CC1-8135-4DB9-9CD8-417533B9448F}
+	EndGlobalSection
+EndGlobal
