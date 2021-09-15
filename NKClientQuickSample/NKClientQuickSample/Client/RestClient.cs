@@ -49,8 +49,10 @@ namespace NKClientQuickSample.Client
                                         }
                                         break;
                                     case "register-channel":
-                                        string channelId = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseChannel>(resString).channelId;
-                                        ResponseLastUidHandler?.Invoke("channelId", channelId);
+                                        {
+                                            Test.ResponseChannel channel = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseChannel>(resString);
+                                            ResponseLastUidHandler?.Invoke("channelId", channel.channelId);
+                                        }
                                         break;
                                     default:
                                         break;
@@ -64,6 +66,33 @@ namespace NKClientQuickSample.Client
                     ResponseAPIHandler?.Invoke(this, "Exeption Error");
                 }
             });
+        }
+        public string GetRequestAsync(string baseURI, string json)
+        {
+            string response = null;
+            string[] splitUris = baseURI.Split('/');
+            StringBuilder pathBuilder = new StringBuilder();
+            if (splitUris.Length > 3)
+            {
+                for (int i = 3; i < splitUris.Length; i++)
+                {
+                    pathBuilder.Append($"/{splitUris[i]}");
+                }
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseURI);
+                    client.Timeout = new TimeSpan(0, 0, 0, 5);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage messge = client.PostAsync(pathBuilder.ToString(), new StringContent(json, UTF8Encoding.UTF8, "application/json")).Result;
+                    if (messge.IsSuccessStatusCode)
+                    {
+                        response = messge.Content.ReadAsStringAsync().Result;
+                    }
+                }
+            }
+
+            return response;
         }
     }
 }

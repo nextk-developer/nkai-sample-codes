@@ -15,6 +15,6 @@ namespace NKClientQuickSample
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new NKClientQuickSampleForm());
-        }
+        } 
     }
 }

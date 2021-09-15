@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using VAMetaService;
 
 namespace NKClientQuickSample.Client
 {
@@ -9,7 +10,7 @@ namespace NKClientQuickSample.Client
     {
         public string _host { get; set; }
         public int _port { get; set; }
-        public event EventHandler<string> ResponseMetaHandler;
+        public event EventHandler<FrameMetaData> ResponseMetaHandler;
 
         private Channel _chClient;
         private bool _IsRunning;
@@ -75,16 +76,9 @@ namespace NKClientQuickSample.Client
                     {
                         continue;
                     }
-                    await foreach (var item in streamCall.ResponseStream.ReadAllAsync())
+                    await foreach (FrameMetaData item in streamCall.ResponseStream.ReadAllAsync())
                     {
-                        StringBuilder builder = new StringBuilder();
-                        foreach (var evt in item.EventList)
-                        {
-                            string res = $"ID({evt.Id}) Class({evt.Segmentation.Label}) Annotaion({evt.Segmentation.Box})\r\n";
-
-                            builder.Append(res);
-                        }
-                        ResponseMetaHandler?.Invoke(this, builder.ToString());
+                        ResponseMetaHandler?.Invoke(this, item);
                     }
                 }
             });

@@ -66,6 +66,9 @@ namespace NKClientQuickSample
             this.rbGetRoi = new System.Windows.Forms.RadioButton();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.pbDrawBox = new System.Windows.Forms.PictureBox();
+            this.lbDrawFrameChannelId = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.pbDrawBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -88,7 +91,7 @@ namespace NKClientQuickSample
             // 
             // btnAPIConnection
             // 
-            this.btnAPIConnection.Location = new System.Drawing.Point(9, 276);
+            this.btnAPIConnection.Location = new System.Drawing.Point(9, 205);
             this.btnAPIConnection.Name = "btnAPIConnection";
             this.btnAPIConnection.Size = new System.Drawing.Size(535, 33);
             this.btnAPIConnection.TabIndex = 8;
@@ -121,16 +124,16 @@ namespace NKClientQuickSample
             // 
             this.rtbPayload.Location = new System.Drawing.Point(9, 54);
             this.rtbPayload.Name = "rtbPayload";
-            this.rtbPayload.Size = new System.Drawing.Size(535, 220);
+            this.rtbPayload.Size = new System.Drawing.Size(535, 148);
             this.rtbPayload.TabIndex = 14;
             this.rtbPayload.Text = "";
             // 
             // rtbResponse
             // 
-            this.rtbResponse.Location = new System.Drawing.Point(9, 332);
+            this.rtbResponse.Location = new System.Drawing.Point(9, 271);
             this.rtbResponse.Name = "rtbResponse";
             this.rtbResponse.ReadOnly = true;
-            this.rtbResponse.Size = new System.Drawing.Size(535, 197);
+            this.rtbResponse.Size = new System.Drawing.Size(535, 151);
             this.rtbResponse.TabIndex = 15;
             this.rtbResponse.Text = "";
             // 
@@ -139,7 +142,7 @@ namespace NKClientQuickSample
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label3.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label3.Location = new System.Drawing.Point(13, 312);
+            this.label3.Location = new System.Drawing.Point(9, 252);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 15);
             this.label3.TabIndex = 16;
@@ -150,7 +153,7 @@ namespace NKClientQuickSample
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label5.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label5.Location = new System.Drawing.Point(12, 531);
+            this.label5.Location = new System.Drawing.Point(9, 426);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(98, 15);
             this.label5.TabIndex = 17;
@@ -158,17 +161,17 @@ namespace NKClientQuickSample
             // 
             // rtbRpcResponse
             // 
-            this.rtbRpcResponse.Location = new System.Drawing.Point(9, 550);
+            this.rtbRpcResponse.Location = new System.Drawing.Point(550, 444);
             this.rtbRpcResponse.Name = "rtbRpcResponse";
             this.rtbRpcResponse.ReadOnly = true;
-            this.rtbRpcResponse.Size = new System.Drawing.Size(535, 142);
+            this.rtbRpcResponse.Size = new System.Drawing.Size(320, 329);
             this.rtbRpcResponse.TabIndex = 18;
             this.rtbRpcResponse.Text = "";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(550, 312);
+            this.label8.Location = new System.Drawing.Point(550, 321);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(311, 15);
             this.label8.TabIndex = 21;
@@ -187,7 +190,7 @@ namespace NKClientQuickSample
             this.tbTChttpPort.MaxLength = 8;
             this.tbTChttpPort.Name = "tbTChttpPort";
             this.tbTChttpPort.Size = new System.Drawing.Size(169, 23);
-            this.tbTChttpPort.TabIndex = 23;
+            this.tbTChttpPort.TabIndex = 24;
             this.tbTChttpPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textbox_KeyPress_OnlyNumberic);
             // 
             // label111
@@ -202,7 +205,7 @@ namespace NKClientQuickSample
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(602, 103);
+            this.label10.Location = new System.Drawing.Point(602, 108);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(62, 15);
             this.label10.TabIndex = 25;
@@ -211,7 +214,7 @@ namespace NKClientQuickSample
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(607, 128);
+            this.label11.Location = new System.Drawing.Point(607, 132);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(57, 15);
             this.label11.TabIndex = 27;
@@ -223,13 +226,13 @@ namespace NKClientQuickSample
             this.tbTCRpcPort.MaxLength = 8;
             this.tbTCRpcPort.Name = "tbTCRpcPort";
             this.tbTCRpcPort.Size = new System.Drawing.Size(169, 23);
-            this.tbTCRpcPort.TabIndex = 26;
+            this.tbTCRpcPort.TabIndex = 25;
             this.tbTCRpcPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textbox_KeyPress_OnlyNumberic);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(621, 78);
+            this.label9.Location = new System.Drawing.Point(621, 82);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(43, 15);
             this.label9.TabIndex = 29;
@@ -240,21 +243,21 @@ namespace NKClientQuickSample
             this.tbTCNodeIp.Location = new System.Drawing.Point(670, 78);
             this.tbTCNodeIp.Name = "tbTCNodeIp";
             this.tbTCNodeIp.Size = new System.Drawing.Size(169, 23);
-            this.tbTCNodeIp.TabIndex = 30;
+            this.tbTCNodeIp.TabIndex = 23;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(609, 155);
+            this.label12.Location = new System.Drawing.Point(590, 157);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(55, 15);
+            this.label12.Size = new System.Drawing.Size(74, 15);
             this.label12.TabIndex = 31;
-            this.label12.Text = "Last ID : ";
+            this.label12.Text = "Current ID : ";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(563, 182);
+            this.label13.Location = new System.Drawing.Point(562, 183);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(103, 15);
             this.label13.TabIndex = 32;
@@ -266,7 +269,7 @@ namespace NKClientQuickSample
             this.tbLastNodeId.Name = "tbLastNodeId";
             this.tbLastNodeId.ReadOnly = true;
             this.tbLastNodeId.Size = new System.Drawing.Size(169, 23);
-            this.tbLastNodeId.TabIndex = 33;
+            this.tbLastNodeId.TabIndex = 26;
             // 
             // tbLastChannelId
             // 
@@ -274,7 +277,7 @@ namespace NKClientQuickSample
             this.tbLastChannelId.Name = "tbLastChannelId";
             this.tbLastChannelId.ReadOnly = true;
             this.tbLastChannelId.Size = new System.Drawing.Size(169, 23);
-            this.tbLastChannelId.TabIndex = 34;
+            this.tbLastChannelId.TabIndex = 27;
             // 
             // rbAddCompute
             // 
@@ -431,11 +434,38 @@ namespace NKClientQuickSample
             this.label7.TabIndex = 49;
             this.label7.Text = "* Select API";
             // 
+            // pbDrawBox
+            // 
+            this.pbDrawBox.BackColor = System.Drawing.Color.Black;
+            this.pbDrawBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pbDrawBox.Location = new System.Drawing.Point(9, 444);
+            this.pbDrawBox.Name = "pbDrawBox";
+            this.pbDrawBox.Size = new System.Drawing.Size(535, 329);
+            this.pbDrawBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbDrawBox.TabIndex = 50;
+            this.pbDrawBox.TabStop = false;
+            // 
+            // lbDrawFrameChannelId
+            // 
+            this.lbDrawFrameChannelId.AutoSize = true;
+            this.lbDrawFrameChannelId.BackColor = System.Drawing.SystemColors.Highlight;
+            this.lbDrawFrameChannelId.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lbDrawFrameChannelId.ForeColor = System.Drawing.Color.White;
+            this.lbDrawFrameChannelId.Location = new System.Drawing.Point(453, 731);
+            this.lbDrawFrameChannelId.Name = "lbDrawFrameChannelId";
+            this.lbDrawFrameChannelId.Size = new System.Drawing.Size(59, 21);
+            this.lbDrawFrameChannelId.TabIndex = 54;
+            this.lbDrawFrameChannelId.Text = "empty";
+            // 
             // NKClientQuickSampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(873, 704);
+            this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.ClientSize = new System.Drawing.Size(873, 775);
+            this.Controls.Add(this.lbDrawFrameChannelId);
+            this.Controls.Add(this.pbDrawBox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.rbGetRoi);
@@ -473,8 +503,10 @@ namespace NKClientQuickSample
             this.Controls.Add(this.btnAPIConnection);
             this.Controls.Add(this.tbUri);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "NKClientQuickSampleForm";
             this.Text = "NKClientQuickSample";
+            ((System.ComponentModel.ISupportInitialize)(this.pbDrawBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -518,6 +550,8 @@ namespace NKClientQuickSample
         private System.Windows.Forms.RadioButton rbGetRoi;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.PictureBox pbDrawBox;
+        private System.Windows.Forms.Label lbDrawFrameChannelId;
     }
 }
 

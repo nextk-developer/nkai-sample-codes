@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
+using VAMetaService;
 
 namespace NKClientQuickSample
 {
     public partial class NKClientQuickSampleForm : Form
     {
-        private RpcClient _rpcClient;
-        private RestClient _requestAPI;
+        private Client.RpcClient _rpcClient;
+        private Client.RestClient _restClient;
+        private Video.CaptureFrame _captureFrame;
+        private FrameMetaData _currentVAMeta;
+        private string _currentDrawChannelID;
         public NKClientQuickSampleForm()
         {
             InitializeComponent();
@@ -16,24 +22,59 @@ namespace NKClientQuickSample
             CreateClients();
             ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
         }
+        private void ReceivedDrawFrame(object sender, System.Drawing.Bitmap e)
+        {
+            if (e == null) return;
+
+            this.Invoke(new Action(delegate ()
+            {
+                using (Graphics grap = Graphics.FromImage(e))
+                {
+                    if (_currentVAMeta != null)
+                    {
+                        Pen drawPen = new Pen(Brushes.Red, 10);
+                        Font ff = new Font("Arial", 20);
+                        SolidBrush sb = new SolidBrush(Color.White);
+
+                        foreach (var evt in _currentVAMeta.EventList)
+                        {
+                            var box = evt.Segmentation.Box;
+                            int x = (int)(e.Width * box.X);
+                            int y = (int)(e.Height * box.Y);
+                            int w = (int)(e.Width * box.Width);
+                            int h = (int)(e.Height * box.Height);
+                            grap.DrawRectangle(drawPen, new Rectangle(x, y, w, h));
+                            grap.DrawString(evt.Segmentation.Label.ToString(), ff, sb, x, y, new StringFormat());
+                        }
+                    }
+                    pbDrawBox.Image = e;
+                }
+            }));
+        }
+
+        #region Client
         private void CreateClients()
         {
             //rest api
-            _requestAPI = new RestClient();
-            _requestAPI.ResponseAPIHandler += ReceivedApiResponse;
-            _requestAPI.ResponseLastUidHandler += ReceivedApiGetUID;
+            _restClient = new Client.RestClient();
+            _restClient.ResponseAPIHandler += ReceivedApiResponse;
+            _restClient.ResponseLastUidHandler += ReceivedApiGetUID;
 
             //rpc
-            _rpcClient = new RpcClient();
+            _rpcClient = new Client.RpcClient();
             _rpcClient.ResponseMetaHandler += ReceivedStreamingMeta;
+
+            //draw 
+            _captureFrame = new Video.CaptureFrame();
+            _captureFrame.ResponseDrawFrameHandler += ReceivedDrawFrame;
         }
         private void SetDefualt()
         {
             tbTCbaseUri.Text = "http://192.168.0.36:9000";
             tbTCNodeIp.Text = "192.168.0.36";
+            //tbTCNodeIp.Text = "nextk.synology.me";
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
-            rbAddCompute.Checked = true;
         }
         private void ChangedRpcSetting(string host, int port)
         {
@@ -42,6 +83,21 @@ namespace NKClientQuickSample
                 _rpcClient.Start(host, port);
             }
         }
+        private void SendAPI(string uri, string payload)
+        {
+            try
+            {
+                //rpc 정보가 변경된 경우
+                ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
+                //Send API
+                _restClient.RequestTo(uri, payload);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+
         private void ReceivedApiGetUID(object target, string uid)
         {
             //마지막 생성된 Id 표출을 위함
@@ -53,11 +109,38 @@ namespace NKClientQuickSample
                 }
                 else if ((string)target == "channelId")
                 {
+                    SetChannelUID(uid);
                     tbLastChannelId.Text = uid;
+                    lbDrawFrameChannelId.Text = uid;
                 }
             }));
         }
+        private string GetChannelURI(string ChannelUID)
+        {
+            string get_command  = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_GET)}";
+            string get_json     = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestChannel
+            {
+                nodeId = tbLastNodeId.Text,
+                channelId = ChannelUID
+            }, Newtonsoft.Json.Formatting.Indented);
 
+            return  _restClient.GetRequestAsync(get_command, get_json);
+        }
+        private void SetChannelUID(string ChannelUID)
+        {
+            string response = GetChannelURI(ChannelUID);
+            string URI = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseChannelInfo>(response).intputUri;
+            if (URI != null)
+            {
+                //카메라 생성시마다 영상 변경
+                if (_captureFrame != null)
+                {
+                    //_captureFrame.Stop();
+                    _captureFrame.StartAndUpdate(URI);
+                }
+                _currentDrawChannelID = ChannelUID;
+            }
+        }
         private void ReceivedApiResponse(object sender, string response)
         {
             //API 응답 표출
@@ -66,29 +149,28 @@ namespace NKClientQuickSample
                 rtbResponse.Text = $"[{DateTime.Now.ToString()}]\r\n" + response;
             }));
         }
-
-        private void ReceivedStreamingMeta(object sender, string response)
+        private void ReceivedStreamingMeta(object sender, FrameMetaData response)
         {
             this.Invoke(new Action(delegate ()
             {
-                rtbRpcResponse.Text = $"[{DateTime.Now.ToString("yy/MM/dd HH:mm:ss:ff")}]\r\n" + response;
+                if (response.ChannelId == _currentDrawChannelID)
+                {
+                    _currentVAMeta = response;
+
+                    if(response.EventList != null)
+                    {
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine($"[{DateTime.Now.ToString("yy/MM/dd HH:mm:ss:ff")}]");
+                        foreach (EventInfo ei in response.EventList)
+                        {
+                            builder.AppendLine($"ID:{ei.Id}, CLASS:{ei.Segmentation.Label}, BOX({ei.Segmentation.Box})");
+                        }
+                        rtbRpcResponse.Text = builder.ToString();
+                    }
+                }
             }));
         }
-
-        private void SendAPI(string uri, string payload)
-        {
-            try
-            {
-                //rpc 정보가 변경된 경우
-                ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
-                //Send API
-                _requestAPI.RequestTo(uri, payload);
-            }
-            catch(Exception e)
-            {
-                
-            }
-        }
+        #endregion
 
         #region 컴퓨팅 노드 API
         private void TestAPICreateComputeNode()
