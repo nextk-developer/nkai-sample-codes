@@ -68,6 +68,8 @@ namespace NKClientQuickSample
             this.label7 = new System.Windows.Forms.Label();
             this.pbDrawBox = new System.Windows.Forms.PictureBox();
             this.lbDrawFrameChannelId = new System.Windows.Forms.Label();
+            this.tbLastRoiId = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbDrawBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -171,7 +173,7 @@ namespace NKClientQuickSample
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(550, 321);
+            this.label8.Location = new System.Drawing.Point(550, 342);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(311, 15);
             this.label8.TabIndex = 21;
@@ -248,7 +250,7 @@ namespace NKClientQuickSample
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(590, 157);
+            this.label12.Location = new System.Drawing.Point(591, 157);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(74, 15);
             this.label12.TabIndex = 31;
@@ -282,7 +284,7 @@ namespace NKClientQuickSample
             // rbAddCompute
             // 
             this.rbAddCompute.AutoSize = true;
-            this.rbAddCompute.Location = new System.Drawing.Point(647, 238);
+            this.rbAddCompute.Location = new System.Drawing.Point(647, 259);
             this.rbAddCompute.Name = "rbAddCompute";
             this.rbAddCompute.Size = new System.Drawing.Size(47, 19);
             this.rbAddCompute.TabIndex = 35;
@@ -294,7 +296,7 @@ namespace NKClientQuickSample
             // rbAddChannel
             // 
             this.rbAddChannel.AutoSize = true;
-            this.rbAddChannel.Location = new System.Drawing.Point(647, 260);
+            this.rbAddChannel.Location = new System.Drawing.Point(647, 281);
             this.rbAddChannel.Name = "rbAddChannel";
             this.rbAddChannel.Size = new System.Drawing.Size(47, 19);
             this.rbAddChannel.TabIndex = 36;
@@ -306,7 +308,7 @@ namespace NKClientQuickSample
             // rbAddROI
             // 
             this.rbAddROI.AutoSize = true;
-            this.rbAddROI.Location = new System.Drawing.Point(647, 281);
+            this.rbAddROI.Location = new System.Drawing.Point(647, 302);
             this.rbAddROI.Name = "rbAddROI";
             this.rbAddROI.Size = new System.Drawing.Size(47, 19);
             this.rbAddROI.TabIndex = 37;
@@ -318,7 +320,7 @@ namespace NKClientQuickSample
             // rbRemoveCompute
             // 
             this.rbRemoveCompute.AutoSize = true;
-            this.rbRemoveCompute.Location = new System.Drawing.Point(753, 238);
+            this.rbRemoveCompute.Location = new System.Drawing.Point(753, 259);
             this.rbRemoveCompute.Name = "rbRemoveCompute";
             this.rbRemoveCompute.Size = new System.Drawing.Size(68, 19);
             this.rbRemoveCompute.TabIndex = 39;
@@ -330,7 +332,7 @@ namespace NKClientQuickSample
             // rbRemoveChannel
             // 
             this.rbRemoveChannel.AutoSize = true;
-            this.rbRemoveChannel.Location = new System.Drawing.Point(753, 260);
+            this.rbRemoveChannel.Location = new System.Drawing.Point(753, 281);
             this.rbRemoveChannel.Name = "rbRemoveChannel";
             this.rbRemoveChannel.Size = new System.Drawing.Size(68, 19);
             this.rbRemoveChannel.TabIndex = 40;
@@ -342,7 +344,7 @@ namespace NKClientQuickSample
             // rbRemoveROI
             // 
             this.rbRemoveROI.AutoSize = true;
-            this.rbRemoveROI.Location = new System.Drawing.Point(753, 280);
+            this.rbRemoveROI.Location = new System.Drawing.Point(753, 301);
             this.rbRemoveROI.Name = "rbRemoveROI";
             this.rbRemoveROI.Size = new System.Drawing.Size(68, 19);
             this.rbRemoveROI.TabIndex = 41;
@@ -354,7 +356,7 @@ namespace NKClientQuickSample
             // rbGetCompute
             // 
             this.rbGetCompute.AutoSize = true;
-            this.rbGetCompute.Location = new System.Drawing.Point(701, 238);
+            this.rbGetCompute.Location = new System.Drawing.Point(701, 259);
             this.rbGetCompute.Name = "rbGetCompute";
             this.rbGetCompute.Size = new System.Drawing.Size(43, 19);
             this.rbGetCompute.TabIndex = 42;
@@ -366,7 +368,7 @@ namespace NKClientQuickSample
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(550, 240);
+            this.label14.Location = new System.Drawing.Point(550, 261);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(93, 15);
             this.label14.TabIndex = 43;
@@ -375,7 +377,7 @@ namespace NKClientQuickSample
             // rbGetChannel
             // 
             this.rbGetChannel.AutoSize = true;
-            this.rbGetChannel.Location = new System.Drawing.Point(701, 260);
+            this.rbGetChannel.Location = new System.Drawing.Point(701, 281);
             this.rbGetChannel.Name = "rbGetChannel";
             this.rbGetChannel.Size = new System.Drawing.Size(43, 19);
             this.rbGetChannel.TabIndex = 44;
@@ -387,7 +389,7 @@ namespace NKClientQuickSample
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(585, 262);
+            this.label15.Location = new System.Drawing.Point(585, 283);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(58, 15);
             this.label15.TabIndex = 45;
@@ -396,7 +398,7 @@ namespace NKClientQuickSample
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(612, 282);
+            this.label16.Location = new System.Drawing.Point(612, 303);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(31, 15);
             this.label16.TabIndex = 46;
@@ -405,7 +407,7 @@ namespace NKClientQuickSample
             // rbGetRoi
             // 
             this.rbGetRoi.AutoSize = true;
-            this.rbGetRoi.Location = new System.Drawing.Point(701, 280);
+            this.rbGetRoi.Location = new System.Drawing.Point(701, 301);
             this.rbGetRoi.Name = "rbGetRoi";
             this.rbGetRoi.Size = new System.Drawing.Size(43, 19);
             this.rbGetRoi.TabIndex = 47;
@@ -428,7 +430,7 @@ namespace NKClientQuickSample
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label7.Location = new System.Drawing.Point(553, 214);
+            this.label7.Location = new System.Drawing.Point(553, 235);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(70, 15);
             this.label7.TabIndex = 49;
@@ -457,6 +459,23 @@ namespace NKClientQuickSample
             this.lbDrawFrameChannelId.TabIndex = 54;
             this.lbDrawFrameChannelId.Text = "empty";
             // 
+            // tbLastRoiId
+            // 
+            this.tbLastRoiId.Location = new System.Drawing.Point(670, 204);
+            this.tbLastRoiId.Name = "tbLastRoiId";
+            this.tbLastRoiId.ReadOnly = true;
+            this.tbLastRoiId.Size = new System.Drawing.Size(169, 23);
+            this.tbLastRoiId.TabIndex = 55;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(589, 208);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(76, 15);
+            this.label17.TabIndex = 56;
+            this.label17.Text = "Last Roi ID : ";
+            // 
             // NKClientQuickSampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -464,6 +483,8 @@ namespace NKClientQuickSample
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(873, 775);
+            this.Controls.Add(this.tbLastRoiId);
+            this.Controls.Add(this.label17);
             this.Controls.Add(this.lbDrawFrameChannelId);
             this.Controls.Add(this.pbDrawBox);
             this.Controls.Add(this.label7);
@@ -552,6 +573,8 @@ namespace NKClientQuickSample
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.PictureBox pbDrawBox;
         private System.Windows.Forms.Label lbDrawFrameChannelId;
+        private System.Windows.Forms.TextBox tbLastRoiId;
+        private System.Windows.Forms.Label label17;
     }
 }
 

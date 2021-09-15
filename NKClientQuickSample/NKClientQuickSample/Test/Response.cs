@@ -19,4 +19,8 @@ namespace NKClientQuickSample.Test
         public string intputUri { get; set; }
         public string channelName { get; set; }
     }
+    public class ResponseRoiInfo
+    {
+        public string roiId { get; set; }
+    }
 }

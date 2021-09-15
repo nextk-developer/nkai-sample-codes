@@ -58,7 +58,7 @@ namespace NKClientQuickSample
             //rest api
             _restClient = new Client.RestClient();
             _restClient.ResponseAPIHandler += ReceivedApiResponse;
-            _restClient.ResponseLastUidHandler += ReceivedApiGetUID;
+            _restClient.ResponseUidHandler += ReceivedApiGetUID;
 
             //rpc
             _rpcClient = new Client.RpcClient();
@@ -103,15 +103,20 @@ namespace NKClientQuickSample
             //마지막 생성된 Id 표출을 위함
             this.Invoke(new Action(delegate ()
             {
-                if ((string)target == "nodeId")
+                string target_name = (string)target;
+                if (target_name == "nodeId")
                 {
                     tbLastNodeId.Text = uid;
                 }
-                else if ((string)target == "channelId")
+                else if (target_name == "channelId")
                 {
                     SetChannelUID(uid);
                     tbLastChannelId.Text = uid;
                     lbDrawFrameChannelId.Text = uid;
+                }
+                else if (target_name == "roiId")
+                {
+                    tbLastRoiId.Text = uid;
                 }
             }));
         }
@@ -210,7 +215,8 @@ namespace NKClientQuickSample
             {
                 nodeId = tbLastNodeId.Text,
                 channelName = "TEST_CHANNEL_NAME",
-                inputUri = "rtsp://nextk.synology.me/vod/fa_test"
+                inputUri = "rtsp://admin:enter2424@192.168.0.71/stream1"
+                //inputUri = "rtsp://nextk.synology.me/vod/fa_test"
             }, Newtonsoft.Json.Formatting.Indented);
         }
         private void TestAPIRemoveChannel()
@@ -258,7 +264,7 @@ namespace NKClientQuickSample
             {
                 nodeId = tbLastNodeId.Text,
                 channelId = tbLastChannelId.Text,
-                roiId = "????",
+                roiId = tbLastRoiId.Text,
             }, Newtonsoft.Json.Formatting.Indented);
         }
         private void TestAPIGetRoi()
@@ -268,7 +274,7 @@ namespace NKClientQuickSample
             {
                 nodeId = tbLastNodeId.Text,
                 channelId = tbLastChannelId.Text,
-                roiId = "????",
+                roiId = tbLastRoiId.Text,
             }, Newtonsoft.Json.Formatting.Indented);
         }
         #endregion

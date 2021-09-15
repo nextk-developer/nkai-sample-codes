@@ -10,7 +10,7 @@ namespace NKClientQuickSample.Client
     public class RestClient
     {
         public event EventHandler<string> ResponseAPIHandler;
-        public event EventHandler<string> ResponseLastUidHandler;
+        public event EventHandler<string> ResponseUidHandler;
         public void RequestTo(string baseURI, string json)
         {
             Task.Run(() =>
@@ -45,13 +45,19 @@ namespace NKClientQuickSample.Client
                                     case "create-computing-node":
                                         {
                                             Test.ResponseCompute compute = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseCompute>(resString);
-                                            ResponseLastUidHandler?.Invoke("nodeId", compute.nodeId);
+                                            ResponseUidHandler?.Invoke("nodeId", compute.nodeId);
                                         }
                                         break;
                                     case "register-channel":
                                         {
                                             Test.ResponseChannel channel = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseChannel>(resString);
-                                            ResponseLastUidHandler?.Invoke("channelId", channel.channelId);
+                                            ResponseUidHandler?.Invoke("channelId", channel.channelId);
+                                        }
+                                        break;
+                                    case "create-roi":
+                                        {
+                                            Test.ResponseRoiInfo roi = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseRoiInfo>(resString);
+                                            ResponseUidHandler?.Invoke("roiId", roi.roiId);
                                         }
                                         break;
                                     default:
