@@ -71,8 +71,8 @@ namespace NKClientQuickSample
         private void SetDefualt()
         {
             tbTCbaseUri.Text = "http://192.168.0.36:9000";
-            tbTCNodeIp.Text = "192.168.0.36";
-            //tbTCNodeIp.Text = "nextk.synology.me";
+            //tbTCNodeIp.Text = "192.168.0.36";
+            tbTCNodeIp.Text = "nextk.synology.me";
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
         }
