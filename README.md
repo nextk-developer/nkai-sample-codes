@@ -3,7 +3,7 @@ NK에서 제공하는 서비스 사용을 위한 예제 샘플 코드
 
 # **NKClientQuickSample QuickStarts**
 ## **구성**
-<img src="doc/flow.png" width="600px" height="150px" title="검출 이벤트 결과" alt="metaImage"></img><br/>
+<img src="doc/flow.png" width="600px" height="150px" title="검출 이벤트 결과" alt="flowImage"></img><br/>
 ***
 ## **사전 준비**
 * NK Package
