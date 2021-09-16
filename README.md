@@ -1,10 +1,9 @@
 # **nkai-sample-codes README**
 NK에서 제공하는 서비스 사용을 위한 예제 샘플 코드
 
-# **NKClientQuickSample**
-## **QuickStarts**
+# **NKClientQuickSample QuickStarts**
 ***
-### **사전 준비**
+## **사전 준비**
 * NK Package
   - NKAPIGateWay 설치 및 실행
   - NKProcess 설치 및 실행
@@ -12,6 +11,7 @@ NK에서 제공하는 서비스 사용을 위한 예제 샘플 코드
     - 최신 드라이버 설치(https://www.nvidia.co.kr/Download/index.aspx?lang=en)
     - Support Cuda Gpus(https://en.wikipedia.org/wiki/CUDA)
 * NKClientQuickSample 솔루션 빌드
+## **직접 API 요청시**
 ### **노드 등록**
 **Request**
 
@@ -112,7 +112,7 @@ POST /v2/va/create-roi
 ```
 <!-- ### 비디오 분석 시작-->
 
-### **NKClientQuickSample UI 사용시**
+## **Sample UI 사용시**
 1) Setting > BaseUri 입력
 2) *ComptuteNode 하위 정보 입력
 3) *Select API 포맷 이용 (아래 순서로 요청)
@@ -120,7 +120,7 @@ POST /v2/va/create-roi
    - Channel Add 선택 --> API Send 버튼
    - Roi Add 선택 --> API Send 버튼
 
-### **분석 결과 확인**
+## **분석 결과 확인**
 영상 내 이벤트 발생시 결과 영상 Annotation 및 Text 출력
 
 <img src="doc/metadata.png" width="640px" height="480px" title="검출 이벤트 결과" alt="metaImage"></img><br/>
