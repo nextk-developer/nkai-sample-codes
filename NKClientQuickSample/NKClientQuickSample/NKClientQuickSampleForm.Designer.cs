@@ -70,6 +70,7 @@ namespace NKClientQuickSample
             this.lbDrawFrameChannelId = new System.Windows.Forms.Label();
             this.tbLastRoiId = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
+            this.rtbRpcOtherResponse = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbDrawBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -166,7 +167,7 @@ namespace NKClientQuickSample
             this.rtbRpcResponse.Location = new System.Drawing.Point(550, 444);
             this.rtbRpcResponse.Name = "rtbRpcResponse";
             this.rtbRpcResponse.ReadOnly = true;
-            this.rtbRpcResponse.Size = new System.Drawing.Size(320, 329);
+            this.rtbRpcResponse.Size = new System.Drawing.Size(320, 171);
             this.rtbRpcResponse.TabIndex = 18;
             this.rtbRpcResponse.Text = "";
             // 
@@ -476,6 +477,15 @@ namespace NKClientQuickSample
             this.label17.TabIndex = 56;
             this.label17.Text = "Last Roi ID : ";
             // 
+            // rtbRpcOtherResponse
+            // 
+            this.rtbRpcOtherResponse.Location = new System.Drawing.Point(550, 621);
+            this.rtbRpcOtherResponse.Name = "rtbRpcOtherResponse";
+            this.rtbRpcOtherResponse.ReadOnly = true;
+            this.rtbRpcOtherResponse.Size = new System.Drawing.Size(320, 152);
+            this.rtbRpcOtherResponse.TabIndex = 57;
+            this.rtbRpcOtherResponse.Text = "";
+            // 
             // NKClientQuickSampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -483,6 +493,7 @@ namespace NKClientQuickSample
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(873, 775);
+            this.Controls.Add(this.rtbRpcOtherResponse);
             this.Controls.Add(this.tbLastRoiId);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.lbDrawFrameChannelId);
@@ -575,6 +586,7 @@ namespace NKClientQuickSample
         private System.Windows.Forms.Label lbDrawFrameChannelId;
         private System.Windows.Forms.TextBox tbLastRoiId;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.RichTextBox rtbRpcOtherResponse;
     }
 }
 

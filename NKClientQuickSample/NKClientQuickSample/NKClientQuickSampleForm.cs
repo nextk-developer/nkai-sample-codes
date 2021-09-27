@@ -32,19 +32,21 @@ namespace NKClientQuickSample
                 {
                     if (_currentVAMeta != null)
                     {
-                        Pen drawPen = new Pen(Brushes.Red, 10);
-                        Font ff = new Font("Arial", 20);
+                        Pen drawPen = new Pen(Brushes.Red, 7);
+                        Font ff = new Font("Arial", 40, FontStyle.Bold);
                         SolidBrush sb = new SolidBrush(Color.White);
 
                         foreach (var evt in _currentVAMeta.EventList)
                         {
-                            var box = evt.Segmentation.Box;
-                            int x = (int)(e.Width * box.X);
-                            int y = (int)(e.Height * box.Y);
-                            int w = (int)(e.Width * box.Width);
-                            int h = (int)(e.Height * box.Height);
-                            grap.DrawRectangle(drawPen, new Rectangle(x, y, w, h));
-                            grap.DrawString(evt.Segmentation.Label.ToString(), ff, sb, x, y, new StringFormat());
+                            var segment = evt.Segmentation;
+                            int x = (int)(e.Width  * segment.Box.X);
+                            int y = (int)(e.Height * segment.Box.Y);
+                            int w = (int)(e.Width  * segment.Box.Width);
+                            int h = (int)(e.Height * segment.Box.Height);
+                            Rectangle drawBox = new Rectangle(x, y, w, h);
+                            grap.DrawRectangle(drawPen, drawBox);
+                            string putDrawString = segment.Label.ToString() + $"\r\n(ID:{evt.Id})";
+                            grap.DrawString(putDrawString, ff, sb, x, y, new StringFormat());
                         }
                     }
                     pbDrawBox.Image = e;
@@ -71,8 +73,8 @@ namespace NKClientQuickSample
         private void SetDefualt()
         {
             tbTCbaseUri.Text = "http://192.168.0.36:9000";
-            //tbTCNodeIp.Text = "192.168.0.36";
-            tbTCNodeIp.Text = "nextk.synology.me";
+            tbTCNodeIp.Text = "192.168.0.36";
+            //tbTCNodeIp.Text = "nextk.synology.me";
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
         }
@@ -162,16 +164,30 @@ namespace NKClientQuickSample
                 {
                     _currentVAMeta = response;
 
-                    if(response.EventList != null)
+                    if (response.EventList != null)
                     {
                         StringBuilder builder = new StringBuilder();
                         builder.AppendLine($"[{DateTime.Now.ToString("yy/MM/dd HH:mm:ss:ff")}]");
                         foreach (EventInfo ei in response.EventList)
                         {
-                            builder.AppendLine($"ID:{ei.Id}, CLASS:{ei.Segmentation.Label}, BOX({ei.Segmentation.Box})");
+                            builder.AppendLine($"Object ID:{ei.Id}({ei.Segmentation.Label}/{ei.State.ToString()})");
                         }
                         rtbRpcResponse.Text = builder.ToString();
                     }
+                }
+                else
+                {
+                    if (response.EventList != null)
+                    {
+                        StringBuilder builder = new StringBuilder();
+                        builder.AppendLine($"[{response.ChannelId} >>> {DateTime.Now.ToString("yy/MM/dd HH:mm:ss:ff")}]");
+                        foreach (EventInfo ei in response.EventList)
+                        {
+                            builder.AppendLine($"Object ID:{ei.Id}({ei.Segmentation.Label}/{ei.State.ToString()})");
+                        }
+                        rtbRpcOtherResponse.Text = builder.ToString();
+                    }
+                    //Console.WriteLine(response.ChannelId);
                 }
             }));
         }

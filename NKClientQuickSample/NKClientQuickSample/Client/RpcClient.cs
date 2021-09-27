@@ -40,12 +40,16 @@ namespace NKClientQuickSample.Client
                         case ChannelState.Shutdown:
                             {
                                 _IsRunning = false;
-                                await _chClient.ConnectAsync();
+                                _chClient.ConnectAsync().Wait(3000);
+                            }
+                            break;
+                        case ChannelState.Ready:
+                            if (_IsRunning == false)
+                            {
                                 StreamingProc();
                             }
                             break;
                         case ChannelState.Connecting:
-                            return;
                         default:
                             break;
                     }
@@ -72,13 +76,12 @@ namespace NKClientQuickSample.Client
             {
                 while (_IsRunning)
                 {
-                    if (_chClient.State != ChannelState.Ready)
+                    if (_chClient.State == ChannelState.Ready)
                     {
-                        continue;
-                    }
-                    await foreach (FrameMetaData item in streamCall.ResponseStream.ReadAllAsync())
-                    {
-                        ResponseMetaHandler?.Invoke(this, item);
+                        await foreach (FrameMetaData item in streamCall.ResponseStream.ReadAllAsync())
+                        {
+                            ResponseMetaHandler?.Invoke(this, item);
+                        }
                     }
                 }
             });
