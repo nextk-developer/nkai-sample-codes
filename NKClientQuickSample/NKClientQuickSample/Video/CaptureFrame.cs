@@ -62,6 +62,7 @@ namespace NKClientQuickSample.Video
                         }
                         GC.Collect();
                     }
+                    System.Threading.Thread.Sleep(68);
                 }
                 _videocapture.Dispose();
                 _isRunProc = false;

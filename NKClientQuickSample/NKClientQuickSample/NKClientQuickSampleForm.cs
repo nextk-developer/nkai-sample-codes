@@ -25,30 +25,47 @@ namespace NKClientQuickSample
         private void ReceivedDrawFrame(object sender, System.Drawing.Bitmap e)
         {
             if (e == null) return;
+            if (_currentVAMeta == null) return;
 
-            this.Invoke(new Action(delegate ()
+                this.Invoke(new Action(delegate ()
             {
                 using (Graphics grap = Graphics.FromImage(e))
                 {
                     if (_currentVAMeta != null)
                     {
-                        Pen drawPen = new Pen(Brushes.Red, 7);
+                        Pen eventPen = new Pen(Brushes.Red, 8);
+                        Pen ObjectPen = new Pen(Brushes.Green, 6);
                         Font ff = new Font("Arial", 40, FontStyle.Bold);
                         SolidBrush sb = new SolidBrush(Color.White);
-
-                        foreach (var evt in _currentVAMeta.EventList)
+                        if (_currentVAMeta.ObjectList != null)
                         {
-                            var segment = evt.Segmentation;
-                            int x = (int)(e.Width  * segment.Box.X);
-                            int y = (int)(e.Height * segment.Box.Y);
-                            int w = (int)(e.Width  * segment.Box.Width);
-                            int h = (int)(e.Height * segment.Box.Height);
-                            Rectangle drawBox = new Rectangle(x, y, w, h);
-                            grap.DrawRectangle(drawPen, drawBox);
-                            string putDrawString = segment.Label.ToString() + $"\r\n(ID:{evt.Id})";
-                            grap.DrawString(putDrawString, ff, sb, x, y, new StringFormat());
+                            foreach (var obj in _currentVAMeta.ObjectList)
+                            {
+                                int x = (int)(e.Width * obj.Box.X);
+                                int y = (int)(e.Height * obj.Box.Y);
+                                int w = (int)(e.Width * obj.Box.Width);
+                                int h = (int)(e.Height * obj.Box.Height);
+                                Rectangle drawBox = new Rectangle(x, y, w, h);
+                                grap.DrawRectangle(ObjectPen, drawBox);
+                            }
+                        }
+                        if (_currentVAMeta.EventList != null)
+                        {
+                            foreach (var evt in _currentVAMeta.EventList)
+                            {
+                                var segment = evt.Segmentation;
+                                int x = (int)(e.Width * segment.Box.X);
+                                int y = (int)(e.Height * segment.Box.Y);
+                                int w = (int)(e.Width * segment.Box.Width);
+                                int h = (int)(e.Height * segment.Box.Height);
+                                Rectangle drawBox = new Rectangle(x, y, w, h);
+                                grap.DrawRectangle(eventPen, drawBox);
+                                string putDrawString = segment.Label.ToString() + $"\r\n(ID:{evt.Id})";
+                                grap.DrawString(putDrawString, ff, sb, x, y, new StringFormat());
+                            }
                         }
                     }
+
                     pbDrawBox.Image = e;
                 }
             }));
@@ -74,6 +91,7 @@ namespace NKClientQuickSample
         {
             tbTCbaseUri.Text = "http://192.168.0.36:9000";
             tbTCNodeIp.Text = "192.168.0.36";
+            //tbTCbaseUri.Text = "http://172.16.0.153:9000";
             //tbTCNodeIp.Text = "nextk.synology.me";
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
@@ -231,7 +249,11 @@ namespace NKClientQuickSample
             {
                 nodeId = tbLastNodeId.Text,
                 channelName = "TEST_CHANNEL_NAME",
+                //rtsp test
                 inputUri = "rtsp://admin:enter2424@192.168.0.71/stream1"
+                //video test
+                //inputUri = "falldown_1.mp4",
+                //inputType = "video",
                 //inputUri = "rtsp://nextk.synology.me/vod/fa_test"
             }, Newtonsoft.Json.Formatting.Indented);
         }

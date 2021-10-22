@@ -21,6 +21,7 @@ namespace NKClientQuickSample.Test
         public string nodeId { get; set; }
         public string channelName { get; set; }
         public string inputUri { get; set; }
+        public string inputType { get; set; }
     }
     public class RequestChannel
     {

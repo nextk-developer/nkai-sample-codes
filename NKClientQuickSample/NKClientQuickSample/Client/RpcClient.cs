@@ -80,7 +80,10 @@ namespace NKClientQuickSample.Client
                     {
                         await foreach (FrameMetaData item in streamCall.ResponseStream.ReadAllAsync())
                         {
-                            ResponseMetaHandler?.Invoke(this, item);
+                            if (item.EventList.Count > 0 || item.ObjectList.Count > 0)
+                            {
+                                ResponseMetaHandler?.Invoke(this, item);
+                            }
                         }
                     }
                 }
