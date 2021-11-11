@@ -13,11 +13,7 @@ namespace NKClientQuickSample.Video
         private VideoCapture _videocapture;
         private bool _isDraw;
         private bool _isRunProc;
-        //public void Stop()
-        //{
-        //    if(_isRunning == true)
-        //        _isRunning = false;
-        //}
+        private string _url;
         public async Task<bool> Stop()
         {
             if (_isDraw == true)
@@ -38,6 +34,7 @@ namespace NKClientQuickSample.Video
         {
             await Stop();
 
+            _url = url;
             _videocapture = new VideoCapture(url);
             _isDraw = true;
 
@@ -50,19 +47,18 @@ namespace NKClientQuickSample.Video
                 _isRunProc = true;
                 while (_isDraw)
                 {
-                    if (_videocapture.FrameCount == _videocapture.PosFrames)
-                    {
-                        break;
-                    }
                     using (Mat image = new Mat())
                     {
                         if (_videocapture.Read(image))
                         {
                             ResponseDrawFrameHandler?.Invoke(this, OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image));
                         }
-                        GC.Collect();
+                        else
+                        {
+                            _videocapture = new VideoCapture(_url);
+                        }
+                        //GC.Collect();
                     }
-                    System.Threading.Thread.Sleep(68);
                 }
                 _videocapture.Dispose();
                 _isRunProc = false;

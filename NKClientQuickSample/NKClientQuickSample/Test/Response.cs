@@ -16,7 +16,7 @@ namespace NKClientQuickSample.Test
     public class ResponseChannelInfo
     {
         public string channelId { get; set; }
-        public string intputUri { get; set; }
+        public string inputUri { get; set; }
         public string channelName { get; set; }
     }
     public class ResponseRoiInfo

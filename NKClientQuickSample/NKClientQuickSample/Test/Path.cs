@@ -16,6 +16,12 @@ namespace NKClientQuickSample.Test
         ROI_CREATE,
         ROI_REMOVE,
         ROI_UPDATE,
-        ROI_GET
+        ROI_GET,
+        ROI_LIST,
+        LINK_CREATE,
+        LINK_REMOVE,
+        LINK_UPDATE,
+        LINK_GET,
+        LINK_LIST
     }
 }

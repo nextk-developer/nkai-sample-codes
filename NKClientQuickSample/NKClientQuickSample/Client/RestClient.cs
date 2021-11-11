@@ -30,7 +30,7 @@ namespace NKClientQuickSample.Client
                         using (var client = new HttpClient())
                         {
                             client.BaseAddress = new Uri(baseURI);
-                            client.Timeout = new TimeSpan(0, 0, 0, 10);
+                            client.Timeout = new TimeSpan(0, 0, 0, 3);
                             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic");
                             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                             HttpResponseMessage messge = client.PostAsync(path, new StringContent(json, UTF8Encoding.UTF8, "application/json")).Result;
@@ -77,17 +77,18 @@ namespace NKClientQuickSample.Client
         {
             string response = null;
             string[] splitUris = baseURI.Split('/');
-            StringBuilder pathBuilder = new StringBuilder();
-            if (splitUris.Length > 3)
+            int uriLength = splitUris.Length;
+            if (uriLength > 3)
             {
-                for (int i = 3; i < splitUris.Length; i++)
+                StringBuilder pathBuilder = new StringBuilder();
+                for (int i = 3; i < uriLength; i++)
                 {
                     pathBuilder.Append($"/{splitUris[i]}");
                 }
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseURI);
-                    client.Timeout = new TimeSpan(0, 0, 0, 5);
+                    client.Timeout = new TimeSpan(0, 0, 0, 3);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic");
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     HttpResponseMessage messge = client.PostAsync(pathBuilder.ToString(), new StringContent(json, UTF8Encoding.UTF8, "application/json")).Result;
@@ -97,7 +98,6 @@ namespace NKClientQuickSample.Client
                     }
                 }
             }
-
             return response;
         }
     }

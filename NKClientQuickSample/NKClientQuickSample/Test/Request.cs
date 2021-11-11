@@ -8,8 +8,8 @@ namespace NKClientQuickSample.Test
     {
         public string host { get; set; }
         public int httpPort { get; set; }
-        public int rpcPort { get; set; }
         public string nodeName { get; set; }
+        public string license { get; set; }
     }
     public class RequestCompute
     {
@@ -32,6 +32,7 @@ namespace NKClientQuickSample.Test
     {
         public string nodeId { get; set; }
         public string channelId { get; set; }
+        public int eventType { get; set; }
         public string roiName { get; set; }
         public string description { get; set; }
         public List<RoiDot> roiDots { get; set; }
@@ -46,5 +47,12 @@ namespace NKClientQuickSample.Test
         public string nodeId { get; set; }
         public string channelId { get; set; }
         public string roiId { get; set; }
+    }
+    public class RequestLink
+    {
+        public string nodeId { get; set; }
+        public string channelId { get; set; }
+        public List<string> roiLink { get; set; }
+        
     }
 }

@@ -24,6 +24,14 @@ namespace NKClientQuickSample.Test
                 case Path.ROI_REMOVE:   return "v2/va/remove-roi";
                 case Path.ROI_UPDATE:   return "v2/va/update-roi";
                 case Path.ROI_GET:      return "v2/va/get-roi";
+                case Path.ROI_LIST:     return "v2/va/list-roi";
+                //link
+                case Path.LINK_CREATE:  return "v2/va/create-link";
+                case Path.LINK_GET: return "v2/va/get-link";
+                case Path.LINK_LIST: return "v2/va/list-link";
+                case Path.LINK_REMOVE: return "v2/va/remove-link";
+                case Path.LINK_UPDATE: return "v2/va/update-link";
+
                 default:                return "";
             }
         }

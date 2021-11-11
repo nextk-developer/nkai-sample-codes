@@ -40,7 +40,8 @@ namespace NKClientQuickSample.Client
                         case ChannelState.Shutdown:
                             {
                                 _IsRunning = false;
-                                _chClient.ConnectAsync().Wait(3000);
+                                //await _chClient.ConnectAsync();
+                                _chClient.ConnectAsync().Wait(50);
                             }
                             break;
                         case ChannelState.Ready:
@@ -53,7 +54,7 @@ namespace NKClientQuickSample.Client
                         default:
                             break;
                     }
-                    await Task.Delay(new TimeSpan(0, 0, 0, 5));
+                    await Task.Delay(new TimeSpan(0, 0, 0, 0, 1));
                 }
             });
         }

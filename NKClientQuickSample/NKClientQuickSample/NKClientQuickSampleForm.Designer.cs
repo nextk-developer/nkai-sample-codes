@@ -71,6 +71,11 @@ namespace NKClientQuickSample
             this.tbLastRoiId = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.rtbRpcOtherResponse = new System.Windows.Forms.RichTextBox();
+            this.rbGetRoiList = new System.Windows.Forms.RadioButton();
+            this.label18 = new System.Windows.Forms.Label();
+            this.rbAddLink = new System.Windows.Forms.RadioButton();
+            this.rbAddROIHalf1 = new System.Windows.Forms.RadioButton();
+            this.rbAddROIHalf2 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.pbDrawBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -174,7 +179,7 @@ namespace NKClientQuickSample
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(550, 342);
+            this.label8.Location = new System.Drawing.Point(550, 407);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(311, 15);
             this.label8.TabIndex = 21;
@@ -309,7 +314,7 @@ namespace NKClientQuickSample
             // rbAddROI
             // 
             this.rbAddROI.AutoSize = true;
-            this.rbAddROI.Location = new System.Drawing.Point(647, 302);
+            this.rbAddROI.Location = new System.Drawing.Point(647, 306);
             this.rbAddROI.Name = "rbAddROI";
             this.rbAddROI.Size = new System.Drawing.Size(47, 19);
             this.rbAddROI.TabIndex = 37;
@@ -345,7 +350,7 @@ namespace NKClientQuickSample
             // rbRemoveROI
             // 
             this.rbRemoveROI.AutoSize = true;
-            this.rbRemoveROI.Location = new System.Drawing.Point(753, 301);
+            this.rbRemoveROI.Location = new System.Drawing.Point(753, 331);
             this.rbRemoveROI.Name = "rbRemoveROI";
             this.rbRemoveROI.Size = new System.Drawing.Size(68, 19);
             this.rbRemoveROI.TabIndex = 41;
@@ -399,7 +404,7 @@ namespace NKClientQuickSample
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(612, 303);
+            this.label16.Location = new System.Drawing.Point(612, 308);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(31, 15);
             this.label16.TabIndex = 46;
@@ -408,7 +413,7 @@ namespace NKClientQuickSample
             // rbGetRoi
             // 
             this.rbGetRoi.AutoSize = true;
-            this.rbGetRoi.Location = new System.Drawing.Point(701, 301);
+            this.rbGetRoi.Location = new System.Drawing.Point(647, 331);
             this.rbGetRoi.Name = "rbGetRoi";
             this.rbGetRoi.Size = new System.Drawing.Size(43, 19);
             this.rbGetRoi.TabIndex = 47;
@@ -486,6 +491,63 @@ namespace NKClientQuickSample
             this.rtbRpcOtherResponse.TabIndex = 57;
             this.rtbRpcOtherResponse.Text = "";
             // 
+            // rbGetRoiList
+            // 
+            this.rbGetRoiList.AutoSize = true;
+            this.rbGetRoiList.Location = new System.Drawing.Point(701, 331);
+            this.rbGetRoiList.Name = "rbGetRoiList";
+            this.rbGetRoiList.Size = new System.Drawing.Size(43, 19);
+            this.rbGetRoiList.TabIndex = 58;
+            this.rbGetRoiList.TabStop = true;
+            this.rbGetRoiList.Text = "List";
+            this.rbGetRoiList.UseVisualStyleBackColor = true;
+            this.rbGetRoiList.CheckedChanged += new System.EventHandler(this.rbGetRoiList_CheckedChanged);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(607, 372);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(36, 15);
+            this.label18.TabIndex = 59;
+            this.label18.Text = "Link :";
+            // 
+            // rbAddLink
+            // 
+            this.rbAddLink.AutoSize = true;
+            this.rbAddLink.Location = new System.Drawing.Point(647, 370);
+            this.rbAddLink.Name = "rbAddLink";
+            this.rbAddLink.Size = new System.Drawing.Size(47, 19);
+            this.rbAddLink.TabIndex = 60;
+            this.rbAddLink.TabStop = true;
+            this.rbAddLink.Text = "Add";
+            this.rbAddLink.UseVisualStyleBackColor = true;
+            this.rbAddLink.CheckedChanged += new System.EventHandler(this.rbAddLink_CheckedChanged);
+            // 
+            // rbAddROIHalf1
+            // 
+            this.rbAddROIHalf1.AutoSize = true;
+            this.rbAddROIHalf1.Location = new System.Drawing.Point(701, 306);
+            this.rbAddROIHalf1.Name = "rbAddROIHalf1";
+            this.rbAddROIHalf1.Size = new System.Drawing.Size(59, 19);
+            this.rbAddROIHalf1.TabIndex = 61;
+            this.rbAddROIHalf1.TabStop = true;
+            this.rbAddROIHalf1.Text = "Half_1";
+            this.rbAddROIHalf1.UseVisualStyleBackColor = true;
+            this.rbAddROIHalf1.CheckedChanged += new System.EventHandler(this.rbAddROIHalf1_CheckedChanged);
+            // 
+            // rbAddROIHalf2
+            // 
+            this.rbAddROIHalf2.AutoSize = true;
+            this.rbAddROIHalf2.Location = new System.Drawing.Point(753, 306);
+            this.rbAddROIHalf2.Name = "rbAddROIHalf2";
+            this.rbAddROIHalf2.Size = new System.Drawing.Size(59, 19);
+            this.rbAddROIHalf2.TabIndex = 62;
+            this.rbAddROIHalf2.TabStop = true;
+            this.rbAddROIHalf2.Text = "Half_2";
+            this.rbAddROIHalf2.UseVisualStyleBackColor = true;
+            this.rbAddROIHalf2.CheckedChanged += new System.EventHandler(this.rbAddROIHalf2_CheckedChanged);
+            // 
             // NKClientQuickSampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -493,6 +555,11 @@ namespace NKClientQuickSample
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(873, 775);
+            this.Controls.Add(this.rbAddROIHalf2);
+            this.Controls.Add(this.rbAddROIHalf1);
+            this.Controls.Add(this.rbAddLink);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.rbGetRoiList);
             this.Controls.Add(this.rtbRpcOtherResponse);
             this.Controls.Add(this.tbLastRoiId);
             this.Controls.Add(this.label17);
@@ -587,6 +654,11 @@ namespace NKClientQuickSample
         private System.Windows.Forms.TextBox tbLastRoiId;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.RichTextBox rtbRpcOtherResponse;
+        private System.Windows.Forms.RadioButton rbGetRoiList;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.RadioButton rbAddLink;
+        private System.Windows.Forms.RadioButton rbAddROIHalf1;
+        private System.Windows.Forms.RadioButton rbAddROIHalf2;
     }
 }
 
