@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -16,7 +17,6 @@ namespace NKClientQuickSample
         private Video.CaptureFrame  _captureFrame;
         private FrameMetaData       _currentVAMeta;
         private string              _currentDrawChannelID;
-        private List<List<Test.RoiDot>> _listDrawRoi;
 
         private Pen _event_pen = new Pen(Brushes.Red, 8);
         private Pen _object_pen = new Pen(Brushes.Green, 6);
@@ -76,18 +76,18 @@ namespace NKClientQuickSample
                             _currentVAMeta = null;
                         }
 
-                        if (_listDrawRoi != null && 
-                            grap != null &&
-                            pbDrawBox.Image != null)
-                        {
-                            foreach (var drawRoi in _listDrawRoi)
-                            {
-                                grap.DrawRectangle(_area_pen,
-                                    new Rectangle(
-                                        (int)(drawRoi[0].X * pbDrawBox.Image.Width), (int)(drawRoi[0].Y * pbDrawBox.Image.Height),
-                                        (int)(drawRoi[2].X * pbDrawBox.Image.Width) - 10, (int)(drawRoi[2].Y * pbDrawBox.Image.Height)));
-                            }
-                        }
+                        //if (_listDrawRoi != null && 
+                        //    grap != null &&
+                        //    pbDrawBox.Image != null)
+                        //{
+                        //    foreach (var drawRoi in _listDrawRoi)
+                        //    {
+                        //        grap.DrawRectangle(_area_pen,
+                        //            new Rectangle(
+                        //                (int)(drawRoi[0].X * pbDrawBox.Image.Width), (int)(drawRoi[0].Y * pbDrawBox.Image.Height),
+                        //                (int)(drawRoi[2].X * pbDrawBox.Image.Width) - 10, (int)(drawRoi[2].Y * pbDrawBox.Image.Height)));
+                        //    }
+                        //}
                     }
                 }
                 catch
@@ -125,7 +125,7 @@ namespace NKClientQuickSample
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
 
-            _listDrawRoi = new List<List<Test.RoiDot>>();
+            //_listDrawRoi = new List<List<Test.RoiDot>>();
         }
         private void ChangedRpcSetting(string host, int port)
         {
@@ -164,10 +164,6 @@ namespace NKClientQuickSample
                     SetChannelUID(uid);
                     tbLastChannelId.Text = uid;
                     lbDrawFrameChannelId.Text = uid;
-                }
-                else if (target_name == "roiId")
-                {
-                    tbLastRoiId.Text = uid;
                 }
             }));
         }
@@ -220,7 +216,24 @@ namespace NKClientQuickSample
                         builder.AppendLine($"[{DateTime.Now.ToString("yy/MM/dd HH:mm:ss:ff")}]");
                         foreach (EventInfo ei in response.EventList)
                         {
-                            builder.AppendLine($"Object ID:{ei.Id}({ei.Segmentation.Label}/{ei.State.ToString()})");
+                            builder.AppendLine($"Object ID:{ei.Id}({ei.Segmentation.Label}/{ei.State})");
+                            lbClassInfo.Text = $"Class: {ei.Segmentation.Label}({ei.State})";
+                            lbBoxInfo.Text = $"Box: {ei.Segmentation.Box.Width}x{ei.Segmentation.Box.Height}";
+                            if (ei.State != State.Continue)
+                            {
+                                System.Threading.Tasks.Task.Run(() =>
+                                {
+                                    byte[] orgBytes = Convert.FromBase64String(ei.Base64JpgImage);
+                                    using (var ms = new System.IO.MemoryStream(orgBytes))
+                                    {
+                                        Bitmap image = new Bitmap(ms);
+                                        this.Invoke(new Action(delegate ()
+                                        {
+                                            pbThumbnail.Image = image;
+                                        }));
+                                    }
+                                });
+                            }
                         }
                         rtbRpcResponse.Text = builder.ToString();
                     }
@@ -243,142 +256,6 @@ namespace NKClientQuickSample
         }
         #endregion
 
-        #region 컴퓨팅 노드 API
-        private void TestAPICreateComputeNode()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_CREATE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddCompute
-            {
-                host = tbTCNodeIp.Text,
-                httpPort = Convert.ToInt32(tbTChttpPort.Text),
-                nodeName = "TEST_COMPUTE_NODE",
-                license = "license-license-license-license"
-                
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-        private void TestAPIRemoveComputeNode()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_REMOVE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestCompute
-            {
-                nodeId = tbLastNodeId.Text
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-        private void TestAPIGetComputeNode()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_GET)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestCompute
-            {
-                nodeId = tbLastNodeId.Text
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-
-        #endregion
-        #region 채널 API
-        private void TestAPIRegistChannel()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_REGIST)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddChannel
-            {
-                nodeId = tbLastNodeId.Text,
-                channelName = "TEST_CHANNEL_NAME",
-                inputUri = "rtsp://192.168.0.70/vod/pertest_5m_15m_fall",
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-        private void TestAPIRemoveChannel()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_REMOVE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestChannel
-            {
-                nodeId = tbLastNodeId.Text,
-                channelId = tbLastChannelId.Text
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-        private void TestAPIGetChannel()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_GET)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestChannel
-            {
-                nodeId = tbLastNodeId.Text,
-                channelId = tbLastChannelId.Text
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
-        #endregion
-        #region ROI API
-        private void TestAPICreateRoi()
-        {
-            var listRoi = new List<Test.RoiDot>
-                {
-                    new Test.RoiDot { X = 0, Y = 0},
-                    new Test.RoiDot { X = 1, Y = 0},
-                    new Test.RoiDot { X = 1, Y = 1},
-                    new Test.RoiDot { X = 0, Y = 1},
-                };
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_CREATE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddROI
-            {
-                nodeId = tbLastNodeId.Text,
-                eventType = 1,
-                channelId = tbLastChannelId.Text,
-                roiName = "ROI_NAME",
-                description = "Loitering Event",
-                roiDots = listRoi
-            }, Newtonsoft.Json.Formatting.Indented);
-
-            _listDrawRoi.Add(listRoi);
-        }
-        private void TestAPICreateRoi1()
-        {
-            var listRoi = new List<Test.RoiDot>
-                {
-                    new Test.RoiDot { X = 0, Y = 0},
-                    new Test.RoiDot { X = 0.5, Y = 0},
-                    new Test.RoiDot { X = 0.5, Y = 1},
-                    new Test.RoiDot { X = 0, Y = 1},
-                };
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_CREATE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddROI
-            {
-                nodeId = tbLastNodeId.Text,
-                channelId = tbLastChannelId.Text,
-                roiName = "ROI_HALF_ONE",
-                description = "Link1 Event",
-                roiDots = listRoi
-            }, Newtonsoft.Json.Formatting.Indented);
-
-            _listDrawRoi.Add(listRoi);
-        }
-        private void TestAPICreateRoi2()
-        {
-            var listRoi = new List<Test.RoiDot>
-                {
-                    new Test.RoiDot { X = 0.5 , Y = 0},
-                    new Test.RoiDot { X = 1   , Y = 0},
-                    new Test.RoiDot { X = 1   , Y = 1},
-                    new Test.RoiDot { X = 0.5 , Y = 1},
-                };
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_CREATE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddROI
-            {
-                nodeId = tbLastNodeId.Text,
-                channelId = tbLastChannelId.Text,
-                roiName = "ROI_HALF_TWO",
-                description = "Link2 Event",
-                roiDots = listRoi
-            }, Newtonsoft.Json.Formatting.Indented);
-
-            _listDrawRoi.Add(listRoi);
-        }
-        private void TestAPIRemoveRoi()
-        {
-            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_REMOVE)}";
-            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestROI
-            {
-                nodeId = tbLastNodeId.Text,
-                channelId = tbLastChannelId.Text,
-                roiId = tbLastRoiId.Text,
-            }, Newtonsoft.Json.Formatting.Indented);
-        }
         private void TestAPIGetRoi()
         {
             tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_GET)}";
@@ -386,7 +263,7 @@ namespace NKClientQuickSample
             {
                 nodeId = tbLastNodeId.Text,
                 channelId = tbLastChannelId.Text,
-                roiId = tbLastRoiId.Text,
+                roiId = "??????",
             }, Newtonsoft.Json.Formatting.Indented);
         }
         private void TestAPIGetRoiList()
@@ -409,7 +286,24 @@ namespace NKClientQuickSample
                 roiLink = new List<string>()
             }, Newtonsoft.Json.Formatting.Indented);
         }
-        #endregion
+        private void TestAPIVaStart()
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.VA_COMMAND_START)}";
+            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestVaStart
+            {
+                nodeId = tbLastNodeId.Text,
+                channelIds = new List<string> { tbLastChannelId.Text },
+                operation = Test.VAOperations.VA_START
+            }, Newtonsoft.Json.Formatting.Indented);
+        }
+        private void TestAPISystemStatus()
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.SYSTEM_STATUS)}";
+            rtbPayload.Text = Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestCompute
+            {
+                nodeId = tbLastNodeId.Text
+            }, Newtonsoft.Json.Formatting.Indented);
+        }
 
         #region Button & Radio
         private void btnAPIConnection_Click(object sender, EventArgs e)
@@ -418,62 +312,88 @@ namespace NKClientQuickSample
         }
         private void rbAddCompute_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPICreateComputeNode();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_CREATE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.NODE_CREATE, tbTCNodeIp.Text, tbTChttpPort.Text);
         }
         private void rbRemoveCompute_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIRemoveComputeNode();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_REMOVE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.NODE_REMOVE, tbLastNodeId.Text);
         }
         private void rbGetCompute_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIGetComputeNode();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_GET)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.NODE_GET, tbLastNodeId.Text);
+        }
+        private void rbListCompute_CheckedChanged(object sender, EventArgs e)
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.NODE_LIST)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.NODE_LIST, "");
         }
         private void rbAddChannel_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIRegistChannel();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_REGIST)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_REGIST, tbLastNodeId.Text, "TEST",
+                "rtsp://admin:enter2424@192.168.0.154/Streaming/Channels/101");
         }
         private void rbRemoveChannel_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIRemoveChannel();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_REMOVE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_REMOVE, tbLastNodeId.Text, tbLastChannelId.Text);
         }
         private void rbGetChannel_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIGetChannel();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_GET)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_GET, tbLastNodeId.Text, tbLastChannelId.Text);
+        }
+
+        private void rbListChannel_CheckedChanged(object sender, EventArgs e)
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_LIST)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_LIST, tbLastNodeId.Text);
         }
         private void rbAddROI_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPICreateRoi();
-        }
-        private void rbAddROIHalf1_CheckedChanged(object sender, EventArgs e)
-        {
-            TestAPICreateRoi1();
-        }
-
-        private void rbAddROIHalf2_CheckedChanged(object sender, EventArgs e)
-        {
-            TestAPICreateRoi2();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_CREATE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.ROI_CREATE, tbLastNodeId.Text, tbLastChannelId.Text);
         }
         private void rbRemoveROI_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIRemoveRoi();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_REMOVE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.ROI_REMOVE, tbLastNodeId.Text, tbLastChannelId.Text);
         }
         private void rbGetRoi_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIGetRoi();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_GET)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.ROI_GET, tbLastNodeId.Text, tbLastChannelId.Text);
         }
         private void rbGetRoiList_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIGetRoiList();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.ROI_LIST)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.ROI_LIST, tbLastNodeId.Text, tbLastChannelId.Text);
         }
         private void rbAddLink_CheckedChanged(object sender, EventArgs e)
         {
-            TestAPIAddLink();
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.LINK_CREATE)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.LINK_CREATE, tbLastNodeId.Text, tbLastChannelId.Text);
         }
+        private void rbVaStart_CheckedChanged(object sender, EventArgs e)
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.VA_COMMAND_START)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.VA_COMMAND_START, tbLastNodeId.Text, tbLastChannelId.Text);
+        }
+        private void rbGetSystemInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.SYSTEM_STATUS)}";
+            rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.SYSTEM_STATUS, tbLastNodeId.Text);
+        }
+        
         #endregion
 
         private void textbox_KeyPress_OnlyNumberic(object sender, KeyPressEventArgs e)
         {
             e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
         }
+
     }
 }

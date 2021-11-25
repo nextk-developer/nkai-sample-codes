@@ -18,6 +18,8 @@ namespace NKClientQuickSample.Test
         ROI_UPDATE,
         ROI_GET,
         ROI_LIST,
+        VA_COMMAND_START,
+        SYSTEM_STATUS,
         LINK_CREATE,
         LINK_REMOVE,
         LINK_UPDATE,
