@@ -35,7 +35,9 @@ namespace NKClientQuickSample.Test
                 case Path.LINK_REMOVE: return "v2/va/remove-link";
                 case Path.LINK_UPDATE: return "v2/va/update-link";
                 //va Command
-                case Path.VA_COMMAND_START: return "v2/va/control";
+                case Path.VA_COMMAND_START: 
+                case Path.VA_COMMAND_STOP:
+                    return "v2/va/control";
                 //system
                 case Path.SYSTEM_STATUS: return "v2/va/get-system-status";
 
@@ -104,10 +106,10 @@ namespace NKClientQuickSample.Test
                     {
                         var listRoi = new List<RoiDot>
                         {
-                            new RoiDot { X = 0, Y = 0},
-                            new RoiDot { X = 1, Y = 0},
-                            new RoiDot { X = 1, Y = 1},
-                            new RoiDot { X = 0, Y = 1},
+                            new RoiDot { X = 0.1, Y = 0.1},
+                            new RoiDot { X = 0.9, Y = 0.1},
+                            new RoiDot { X = 0.9, Y = 0.9},
+                            new RoiDot { X = 0.1, Y = 0.9},
                         };
                         return Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddROI
                         {
@@ -159,6 +161,13 @@ namespace NKClientQuickSample.Test
                         nodeId = param1,
                         channelIds = new List<string> { param2 },
                         operation = Test.VAOperations.VA_START
+                    }, Newtonsoft.Json.Formatting.Indented);
+                case Path.VA_COMMAND_STOP:
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestVaStart
+                    {
+                        nodeId = param1,
+                        channelIds = new List<string> { param2 },
+                        operation = Test.VAOperations.VA_STOP
                     }, Newtonsoft.Json.Formatting.Indented);
                 //system
                 case Path.SYSTEM_STATUS:

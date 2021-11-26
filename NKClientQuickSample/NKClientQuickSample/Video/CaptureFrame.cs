@@ -33,31 +33,26 @@ namespace NKClientQuickSample.Video
         public async void StartAndUpdate(string url)
         {
             await Stop();
-
-            _url = url;
-            _videocapture = new VideoCapture(url);
-            _isDraw = true;
-
-            ReadProc();
+            ReadProc(url);
         }
-        public void ReadProc()
+        public void ReadProc(string url)
         {
+            _isDraw = false;
+            _url = url;
             Task.Run(() =>
             {
+                Mat image = new Mat();
+                _videocapture = new VideoCapture(url);
                 _isRunProc = true;
+                _isDraw = true;
                 while (_isDraw)
                 {
-                    using (Mat image = new Mat())
+                    if (_videocapture.Read(image))
+                        ResponseDrawFrameHandler?.Invoke(this, OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image));
+                    else
                     {
-                        if (_videocapture.Read(image))
-                        {
-                            ResponseDrawFrameHandler?.Invoke(this, OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image));
-                        }
-                        else
-                        {
-                            _videocapture = new VideoCapture(_url);
-                        }
-                        //GC.Collect();
+                        _videocapture.Dispose();
+                        _videocapture = new VideoCapture(_url);
                     }
                 }
                 _videocapture.Dispose();
