@@ -16,13 +16,14 @@ namespace NKClientQuickSample
         private Client.RestClient   _restClient;
         private Video.CaptureFrame  _captureFrame;
         private FrameMetaData       _currentVAMeta;
-        private string              _currentDrawChannelID;
+        private string _currentDrawChannelID;
+        private string _currentParameter;
         private Test.ResponseRoiList _drawRoiList;
 
         private Pen _event_pen = new Pen(Brushes.Red, 8);
         private Pen _object_pen = new Pen(Brushes.Green, 6);
         private Pen _area_pen = new Pen(Brushes.Yellow, 6);
-        private Font _draw_font = new Font("Arial", 40, FontStyle.Bold);
+        private Font _draw_font = new Font("Arial", 5, FontStyle.Bold);
         private SolidBrush _solid_brush = new SolidBrush(Color.White);
 
         public NKClientQuickSampleForm()
@@ -80,8 +81,6 @@ namespace NKClientQuickSample
                                     int w = (int)(e.Width * segment.Box.Width);
                                     int h = (int)(e.Height * segment.Box.Height);
                                     grap.DrawRectangle(_event_pen, new Rectangle(x, y, w, h));
-                                    grap.DrawString(segment.Label.ToString() + $"\r\n(ID:{evt.Id})",
-                                        _draw_font, _solid_brush, x, y, new StringFormat());
                                 }
                             }
                         }
@@ -118,7 +117,6 @@ namespace NKClientQuickSample
             _captureFrame = new Video.CaptureFrame();
             _captureFrame.ResponseDrawFrameHandler += ReceivedDrawFrame;
         }
-
         private void ReceivedDrawDirectResponse(object sender, string e)
         {
             try
@@ -130,7 +128,6 @@ namespace NKClientQuickSample
                 _drawRoiList = null;
             }
         }
-
         private void SetDefualt()
         {
             _vaMetaDate = DateTime.Now;
@@ -213,19 +210,28 @@ namespace NKClientQuickSample
                 rtbResponse.Text = $"[{DateTime.Now.ToString()}]\r\n" + response;
             }));
         }
-        private void DrawCaptureImge(State state, ObjectType type, string base64Jpg, 
+        private void DrawCaptureImge(State state, ObjectType type, 
+            double x, double y, double w, double h, string base64Jpg, 
             double width, double height)
         {
-            if (state == State.Continue) return;
+            if (base64Jpg == null || base64Jpg.Length == 0) return;
 
             System.Threading.Tasks.Task.Run(() =>
             {
                 byte[] orgBytes = Convert.FromBase64String(base64Jpg);
                 using (var ms = new System.IO.MemoryStream(orgBytes))
                 {
-                    Bitmap image = new Bitmap(ms);
                     this.Invoke(new Action(delegate ()
                     {
+                        Bitmap image = new Bitmap(ms);
+                        using (Graphics grap = Graphics.FromImage(image))
+                        {
+                            grap.DrawRectangle(Pens.Red, new Rectangle((int)(x * width), (int)(y * height), (int)(w * width), (int)(h * height)));
+                            if (_currentParameter != null)
+                            {
+                                grap.DrawString($"{_currentParameter}", _draw_font, _solid_brush, 0, 0, new StringFormat());
+                            }
+                        }
                         pbThumbnail.Image = image;
                         lbClassInfo.Text = $"Class: {type}({state})";
                         lbBoxInfo.Text = $"Box: {width}x{height}";
@@ -247,8 +253,17 @@ namespace NKClientQuickSample
                     _vaMetaDate = DateTime.Now;
                     foreach (EventInfo ei in response.EventList)
                     {
-                        DrawCaptureImge(ei.State, ei.Segmentation.Label, 
-                            ei.Base64JpgImage, ei.Segmentation.Box.Width, ei.Segmentation.Box.Height);
+                        if (ei.JpegImage == null) continue;
+
+                        _currentParameter = null;
+                        if (ei.EventParam != null && ei.EventParam.Parameters.Count() > 0)
+                        {
+                            _currentParameter = ei.EventParam.Parameters[0];
+                        }
+
+                        DrawCaptureImge(ei.State, ei.Segmentation.Label,
+                            ei.JpegImage.ObjectBox.X, ei.JpegImage.ObjectBox.Y, ei.JpegImage.ObjectBox.Width, ei.JpegImage.ObjectBox.Height,
+                            ei.JpegImage.Base64Image, ei.JpegImage.ImageWidth, ei.JpegImage.ImageHeight);
                     }
                 }
             }));
@@ -289,7 +304,12 @@ namespace NKClientQuickSample
             tbUri.Text = $"{tbTCbaseUri.Text}/{Test.TestCase.GetPath(Test.Path.CH_REGIST)}";
             rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_REGIST, tbLastNodeId.Text, "TEST",
                 //"rtsp://192.168.0.70:554/live/dotonbori.stream");
-                "rtsp://192.168.0.70:554/vod/its2");
+                //"rtsp://192.168.0.70:554/vod/its2");
+                "rtsp://192.168.0.70:554/vod/fa_test");
+                //"rtsp://192.168.0.70:554/vod/face_gogo");
+                //"rtsp://192.168.0.70:554/vod/pertest_3m_5m_con");
+
+
             if (_drawRoiList != null)
                 _drawRoiList = null;
         }

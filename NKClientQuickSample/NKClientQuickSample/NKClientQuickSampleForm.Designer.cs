@@ -491,9 +491,9 @@ namespace NKClientQuickSample
             // pbThumbnail
             // 
             this.pbThumbnail.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.pbThumbnail.Location = new System.Drawing.Point(367, 460);
+            this.pbThumbnail.Location = new System.Drawing.Point(367, 461);
             this.pbThumbnail.Name = "pbThumbnail";
-            this.pbThumbnail.Size = new System.Drawing.Size(98, 125);
+            this.pbThumbnail.Size = new System.Drawing.Size(238, 98);
             this.pbThumbnail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbThumbnail.TabIndex = 63;
             this.pbThumbnail.TabStop = false;
@@ -522,7 +522,7 @@ namespace NKClientQuickSample
             // lbBoxInfo
             // 
             this.lbBoxInfo.AutoSize = true;
-            this.lbBoxInfo.Location = new System.Drawing.Point(471, 460);
+            this.lbBoxInfo.Location = new System.Drawing.Point(367, 562);
             this.lbBoxInfo.Name = "lbBoxInfo";
             this.lbBoxInfo.Size = new System.Drawing.Size(41, 15);
             this.lbBoxInfo.TabIndex = 66;
@@ -531,7 +531,7 @@ namespace NKClientQuickSample
             // lbClassInfo
             // 
             this.lbClassInfo.AutoSize = true;
-            this.lbClassInfo.Location = new System.Drawing.Point(471, 489);
+            this.lbClassInfo.Location = new System.Drawing.Point(367, 580);
             this.lbClassInfo.Name = "lbClassInfo";
             this.lbClassInfo.Size = new System.Drawing.Size(41, 15);
             this.lbClassInfo.TabIndex = 66;
