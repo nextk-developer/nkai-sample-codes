@@ -47,4 +47,11 @@ namespace NKClientQuickSample.Test
     {
         public List<ResponseRoiInfo> rois { get; set; }
     }
+
+    public class ResponseVACStartrpcInfoTest
+    {
+        public string sourceIp { get; set; }
+        public int sourcePort { get; set; }
+        public int code { get; set; }
+    }
 }

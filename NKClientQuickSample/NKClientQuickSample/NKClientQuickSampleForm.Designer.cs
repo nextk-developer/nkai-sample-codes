@@ -169,7 +169,7 @@ namespace NKClientQuickSample
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label5.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label5.Location = new System.Drawing.Point(255, 386);
+            this.label5.Location = new System.Drawing.Point(34, 475);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(98, 15);
             this.label5.TabIndex = 17;
@@ -436,9 +436,9 @@ namespace NKClientQuickSample
             // 
             this.pbDrawBox.BackColor = System.Drawing.Color.Black;
             this.pbDrawBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pbDrawBox.Location = new System.Drawing.Point(10, 380);
+            this.pbDrawBox.Location = new System.Drawing.Point(10, 469);
             this.pbDrawBox.Name = "pbDrawBox";
-            this.pbDrawBox.Size = new System.Drawing.Size(351, 210);
+            this.pbDrawBox.Size = new System.Drawing.Size(527, 301);
             this.pbDrawBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbDrawBox.TabIndex = 50;
             this.pbDrawBox.TabStop = false;
@@ -449,7 +449,7 @@ namespace NKClientQuickSample
             this.lbDrawFrameChannelId.BackColor = System.Drawing.SystemColors.Highlight;
             this.lbDrawFrameChannelId.Font = new System.Drawing.Font("맑은 고딕", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lbDrawFrameChannelId.ForeColor = System.Drawing.Color.White;
-            this.lbDrawFrameChannelId.Location = new System.Drawing.Point(33, 385);
+            this.lbDrawFrameChannelId.Location = new System.Drawing.Point(35, 492);
             this.lbDrawFrameChannelId.Name = "lbDrawFrameChannelId";
             this.lbDrawFrameChannelId.Size = new System.Drawing.Size(47, 17);
             this.lbDrawFrameChannelId.TabIndex = 54;
@@ -491,7 +491,7 @@ namespace NKClientQuickSample
             // pbThumbnail
             // 
             this.pbThumbnail.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.pbThumbnail.Location = new System.Drawing.Point(367, 461);
+            this.pbThumbnail.Location = new System.Drawing.Point(10, 365);
             this.pbThumbnail.Name = "pbThumbnail";
             this.pbThumbnail.Size = new System.Drawing.Size(238, 98);
             this.pbThumbnail.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -522,7 +522,7 @@ namespace NKClientQuickSample
             // lbBoxInfo
             // 
             this.lbBoxInfo.AutoSize = true;
-            this.lbBoxInfo.Location = new System.Drawing.Point(367, 562);
+            this.lbBoxInfo.Location = new System.Drawing.Point(254, 370);
             this.lbBoxInfo.Name = "lbBoxInfo";
             this.lbBoxInfo.Size = new System.Drawing.Size(41, 15);
             this.lbBoxInfo.TabIndex = 66;
@@ -531,7 +531,7 @@ namespace NKClientQuickSample
             // lbClassInfo
             // 
             this.lbClassInfo.AutoSize = true;
-            this.lbClassInfo.Location = new System.Drawing.Point(367, 580);
+            this.lbClassInfo.Location = new System.Drawing.Point(254, 398);
             this.lbClassInfo.Name = "lbClassInfo";
             this.lbClassInfo.Size = new System.Drawing.Size(41, 15);
             this.lbClassInfo.TabIndex = 66;
@@ -585,7 +585,7 @@ namespace NKClientQuickSample
             // pbRpcSignal
             // 
             this.pbRpcSignal.BackColor = System.Drawing.Color.Gray;
-            this.pbRpcSignal.Location = new System.Drawing.Point(15, 384);
+            this.pbRpcSignal.Location = new System.Drawing.Point(14, 474);
             this.pbRpcSignal.Name = "pbRpcSignal";
             this.pbRpcSignal.Size = new System.Drawing.Size(18, 18);
             this.pbRpcSignal.TabIndex = 69;
@@ -607,7 +607,7 @@ namespace NKClientQuickSample
             // 
             this.btnUpdateArea.AutoSize = true;
             this.btnUpdateArea.Font = new System.Drawing.Font("맑은 고딕", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnUpdateArea.Location = new System.Drawing.Point(274, 562);
+            this.btnUpdateArea.Location = new System.Drawing.Point(448, 472);
             this.btnUpdateArea.Name = "btnUpdateArea";
             this.btnUpdateArea.Size = new System.Drawing.Size(82, 23);
             this.btnUpdateArea.TabIndex = 70;
@@ -622,7 +622,7 @@ namespace NKClientQuickSample
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(616, 604);
+            this.ClientSize = new System.Drawing.Size(617, 769);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.btnAPIConnection);
             this.Controls.Add(this.label4);

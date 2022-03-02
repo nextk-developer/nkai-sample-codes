@@ -17,10 +17,10 @@ namespace NKClientQuickSample.Client
 
         public bool IsChangedCheck(string host, int port)
         {
-            if(host == _host &&  port == _port)
-            {
-                return false;
-            }
+            //if(host == _host &&  port == _port)
+            //{
+            //    return false;
+            //}
 
             Stop();
             return true;
@@ -60,7 +60,7 @@ namespace NKClientQuickSample.Client
         }
         public void Stop()
         {
-            if(_IsRunning)
+            if (_IsRunning)
                 _IsRunning = false;
         }
         public bool IsRunning()
@@ -75,10 +75,12 @@ namespace NKClientQuickSample.Client
 
             Task.Run(async () =>
             {
-                while (_IsRunning)
+                try
                 {
-                    if (_chClient.State == ChannelState.Ready)
+                    while (_IsRunning)
                     {
+                        if (_chClient.State != ChannelState.Ready) continue;
+
                         await foreach (FrameMetaData item in streamCall.ResponseStream.ReadAllAsync())
                         {
                             if (item.EventList.Count > 0 || item.ObjectList.Count > 0)
@@ -88,6 +90,11 @@ namespace NKClientQuickSample.Client
                         }
                     }
                 }
+                catch
+                {
+
+                }
+                _IsRunning = false;
             });
         }
 

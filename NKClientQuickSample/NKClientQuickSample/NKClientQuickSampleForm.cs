@@ -32,7 +32,6 @@ namespace NKClientQuickSample
 
             SetDefualt();
             CreateClients();
-            ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
         }
 
         private void ReceivedDrawFrame(object sender, System.Drawing.Bitmap e)
@@ -131,8 +130,8 @@ namespace NKClientQuickSample
         private void SetDefualt()
         {
             _vaMetaDate = DateTime.Now;
-            tbTCbaseUri.Text = "http://192.168.0.36:9000";
-            tbTCNodeIp.Text = "192.168.0.36";
+            tbTCbaseUri.Text = "http://127.0.0.1:9000";
+            tbTCNodeIp.Text = "127.0.0.1";
             //tbTCbaseUri.Text = "http://172.16.0.153:9000";
             tbTChttpPort.Text = "8880";
             tbTCRpcPort.Text = "33300";
@@ -149,7 +148,7 @@ namespace NKClientQuickSample
             try
             {
                 //rpc 정보가 변경된 경우
-                ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
+                //ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
                 //Send API
                 _restClient.RequestTo(uri, payload, useResponse);
             }
@@ -204,6 +203,19 @@ namespace NKClientQuickSample
         }
         private void ReceivedApiResponse(object sender, string response)
         {
+            //임시구현
+            try
+            {
+                var item = Newtonsoft.Json.JsonConvert.DeserializeObject<Test.ResponseVACStartrpcInfoTest>(response);
+                //ChangedRpcSetting(tbTCNodeIp.Text, Convert.ToInt32(tbTCRpcPort.Text));
+                if(item.sourceIp != null && item.sourcePort > 0)
+                    ChangedRpcSetting(item.sourceIp, item.sourcePort);
+            }
+            catch
+            {
+                Console.WriteLine("error");
+            }
+
             //API 응답 표출
             this.Invoke(new Action(delegate ()
             {
@@ -226,7 +238,7 @@ namespace NKClientQuickSample
                         Bitmap image = new Bitmap(ms);
                         using (Graphics grap = Graphics.FromImage(image))
                         {
-                            grap.DrawRectangle(Pens.Red, new Rectangle((int)(x * width), (int)(y * height), (int)(w * width), (int)(h * height)));
+                            grap.DrawRectangle(new Pen(Brushes.Red, 10), new Rectangle((int)(x * width), (int)(y * height), (int)(w * width), (int)(h * height)));
                             if (_currentParameter != null)
                             {
                                 grap.DrawString($"{_currentParameter}", _draw_font, _solid_brush, 0, 0, new StringFormat());
@@ -305,8 +317,14 @@ namespace NKClientQuickSample
             rtbPayload.Text = Test.TestCase.GetFormat(Test.Path.CH_REGIST, tbLastNodeId.Text, "TEST",
                 //"rtsp://192.168.0.70:554/live/dotonbori.stream");
                 //"rtsp://192.168.0.70:554/vod/its2");
-                "rtsp://192.168.0.70:554/vod/fa_test");
-                //"rtsp://192.168.0.70:554/vod/face_gogo");
+                //"rtsp://admin:enter2424@192.168.0.203/stream1");
+                //"C:\\Users\\jaelo\\Desktop\\Video\\freevideo\\face_woman.mp4");
+                "rtsp://121.137.0.173/vod/its_Density");
+                //"rtsp://192.168.0.70:554/vod/DKface") ;
+                //"rtsp://192.168.0.70:554/vod/pavv_congestion");
+                //"rtsp://192.168.0.70:554/vod/repeated_falldown"); // falldown
+                //"rtsp://192.168.0.70:554/vod/firetest1");
+                //"rtsp://210.99.70.120:1935/live/cctv013.stream");
                 //"rtsp://192.168.0.70:554/vod/pertest_3m_5m_con");
 
 

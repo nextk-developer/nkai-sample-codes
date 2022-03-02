@@ -106,10 +106,10 @@ namespace NKClientQuickSample.Test
                     {
                         var listRoi = new List<RoiDot>
                         {
-                            new RoiDot { X = 0.1, Y = 0.1},
-                            new RoiDot { X = 0.9, Y = 0.1},
-                            new RoiDot { X = 0.9, Y = 0.9},
-                            new RoiDot { X = 0.1, Y = 0.9},
+                            new RoiDot { X = 0, Y = 0},
+                            new RoiDot { X = 1.0, Y = 0},
+                            new RoiDot { X = 1.0, Y = 1},
+                            new RoiDot { X = 0, Y = 1},
                         };
                         return Newtonsoft.Json.JsonConvert.SerializeObject(new Test.RequestAddROI
                         {
@@ -117,8 +117,14 @@ namespace NKClientQuickSample.Test
                             eventType = Test.EventType.EVT_LOITERING,
                             channelId = param2,
                             roiName = "ROI_NAME",
-                            description = "Loitering Event",
-                            roiDots = listRoi
+                            description = "Custom Event",
+                            roiDots = listRoi,
+                            EventFilter = new Filter
+                            {
+                                maxDetectSize = 10,
+                                minDetectSize = 1,
+                                objectsTarget = new List<ObjectType>() { ObjectType.PERSON }
+                            }
                         }, Newtonsoft.Json.Formatting.Indented);
                     }
                 case Path.ROI_REMOVE:

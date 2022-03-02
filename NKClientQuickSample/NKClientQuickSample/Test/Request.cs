@@ -36,6 +36,32 @@ namespace NKClientQuickSample.Test
         public string roiName { get; set; }
         public string description { get; set; }
         public List<RoiDot> roiDots { get; set; }
+        public Filter EventFilter { get; set; }
+    }
+    public class Filter
+    {
+        public int minDetectSize { get; set; }
+        public int maxDetectSize { get; set; }
+        public List<ObjectType> objectsTarget { get; set; }
+    }
+    public enum ObjectType
+    {
+        PERSON = 0,                   // 사람
+        BIKE = 1,                     // 자전거
+        CAR = 2,                      // 승용차
+        MOTORCYCLE = 3,               // 오토바이
+        BUS = 4,                      // 버스
+        TRUCK = 5,                    // 트럭
+        EXCAVATOR = 6,                // 굴착기
+        TANKTRUCK = 7,                // 탱크트럭
+        FORKLIFT = 8,                 // 지게차
+        LEMICON = 9,                  // 레미콘
+        CULTIVATOR = 10,              // 경운기
+        TRACTOR = 11,                 // 트랙터
+        SMOKE = 50,                   // 불꽃
+        FLAME = 51,                   // 연기
+        FACE_MAN = 200,               // 얼굴_남자
+        FACE_WOMAN = 201              // 얼굴_여자
     }
     public class RoiDot
     {
@@ -68,21 +94,34 @@ namespace NKClientQuickSample.Test
     }
     public enum EventType
     {
-        EVT_LOITERING = 1,              //배회
-        EVT_INTRUSION,                  //침입
-        EVT_QUEUEING,                   //대기열
-        EVT_ABNORMAL_CONGESTION,        //정체 (정상 흐름 대비)
-        EVT_ABNORMAL_OBJ_COUNT,         //정체 (영역 내 설정된 객체 수)
-        EVT_ROI_COUNT,                  //ROI 카운팅
-        EVT_LINE_COUNT,                 //LINE 카운팅
-        EVT_ILLEGAL_PARKING,            //불법 주정차
-        EVT_WRONG_WAY,                  //역주행
-        EVT_DIRECTION_COUNTING,         //방향성 이동
-        EVT_VEHICLE_SPEED,              //속도 (차량)
-        EVT_VEHICLE_DENSITY,            //밀도 (차량) _ 밀도에 대한 기준은?
-        EVT_STOP_VEHICLE_COUNTING,      //정지 카운팅 (차량)
-        EVT_SIGNAL_WAITING_TIME,        //신호 대기 시간
-        EVT_PARKING_SPACE,              //주차 공간 점유 검출
-        EVT_CROSSWALK_QUEUEING          //횡단보도 대기열 카운팅
+        EVT_LONGSTAY,   // 장기체류
+        EVT_LOITERING,  // 배회
+        EVT_INTRUSION,  // 침입
+        EVT_FALLDOWN,   // 쓰러짐
+        EVT_ABANDONMENT,        // 유기 (미구현)
+        EVT_VIOLENCE,           // 싸움
+        EVT_PEOPLE_COUNTING_A,  // 출입자 카운팅 영역 A (KISA)
+        EVT_PEOPLE_COUNTING_B,  // 출입자 카운팅 영역 B (KISA)
+        EVT_PEOPLE_COUNTING,    // 출입자 카운팅 (KISA)
+        EVT_QUEUEING,                   // 대기열 (KISA)
+        EVT_ABNORMAL_CONGESTION,       // 영역 ROI 내 이동흐름 정체 (정상흐름 대비 상대적 정체도)
+        EVT_ABNORMAL_OBJ_COUNT,        // 영역 ROI 내 개체밀집 (정의된 개체수 이상의 객체 존재)
+        EVT_ROI_COUNT,                 // 영역 ROI 카운팅
+        EVT_LINE_COUNT,                // Line ROI 카운팅
+        EVT_ILLEGAL_PARKING,           // 불법 주정차
+        EVT_WRONG_WAY,                 // Line ROI 역주행
+        EVT_DIRECTION_COUNTING,        // 방향성 이동(직전, 좌/우회전, 유턴) 카운팅
+        EVT_PEOPLE_CONGESTION_LEVEL,   // 영역내 혼잡도 (상,중,하)
+        EVT_VEHICLE_SPEED,             // 차량 속도
+        EVT_VEHICLE_DENSITY,           // 차량 밀도
+        EVT_STOP_VEHICLE_COUNTING,     // 정지 차량 카운팅
+        EVT_SIGNAL_WAITING_TIME,       // 신호 대기 시간
+        EVT_ANOMALY_KISA,              // 이상 징후 (KISA 방위)
+        EVT_LINE_ENTER,                // Line ROI In 카운팅
+        EVT_LINE_EXIT,                 // Line ROI Out 카운팅
+        EVT_TYPE_SIZE,
+        EVT_FIRE,
+        EVT_FACE_MATCHING,
+        EVT_FACE_MASKED,
     }
 }
