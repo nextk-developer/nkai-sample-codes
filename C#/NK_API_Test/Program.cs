@@ -71,6 +71,28 @@ while (true)
             Console.WriteLine($"add : {stopwatch.ElapsedMilliseconds}ms");
             stopwatch.Restart();
 
+
+            var schedule = new List<List<int>>();
+
+            for (int w = 0; w < 7; w++)
+            {
+                List<int> hours = new();
+                for (int h = 0; h < 24; h++)
+                    hours.Add(h);
+
+                schedule.Add(hours);
+            }
+
+            var responseVASchedule = await service.Requset(new RequestVaSchedule()
+            {
+                ChannelID = responseCameraRegister.ChannelId,
+                NodeId = responseCreateCN.NodeId,
+                Schedule = schedule
+            }) as ResponseVaSchedule;
+
+            Console.WriteLine($"va schedule : {stopwatch.ElapsedMilliseconds}ms");
+            stopwatch.Restart();
+
             for (int j = 0; j < roiCount; j++)
             {
                 var responsecreateroi = await service.Requset(new RequestCreateROI()
