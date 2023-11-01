@@ -5,10 +5,12 @@ namespace NK_API_Test.SingleApiTests
 {
     internal class Test_Record_days : TestBase
     {
-        internal async Task RecordDays()
+        internal async Task Test(int repeat)
         {
-            while (true)
+            for (int i = 0; i < repeat; i++)
             {
+                await Console.Out.WriteLineAsync($"Test {i}");
+
                 var firstCN = await service.Requset(new RequestGetComputingNode()
                 {
 

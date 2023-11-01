@@ -59,6 +59,7 @@ namespace NK_API_Test.SingleApiTests
         {
             for (int r = 0; r < repeatCount; r++)
             {
+                await Console.Out.WriteLineAsync($"Test {r}");
                 string nodeId = string.Empty;
                 List<string> uuids = new();
 

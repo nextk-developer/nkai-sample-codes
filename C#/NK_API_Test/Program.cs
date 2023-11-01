@@ -4,14 +4,11 @@ using NK_API_Test.SingleApiTests;
 
 Console.WriteLine("Hello, World!");
 
-//var test1 = new Test_Record_days();
-//await test1.RecordDays();
-
-//var test2 = new Test_Aging();
-//await test2.Tets();
-
+var test1 = new Test_Record_days();
+await test1.Test(100);
 
 var test3 = new Test_Crud_Face();
 await test3.TestNbyN(10, 100);
 
-
+var agingTest = new Test_Aging();
+await agingTest.Test(100);

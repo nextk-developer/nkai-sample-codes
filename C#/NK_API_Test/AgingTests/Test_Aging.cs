@@ -8,15 +8,11 @@ namespace NK_API_Test.AgingTets
 {
     internal class Test_Aging : TestBase
     {
-        internal async Task Tets()
+        internal async Task Test(int repeat, int channelCount = 4, int roiCount = 4)
         {
-            int index = 0;
-            int channelCount = 4;
-            int roiCount = 4;
-
-            while (true)
+            for (int index = 0; index < repeat; index++)
             {
-                Console.WriteLine($"################# Processing count {index++} #################");
+                Console.WriteLine($"################# Processing count {index} #################");
                 Stopwatch stopwatch = Stopwatch.StartNew();
 
                 var firstCN = await service.Requset(new RequestGetComputingNode()
