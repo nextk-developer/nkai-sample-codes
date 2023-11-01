@@ -52,6 +52,7 @@ namespace NK_API_Test.AgingTets
 
                     for (int i = 0; i < channelCount; i++)
                     {
+                        stopwatch.Restart();
                         // add camera
                         var responseCameraRegister = await service.Requset(new RequestRegisterChannel()
                         {
@@ -66,8 +67,30 @@ namespace NK_API_Test.AgingTets
                         if (responseCameraRegister == null) continue;
 
                         channelId.Add(responseCameraRegister.ChannelId);
-
                         Console.WriteLine($"add : {stopwatch.ElapsedMilliseconds}ms");
+
+                        stopwatch.Restart();
+
+                        var schdule = new List<List<int>>();
+                        for (int w = 0; w < 7; w++)
+                        {
+                            List<int> hhh = new();
+                            for (int h = 0; h < 24; h++)
+                            {
+                                hhh.Add(h);
+                            }
+                            schdule.Add(hhh);
+                        }
+                        var responseVaSchedule = await service.Requset(new RequestVaSchedule()
+                        {
+                            ChannelID = responseCameraRegister.ChannelId,
+                            NodeId = responseCreateCN.NodeId,
+                            Schedule = schdule
+                        }); ;
+                        Console.WriteLine($"{nameof(RequestVaSchedule)}: {stopwatch.ElapsedMilliseconds}ms");
+
+
+
                         stopwatch.Restart();
 
                         for (int j = 0; j < roiCount; j++)
