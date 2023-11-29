@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NKAPIService\NKAPIService.csproj" />
+    <ProjectReference Include="..\NKAPIService\NKAPIService.csproj" />
   </ItemGroup>
 
 </Project>
