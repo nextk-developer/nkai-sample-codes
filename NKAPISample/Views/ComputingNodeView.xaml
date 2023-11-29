@@ -10,7 +10,7 @@
     <Grid>
         <dxlc:LayoutGroup Orientation="Vertical">
             <dxlc:LayoutItem Label="Host URI">
-                <TextBox Text="{Binding HostURI}"/>
+                <TextBox Text="{Binding HostIP}"/>
             </dxlc:LayoutItem>
             <dxlc:LayoutItem Label="Host Port">
                 <TextBox Text="{Binding HostPort}"/>

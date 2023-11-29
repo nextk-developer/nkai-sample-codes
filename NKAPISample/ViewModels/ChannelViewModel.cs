@@ -12,68 +12,57 @@ using NKAPIService.API.ComputingNode;
 
 namespace NKAPISample.ViewModels
 {
-    public partial class ChannelViewModel : ObservableObject
+    public partial class ChannelViewModel : ObservableObject, ICommnunication
     {
 
+
         private string nodeID;
-
-        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
-
+        
 
         private string channelID;
-
-        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
-
         private string channelName;
-
-        public string ChannelName { get => channelName; set => SetProperty(ref channelName, value); }
-
         private string channelDescription;
-
-        public string ChannelDescription { get => channelDescription; set => SetProperty(ref channelDescription, value); }
-
         private bool isAutoTimeout = false;
-        public bool IsAutoTimeout { get => isAutoTimeout; set => SetProperty(ref isAutoTimeout, value); }
-
         private string channelURI;
-
-        public string ChannelURI { get => channelURI; set => SetProperty(ref channelURI, value); }
-
-
         private NKAPIService.API.Channel.Models.InputType channelType;
-
-        public NKAPIService.API.Channel.Models.InputType ChannelType { get => channelType; set => SetProperty(ref channelType, value); }
-
         private string channelGroupName;
-
-        public string ChannelGroupName { get => channelGroupName; set => SetProperty(ref channelGroupName, value); }
-
         private string requestResult;
-        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
-
         private string responseResult;
-        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
+        private string postURL; // host url + function domain
+        private string hostURL; // host ip + host port
 
-        private string postURI;
-        public string PostURI { get => postURI; set => SetProperty(ref postURI, value); }
+        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
+        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
+        public string ChannelName { get => channelName; set => SetProperty(ref channelName, value); }
+        public string ChannelDescription { get => channelDescription; set => SetProperty(ref channelDescription, value); }
+        public bool IsAutoTimeout { get => isAutoTimeout; set => SetProperty(ref isAutoTimeout, value); }
+        public string ChannelURI { get => channelURI; set => SetProperty(ref channelURI, value); }
+        public NKAPIService.API.Channel.Models.InputType ChannelType { get => channelType; set => SetProperty(ref channelType, value); }
+        public string ChannelGroupName { get => channelGroupName; set => SetProperty(ref channelGroupName, value); }
+        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
+        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
+        public string PostURL { get => postURL; set => SetProperty(ref postURL, value); }
+        public string HostURL { get => hostURL; set => SetProperty(ref hostURL, value); }
 
         public ChannelViewModel(MainViewModel mainViewModel)
         {
-            mainViewModel.CreateButtonClicked += registerChannelAsync;
-            mainViewModel.GetButtonClicked += getChannel;
-            mainViewModel.RemoveButtonClicked += removeChannel;
+            mainViewModel.PropertyChanged += MainViewModelPropertyChanged;
+        }
+
+        private void MainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var property = this.GetType().GetProperty(e.PropertyName);
+            if (property == null)
+                return;
+
+            var main = sender as MainViewModel;
+            var propertyValue = main.GetType().GetProperty(e.PropertyName).GetValue(main).ToString();
+            property.SetValue(this, propertyValue);
         }
 
 
-        private void registerChannelAsync()
+        public void CreateObject()
         {
-            ErrorCode errorCode = ErrorCode.REQUEST_TIMEOUT;
-            //var cc = new ChannelComponent(this, channelUid: device.Id,
-            //                                           groupName: found.Group,
-            //                                           channelName: found.Name,
-            //                                           inputUrl: responsePlay.RtspUrl,
-            //                                           inputUrlSub: responsePlay.RtspUrl);
-
             var channel = new RequestRegisterChannel()
             {
                 NodeId = nodeID,
@@ -85,27 +74,38 @@ namespace NKAPISample.ViewModels
                 AutoTimeout = isAutoTimeout
             };
 
-            setPostURI(channel);
-            setRequestResult(channel);
-            setResponseResult(channel);
+            SetPostURL(channel);
+            SetRequestResult(channel);
+            SetResponseResult(channel);
         }
 
 
-        private void getChannel()
+        public void GetObject()
         {
-            throw new NotImplementedException();
+            var requestChannel = new RequestGetChannel()
+            {
+
+            } as RequestGetChannel;
+            SetPostURL(requestChannel);
+            SetRequestResult(requestChannel);
+            SetResponseResult(requestChannel);
         }
 
-        private void removeChannel()
+        public void RemoveObject()
         {
-            throw new NotImplementedException();
+            var requestChannel = new RequestRemoveChannel()
+            {
+
+            } as RequestRemoveChannel;
+            SetPostURL(requestChannel);
+            SetRequestResult(requestChannel);
+            SetResponseResult(requestChannel);
         }
 
 
-        private void setPostURI(IRequest node)
+        public void SetPostURL(IRequest node)
         {
-            //string host = $"http://{hostURI}:{hostPort}";
-            //PostURI = $"{host}{node.GetResource()}";
+            PostURL = $"{HostURL}{node.GetResource()}";
         }
 
 
@@ -113,14 +113,14 @@ namespace NKAPISample.ViewModels
         /// RequestCreateComputingNode Json String 값 세팅
         /// </summary>
         /// <param name="channel">RequestCreateComputingNode 객체</param>
-        private void setRequestResult(IRequest channel)
+        public void SetRequestResult(IRequest channel)
         {
-            if (channel is RequestCreateComputingNode createNode)
-                RequestResult = JsonConvert.SerializeObject(createNode, Formatting.Indented);
-            else if (channel is RequestGetComputingNode getNode)
-                RequestResult = JsonConvert.SerializeObject(getNode, Formatting.Indented);
-            else if (channel is RequestRemoveComputingNode removeNode)
-                RequestResult = JsonConvert.SerializeObject(removeNode, Formatting.Indented);
+            if (channel is RequestCreateComputingNode createReq)
+                RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
+            else if (channel is RequestGetComputingNode getReq)
+                RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
+            else if (channel is RequestRemoveComputingNode removeReq)
+                RequestResult = JsonConvert.SerializeObject(removeReq, Formatting.Indented);
         }
 
         /// <summary>
@@ -128,15 +128,11 @@ namespace NKAPISample.ViewModels
         /// </summary>
         /// <param name="node">RequestCreateComputingNode 객체</param>
         /// <returns></returns>
-        private async Task setResponseResult(IRequest channel)
+        public async Task SetResponseResult(IRequest channel)
         {
-            ErrorCode code = ErrorCode.REQUEST_TIMEOUT;
-            
-
-            ResponseBase? response = await getResponse(channel);
+            ResponseBase? response = await GetResponse(channel);
             if (response != null)
             {
-                code = response.Code;
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
@@ -145,18 +141,20 @@ namespace NKAPISample.ViewModels
             }
         }
 
-        private async Task<ResponseBase> getResponse(IRequest channel)
+        public async Task<ResponseBase> GetResponse(IRequest channel)
         {
-            //APIService service = APIService.Build().SetUrl(new Uri($"http://{hostURI}:{hostPort}"));
             
-            //if (channel is RequestRegisterChannel createReq)
-            //    return await service.Requset(createReq) as ResponseCreateComputingNode;
-            //else if (channel is RequestGetChannel getReq)
-            //    return await service.Requset(getReq) as ResponseGetComputingNode;
-            //else if (channel is RequestRemoveChannel removeReq)
-            //    return await service.Requset(removeReq) as ResponseRemoveChannel;
+            APIService service = APIService.Build().SetUrl(new Uri(HostURL));
+
+            if (channel is RequestRegisterChannel createReq)
+                return await service.Requset(createReq) as ResponseRegisterChannel;
+            else if (channel is RequestGetChannel getReq)
+                return await service.Requset(getReq) as ResponseGetChannel;
+            else if (channel is RequestRemoveChannel removeReq)
+                return await service.Requset(removeReq) as ResponseRemoveChannel;
 
             return null;
         }
+
     }
 }

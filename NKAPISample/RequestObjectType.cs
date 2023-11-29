@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NKAPISample
 {
-    public enum APITarget
+    public enum RequestObjectType
     {
-        Node=0, Channel=1, ROI=2
+        Node=0, Channel=1, RoI=2
     }
 }

@@ -26,34 +26,35 @@ namespace NKAPISample.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-
-        private string postURI;
-
-        public string PostURI { get => postURI; set => SetProperty(ref postURI, value); }
-
+        private string postURL;
+        private string hostURL;
         private string requestResult;
-
-        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
-
         private string responseResult;
-
-        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
-
-
         private string nodeID;
-        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
-
         private string channelID;
-        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
 
+        private RequestObjectType selectedObject;
+
+        
+        private ComputingNodeViewModel _nodeVM;
+        private ChannelViewModel _channelVM;
+        private ROIViewModel _roiVM;
+
+        public string PostURL { get => postURL; set => SetProperty(ref postURL, value); }
+        public string HostURL { get => hostURL; set => SetProperty(ref hostURL, value); }
+        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
+        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
+        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
+        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
+        public RequestObjectType SelectedObject { get => selectedObject; set => SetProperty(ref selectedObject, value); }
+
+        
 
         public ComputingNodeView NodeView { get; private set; }
         public ChannelView ChannelView { get; private set; }
         public ROIView RoIView { get; private set; }
 
-        private ComputingNodeViewModel _nodeVM;
-        private ChannelViewModel _channelVM;
-        private ROIViewModel _roiVM;
+
 
         public MainViewModel()
         {
@@ -64,7 +65,12 @@ namespace NKAPISample.ViewModels
             _nodeVM = new ComputingNodeViewModel(this);
             _nodeVM.PropertyChanged += SubViewModelPropertyChanged;
             _channelVM = new ChannelViewModel(this);
+            _channelVM.PropertyChanged += SubViewModelPropertyChanged;
             _roiVM = new ROIViewModel(this);
+            _roiVM.PropertyChanged += SubViewModelPropertyChanged;
+
+            // 뷰모델마다 속성 변경 이벤트 각각 처리 필요.
+            // 현재 상호참조 되어있어 재귀로 계속 들어옴.
 
             NodeView.DataContext = _nodeVM;
             ChannelView.DataContext = _channelVM;
@@ -95,8 +101,12 @@ namespace NKAPISample.ViewModels
             else if (sender is ROIViewModel roi)
                 propertyValue = roi.GetType().GetProperty(e.PropertyName).GetValue(roi).ToString();
 
+            if (property.GetValue(this) != null && property.GetValue(this).ToString().Equals(propertyValue))
+                return;
+
             property.SetValue(this, propertyValue);
         }
+
 
 
     }
@@ -107,26 +117,63 @@ namespace NKAPISample.ViewModels
     /// </summary>
     public partial class MainViewModel
     {
+        private DelegateCommand createCommand;
+        private DelegateCommand getCommand;
+        private DelegateCommand removeCommand;
+        public ICommand CreateCommand => createCommand ??= new DelegateCommand(Create);
+        public ICommand GetCommand => getCommand ??= new DelegateCommand(Get);
+        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(Remove);
 
-        public Action CreateButtonClicked;
-        public Action GetButtonClicked = null;
-        public Action RemoveButtonClicked = null;
 
-
-        private ICommand createCommand;
-
-        public ICommand CreateCommand { get { return (createCommand) ?? (createCommand = new DelegateCommand(Create)); } }
 
         private void Create()
         {
-            CreateButtonClicked?.Invoke();
+            switch(SelectedObject)
+            {
+                case RequestObjectType.Node:
+                    _nodeVM.CreateObject();
+                    break;
+                case RequestObjectType.Channel:
+                    _channelVM.CreateObject();
+                    break;
+                case RequestObjectType.RoI:
+                    _roiVM.CreateObject();
+                    break; ;
+            }
         }
 
-        private DelegateCommand getCommand;
-        public ICommand GetCommand => getCommand ??= new DelegateCommand(Get);
 
         private void Get()
         {
+            switch (SelectedObject)
+            {
+                case RequestObjectType.Node:
+                    _nodeVM.GetObject();
+                    break;
+                case RequestObjectType.Channel:
+                    _channelVM.GetObject();
+                    break;
+                case RequestObjectType.RoI:
+                    _roiVM.GetObject();
+                    break; ;
+            }
+        }
+
+
+        private void Remove()
+        {
+            switch (SelectedObject)
+            {
+                case RequestObjectType.Node:
+                    _nodeVM.RemoveObject();
+                    break;
+                case RequestObjectType.Channel:
+                    _channelVM.RemoveObject();
+                    break;
+                case RequestObjectType.RoI:
+                    _roiVM.RemoveObject();
+                    break; ;
+            }
         }
     }
 
