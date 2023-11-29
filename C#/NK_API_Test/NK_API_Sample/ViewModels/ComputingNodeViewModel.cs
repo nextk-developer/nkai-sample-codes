@@ -32,18 +32,26 @@ namespace NKAPISample.ViewModels
 
         public string NodeName { get => nodeName; set => SetProperty(ref nodeName, value); }
 
-        private string license = "4/Hpx/q3jP42zD1RXm2I4ya2XSYLORbgYRDhA8fOGqld3bEsHNHIp8EstNUlvKhS";
+        private string license = "license-license-license-license";
         public string License { get => license; set => SetProperty(ref license, value); }
 
         public ComputingNodeViewModel(MainViewModel mainViewModel)
         {
-            mainViewModel.CreateButtonClicked = delegate () { return getCreateRequest().Result; };
+            mainViewModel.CreateButtonClicked = delegate () {
+                var node = createNode();
+                var request = getRequest(node);
+                var response = getResponse(node);
+                return new object[2] { request, response };
+            };
         }
 
-
-        private async Task<string> getCreateRequest()
+        private string getRequest(RequestCreateComputingNode node)
         {
+            return JsonConvert.SerializeObject(node);
+        }
 
+        private RequestCreateComputingNode createNode()
+        {
             var request = new RequestCreateComputingNode()
             {
                 Host = $"http://{hostURI}:{hostPort}",
@@ -51,25 +59,26 @@ namespace NKAPISample.ViewModels
                 License = license
             } as RequestCreateComputingNode;
 
-            var req = new RestRequest()
+            return request;
+        }
+
+        private async Task<string> getResponse(RequestCreateComputingNode node)
+        {
+            ErrorCode code = ErrorCode.REQUEST_TIMEOUT;
+            APIService service = APIService.Build().SetUrl(new Uri($"http://{hostURI}:{hostPort}"));
+            var response = await service.Requset(node) as ResponseCreateComputingNode;
+            if (response != null)
             {
-                Resource = request.GetResource(),
-                Method = Method.Post,
-                RequestFormat = DataFormat.Json,
-            };
-
-            var body = JsonConvert.SerializeObject(request);
-            req.AddHeader("Content-type", "application/json; charset=utf-8");
-            req.AddHeader("Accept-Encoding", "gzip");
-            req.AddJsonBody(body);
-
-            RestClient restClient = new RestClient(new RestClientOptions() { BaseUrl = new Uri($"http://{hostURI}:{hostPort}") });
-
-            var res = await restClient.ExecutePostAsync(req);
-            if (res.StatusCode == System.Net.HttpStatusCode.OK)
-                return res.Content;
-
+                code = response.Code;
+                if (response.Code == ErrorCode.SUCCESS)
+                {
+                    string responseResult = JsonConvert.SerializeObject(response);
+                    return responseResult;
+                }
+            }
             return "";
+
+
         }
 
     }

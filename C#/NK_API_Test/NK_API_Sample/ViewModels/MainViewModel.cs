@@ -2,6 +2,7 @@
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.CodeGenerators;
 using DevExpress.Pdf.Native.BouncyCastle.Asn1.Ocsp;
+using DevExpress.Pdf.Native.BouncyCastle.Ocsp;
 using DevExpress.Xpf.Core;
 using Newtonsoft.Json;
 using NKAPISample.Views;
@@ -13,6 +14,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -26,11 +28,25 @@ namespace NKAPISample.ViewModels
     {
         string apiVersion = "v2";
         string apiObject = "va";
-        public Func<string> CreateButtonClicked;
+
+        public Func<object[]> CreateButtonClicked;
         public Action<string> GetButtonClicked = null;
         public Action<string> RemoveButtonClicked = null;
         private string nodeID;
         public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
+
+
+        private string postURI;
+
+        public string PostURI { get => postURI; set => SetProperty(ref postURI, value); }
+
+        private string requestResult;
+
+        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
+
+        private string responseResult;
+
+        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
 
         public APITarget SelectedObject { get; set; }
 
@@ -41,6 +57,7 @@ namespace NKAPISample.ViewModels
         private ComputingNodeViewModel _nodeVM;
         private ChannelViewModel _channelVM;
         private ROIViewModel _roiVM;
+
         public MainViewModel()
         {
             NodeView = new ComputingNodeView();
@@ -60,16 +77,15 @@ namespace NKAPISample.ViewModels
 
         private void OnCreate()
         {
-            string s = CreateButtonClicked?.Invoke();
-            getResponse(s);
+            object[] result = CreateButtonClicked?.Invoke();
+            setResult(result);
         }
 
-
-        private object getResponse(string requestString)
+        private async void setResult(object[] result)
         {
-            ResponseBase rb = new() { Code = ErrorCode.REQUEST_TIMEOUT };
-            rb = JsonConvert.DeserializeObject<ResponseCreateComputingNode>(requestString);
-            return rb;
+            RequestResult = result[0].ToString();
+            //var responseTask = await Task.FromResult(result[1]);
+            //ResponseResult = responseTask.ToString();
         }
 
         private RequestType? getAPIType(string apiType, APITarget apiTarget)
@@ -116,6 +132,7 @@ namespace NKAPISample.ViewModels
             return null;
 
         }
+
 
     }
 

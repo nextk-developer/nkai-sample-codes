@@ -5,6 +5,10 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKAPISample", "NK_API_Sample\NKAPISample.csproj", "{144670CB-6396-488C-A76D-2E03A3B69E78}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKAPIService", "..\NKAPIService\NKAPIService.csproj", "{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredefineConstant", "..\PredefineConstant\PredefineConstant.csproj", "{289D27F8-C985-47CE-9CF5-C78DD9CA0601}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,30 @@ Global
 		{144670CB-6396-488C-A76D-2E03A3B69E78}.RemoteDebug|Any CPU.Build.0 = Release|Any CPU
 		{144670CB-6396-488C-A76D-2E03A3B69E78}.RemoteDebug|x64.ActiveCfg = Release|Any CPU
 		{144670CB-6396-488C-A76D-2E03A3B69E78}.RemoteDebug|x64.Build.0 = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Debug|x64.Build.0 = Debug|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Release|x64.ActiveCfg = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.Release|x64.Build.0 = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.RemoteDebug|Any CPU.ActiveCfg = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.RemoteDebug|Any CPU.Build.0 = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.RemoteDebug|x64.ActiveCfg = Release|Any CPU
+		{9348F77B-E2C4-48C7-8BDD-F7D012C4A193}.RemoteDebug|x64.Build.0 = Release|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Debug|x64.Build.0 = Debug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Release|Any CPU.Build.0 = Release|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Release|x64.ActiveCfg = Release|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.Release|x64.Build.0 = Release|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.RemoteDebug|Any CPU.ActiveCfg = RemoteDebug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.RemoteDebug|Any CPU.Build.0 = RemoteDebug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.RemoteDebug|x64.ActiveCfg = RemoteDebug|Any CPU
+		{289D27F8-C985-47CE-9CF5-C78DD9CA0601}.RemoteDebug|x64.Build.0 = RemoteDebug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

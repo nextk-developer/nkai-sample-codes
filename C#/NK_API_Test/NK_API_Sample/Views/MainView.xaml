@@ -68,11 +68,14 @@
                         </dxdo:LayoutPanel>
                     </dxdo:LayoutGroup>
                     <dxdo:LayoutGroup Orientation="Vertical">
+                        <dxdo:LayoutPanel Caption="Post">
+                            <TextBox Text="{Binding PostURI}"/>
+                        </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel Caption="Request API">
-                            <RichTextBox />
+                            <TextBox Text="{Binding RequestResult}"/>
                         </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel Caption="Response API / Log">
-                            <RichTextBox />
+                            <TextBox Text="{Binding ResponseResult}"/>
                         </dxdo:LayoutPanel>
                     </dxdo:LayoutGroup>
                     

@@ -18,9 +18,6 @@
             <dxlc:LayoutItem Label="Node Name">
                 <TextBox Text="{Binding NodeName}"/>
             </dxlc:LayoutItem>
-            <dxlc:LayoutItem Label="Node License">
-                <TextBox Text="{Binding License}"/>
-            </dxlc:LayoutItem>
         </dxlc:LayoutGroup>
     </Grid>
 </UserControl>
