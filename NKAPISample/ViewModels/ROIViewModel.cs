@@ -1,18 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DevExpress.Mvvm.CodeGenerators;
-using FFmpeg.AutoGen;
 using Newtonsoft.Json;
 using NKAPIService;
 using NKAPIService.API;
-using NKAPIService.API.Channel;
-using NKAPIService.API.ComputingNode;
 using NKAPIService.API.VideoAnalysisSetting;
-using PredefineConstant.Enum.Camera;
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.ServiceModel.Channels;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace NKAPISample.ViewModels
@@ -79,7 +70,7 @@ namespace NKAPISample.ViewModels
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _mainVM.ResponseResult = responseResult;
+                    _mainVM.SetResponseResult(responseResult);
                 }
             }
         }

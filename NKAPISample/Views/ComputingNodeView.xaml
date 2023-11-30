@@ -4,20 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:ui="clr-namespace:NKAPISample.Controls"
              xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <dxlc:LayoutGroup Orientation="Vertical">
-            <dxlc:LayoutItem Label="Host URI">
-                <TextBox Text="{Binding HostIP}"/>
-            </dxlc:LayoutItem>
-            <dxlc:LayoutItem Label="Host Port">
-                <TextBox Text="{Binding HostPort}"/>
-            </dxlc:LayoutItem>
-            <dxlc:LayoutItem Label="Node Name">
-                <TextBox Text="{Binding NodeName}"/>
-            </dxlc:LayoutItem>
-        </dxlc:LayoutGroup>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ui:LabelledTextBox Header="Host IP" Text="{Binding HostIP, Mode=TwoWay}"/>
+        <!--<TextBox Text="{Binding HostIP}"/>-->
+        <ui:LabelledTextBox Header="Host Port" Text="{Binding HostPort}" Grid.Row="1"/>
+        <ui:LabelledTextBox Header="Node Name" Text="{Binding NodeName}" Grid.Row="2"/>
+        
     </Grid>
 </UserControl>

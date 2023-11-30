@@ -1,38 +1,66 @@
 ﻿<UserControl x:Class="NKAPISample.Views.ChannelView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
-             xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+             xmlns:ui="clr-namespace:NKAPISample.Controls"
              xmlns:channelAPI="clr-namespace:NKAPIService.API.Channel.Models;assembly=NKAPIService"
-             xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <dxlc:LayoutGroup Orientation="Vertical">
-        <dxlc:LayoutItem Label="Node ID">
-            <TextBox Text="{Binding NodeID}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel ID">
-            <TextBox Text="{Binding ChannelID}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel Name">
-            <TextBox Text="{Binding ChannelName}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel URI">
-            <TextBox Text="{Binding ChannelURI}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel Type">
-            <dxe:ComboBoxEdit EditValue="{Binding ChannelType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{dxe:EnumItemsSource EnumType=channelAPI:InputType, UseNumericEnumValue=False}" IsTextEditable="False"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel Group Name">
-            <TextBox Text="{Binding ChannelGroupName}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Channel Description">
-            <TextBox Text="{Binding ChannelDescription}"/>
-        </dxlc:LayoutItem>
-        <dxlc:LayoutItem Label="Auto Timeout">
-            <CheckBox IsChecked="{Binding IsAutoTimeout}" />
-        </dxlc:LayoutItem>
-    </dxlc:LayoutGroup>
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="ChannelTypeSource"
+                        ObjectType="{x:Type sys:Enum}"
+                        MethodName="GetNames">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="channelAPI:InputType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <Style TargetType="{x:Type ui:LabelledTextBox}">
+            <Setter Property="HeaderWidth" Value="120"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ui:LabelledTextBox Header="Node ID" Text="{Binding NodeID}"/>
+        <ui:LabelledTextBox Header="Channel ID" Text="{Binding ChannelID}" Grid.Row="1"/>
+
+        <ui:LabelledTextBox Header="Channel Name" Text="{Binding ChannelName}" Grid.Row="2"/>
+
+        <ui:LabelledTextBox Header="Channel URL" Text="{Binding ChannelURL}" Grid.Row="3"/>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Channel Type" Width="120" Foreground="#666666" FontSize="11" VerticalAlignment="Center"/>
+            <ComboBox SelectedItem="{Binding ChannelType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={StaticResource ChannelTypeSource}}" Height="24" HorizontalAlignment="Stretch" Grid.Column="1"/>
+        </Grid>
+        <ui:LabelledTextBox Header="Channel Group Name" Text="{Binding ChannelGroupName}" Grid.Row="5"/>
+
+        <ui:LabelledTextBox Header="Channel Description" Text="{Binding ChannelDescription}" Grid.Row="6"/>
+
+        <Grid Grid.Row="7">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Auto Timeout" Width="120" Foreground="#666666" FontSize="11" VerticalAlignment="Center"/>
+            <CheckBox IsChecked="{Binding IsAutoTimeout}" Grid.Column="1" VerticalAlignment="Center"/>
+            
+        </Grid>
+        
+
+    </Grid>
 </UserControl>

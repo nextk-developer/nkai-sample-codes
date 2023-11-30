@@ -1,22 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DevExpress.Mvvm.CodeGenerators;
-using NKAPIService.API.ComputingNode;
-using NKAPIService.API;
-using System;
-using System.ComponentModel;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using NKAPIService;
-using DevExpress.XtraPrinting.Native.Properties;
-using RestSharp.Authenticators;
-using RestSharp;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using DevExpress.Pdf.Native.BouncyCastle.Ocsp;
 using Newtonsoft.Json;
+using NKAPIService;
+using NKAPIService.API;
+using NKAPIService.API.ComputingNode;
+using System;
 using System.Threading.Tasks;
-using System.Text.Json;
-using DevExpress.Pdf.Native.BouncyCastle.Asn1.Ocsp;
-using System.Threading.Channels;
 
 namespace NKAPISample.ViewModels
 {
@@ -37,18 +25,6 @@ namespace NKAPISample.ViewModels
         {
             _mainVM = mainViewModel;
         }
-
-        private void MainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var property = this.GetType().GetProperty(e.PropertyName);
-            if (property == null)
-                return;
-
-            var main = sender as MainViewModel;
-            var propertyValue = main.GetType().GetProperty(e.PropertyName).GetValue(main).ToString();
-            property.SetValue(this, propertyValue);
-        }
-
 
 
         /// <summary>
@@ -76,8 +52,9 @@ namespace NKAPISample.ViewModels
         {
             var requestNode = new RequestGetComputingNode()
             {
+                
+            }; // 속성 없이 리스트로 받아옴
 
-            } as RequestGetComputingNode;
             SetPostURL(requestNode);
             SetRequestResult(requestNode);
             SetResponseResult(requestNode);
@@ -90,7 +67,7 @@ namespace NKAPISample.ViewModels
         {
             var requestNode = new RequestRemoveComputingNode()
             {
-
+                NodeId= _mainVM.NodeID
             } as RequestRemoveComputingNode;
             SetPostURL(requestNode);
             SetRequestResult(requestNode);
@@ -129,21 +106,46 @@ namespace NKAPISample.ViewModels
         public async Task SetResponseResult(IRequest node)
         {
             ErrorCode code = ErrorCode.REQUEST_TIMEOUT;
-            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
             ResponseBase? response = await GetResponse(node);
 
-            if (response == null)
-                _mainVM.ResponseResult = "No Response";
+            if (response == null) // 서버 응답 없을 경우 샘플 표출.
+            {
+                string responseResult = "";
+                if (node is RequestCreateComputingNode)
+                {
+                    var sampleNode = new ResponseCreateComputingNode();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+                else if(node is RequestGetComputingNode)
+                {
+                    var sampleNode = new ResponseGetComputingNode();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+                else if(node is RequestRemoveComputingNode)
+                {
+                    var sampleNode = new ResponseRemoveComputingNode();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+
+                _mainVM.SetResponseResult(responseResult);
+            }
             else
             {
                 code = response.Code;
                 if (code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _mainVM.ResponseResult = responseResult;
+                    if (response is ResponseCreateComputingNode createNode)
+                        _mainVM.NodeID = createNode.NodeId;
+                    else if (response is ResponseGetComputingNode getNode)
+                        _mainVM.NodeID = getNode.Node.NodeId;
+                    else if (response is ResponseRemoveComputingNode)
+                        _mainVM.NodeID = "";
+
+                    _mainVM.SetResponseResult(responseResult);
                 }
                 else
-                    _mainVM.ResponseResult = $"[{code}] {response.Message}";
+                    _mainVM.SetResponseResult($"[{code}] {response.Message}");
             }
 
 
@@ -152,7 +154,6 @@ namespace NKAPISample.ViewModels
         
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
-            
             APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
 
             if (channel is RequestCreateComputingNode createReq)

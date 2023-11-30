@@ -3,11 +3,11 @@
 namespace NKAPISample.Views
 {
     /// <summary>
-    /// Interaction logic for ROIView.xaml
+    /// Interaction logic for ScheduleView.xaml
     /// </summary>
-    public partial class ROIView : UserControl
+    public partial class ScheduleView : UserControl
     {
-        public ROIView()
+        public ScheduleView()
         {
             InitializeComponent();
         }

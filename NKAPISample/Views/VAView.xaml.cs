@@ -3,11 +3,11 @@
 namespace NKAPISample.Views
 {
     /// <summary>
-    /// Interaction logic for ROIView.xaml
+    /// Interaction logic for VAView.xaml
     /// </summary>
-    public partial class ROIView : UserControl
+    public partial class VAView : UserControl
     {
-        public ROIView()
+        public VAView()
         {
             InitializeComponent();
         }

@@ -1,14 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DevExpress.Mvvm.CodeGenerators;
-using NKAPIService.API.Channel;
-using NKAPIService;
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using NKAPIService.API;
 using Newtonsoft.Json;
+using NKAPIService;
+using NKAPIService.API;
+using NKAPIService.API.Channel;
 using NKAPIService.API.ComputingNode;
+using System;
+using System.Threading.Tasks;
 
 namespace NKAPISample.ViewModels
 {
@@ -17,19 +14,18 @@ namespace NKAPISample.ViewModels
 
         private MainViewModel _mainVM;
        
-        private string channelName;
-        private string channelDescription;
+        private string channelName = "NextK Channel";
+        private string channelDescription = "725, 201 beon gil, Seocheon-ro, Giheung-gu, Yongin-si, Kyeonggi-do";
         private bool isAutoTimeout = false;
-        private string channelURI;
-        private NKAPIService.API.Channel.Models.InputType channelType;
-        private string channelGroupName;
+        private NKAPIService.API.Channel.Models.InputType channelType = NKAPIService.API.Channel.Models.InputType.SRC_IPCAM_NORMAL;
+        private string channelGroupName = "NextK Group";
 
         public string NodeID { get => _mainVM.NodeID; set => _mainVM.NodeID = value; }
         public string ChannelID { get => _mainVM.ChannelID; set => _mainVM.ChannelID = value; }
         public string ChannelName { get => channelName; set => SetProperty(ref channelName, value); }
         public string ChannelDescription { get => channelDescription; set => SetProperty(ref channelDescription, value); }
         public bool IsAutoTimeout { get => isAutoTimeout; set => SetProperty(ref isAutoTimeout, value); }
-        public string ChannelURI { get => channelURI; set => SetProperty(ref channelURI, value); }
+        public string ChannelURL { get => _mainVM.ChannelURL; set => _mainVM.ChannelURL = value; }
         public NKAPIService.API.Channel.Models.InputType ChannelType { get => channelType; set => SetProperty(ref channelType, value); }
         public string ChannelGroupName { get => channelGroupName; set => SetProperty(ref channelGroupName, value); }
 
@@ -44,11 +40,13 @@ namespace NKAPISample.ViewModels
             var channel = new RequestRegisterChannel()
             {
                 NodeId = NodeID,
+                ChannelId = "",
                 InputType = channelType,
                 GroupName = channelGroupName,
                 Description = channelDescription,
                 ChannelName = channelName,
-                InputUrl = this.channelURI,
+                InputUrl = ChannelURL,
+                InputUrlSub = ChannelURL,
                 AutoTimeout = isAutoTimeout
             };
 
@@ -109,13 +107,44 @@ namespace NKAPISample.ViewModels
         public async Task SetResponseResult(IRequest channel)
         {
             ResponseBase? response = await GetResponse(channel);
-            if (response != null)
+           
+            if (response == null) // 서버 응답 없을 경우 샘플 표출.
+            {
+                string responseResult = "";
+                if (channel is RequestRegisterChannel)
+                {
+                    var sampleNode = new ResponseRegisterChannel();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+                else if (channel is RequestGetChannel)
+                {
+                    var sampleNode = new ResponseGetComputingNode();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+                else if (channel is RequestRemoveChannel)
+                {
+                    var sampleNode = new ResponseRemoveChannel();
+                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                }
+
+                _mainVM.SetResponseResult(responseResult);
+            }
+            else
             {
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _mainVM.ResponseResult = responseResult;
+                    if (response is ResponseRegisterChannel createChannel)
+                        _mainVM.ChannelID = createChannel.ChannelId;
+                    else if (response is ResponseGetChannel getChannel)
+                        _mainVM.ChannelID = getChannel.ChannelModel.ChannelId;
+                    else if (response is ResponseRemoveChannel)
+                        _mainVM.ChannelID = "";
+
+                    _mainVM.SetResponseResult(responseResult);
                 }
+                else
+                    _mainVM.SetResponseResult($"[{response.Code}] {response.Message}");
             }
         }
 
