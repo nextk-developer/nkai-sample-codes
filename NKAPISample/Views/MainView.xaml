@@ -69,7 +69,7 @@
                     </dxdo:LayoutGroup>
                     <dxdo:LayoutGroup Orientation="Vertical">
                         <dxdo:LayoutPanel Caption="Post" ItemHeight="70" CaptionAlignMode="Custom">
-                            <TextBox Text="{Binding PostURI}"/>
+                            <TextBox Text="{Binding PostURL}"/>
                         </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel Caption="Request API">
                             <TextBox Text="{Binding RequestResult}"/>

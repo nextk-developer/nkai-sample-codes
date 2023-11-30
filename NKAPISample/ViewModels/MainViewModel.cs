@@ -26,8 +26,11 @@ namespace NKAPISample.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private string postURL;
+        
         private string hostURL;
+        private string hostIP = "127.0.0.1";
+        private string hostPort = "8880";
+        private string postURL;
         private string requestResult;
         private string responseResult;
         private string nodeID;
@@ -40,8 +43,12 @@ namespace NKAPISample.ViewModels
         private ChannelViewModel _channelVM;
         private ROIViewModel _roiVM;
 
+        
+        
+        public string HostIP { get => hostIP; set => SetProperty(ref hostIP, value); }
+        public string HostPort { get => hostPort; set => SetProperty(ref hostPort, value); }
+        public string HostURL { get => $"http://{hostIP}:{hostPort}/"; }
         public string PostURL { get => postURL; set => SetProperty(ref postURL, value); }
-        public string HostURL { get => hostURL; set => SetProperty(ref hostURL, value); }
         public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
         public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
         public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
@@ -63,51 +70,13 @@ namespace NKAPISample.ViewModels
             RoIView = new ROIView();
 
             _nodeVM = new ComputingNodeViewModel(this);
-            _nodeVM.PropertyChanged += SubViewModelPropertyChanged;
             _channelVM = new ChannelViewModel(this);
-            _channelVM.PropertyChanged += SubViewModelPropertyChanged;
             _roiVM = new ROIViewModel(this);
-            _roiVM.PropertyChanged += SubViewModelPropertyChanged;
-
-            // 뷰모델마다 속성 변경 이벤트 각각 처리 필요.
-            // 현재 상호참조 되어있어 재귀로 계속 들어옴.
 
             NodeView.DataContext = _nodeVM;
             ChannelView.DataContext = _channelVM;
             RoIView.DataContext = _roiVM;
         }
-
-
-
-        /// <summary>
-        /// 서브 뷰모델(node/channel/roi 뷰모델) 값 변경시 이벤트 처리
-        /// </summary>
-        /// <param name="sender">뷰모델 객체</param>
-        /// <param name="e">이벤트 인자</param>
-        private void SubViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var property = this.GetType().GetProperty(e.PropertyName);
-            if (property == null)
-                return;
-
-            var propertyValue = "";
-
-            if (sender is ComputingNodeViewModel node)
-                propertyValue = node.GetType().GetProperty(e.PropertyName).GetValue(node).ToString();
-
-            else if (sender is ChannelViewModel channel)
-                propertyValue = channel.GetType().GetProperty(e.PropertyName).GetValue(channel).ToString();
-
-            else if (sender is ROIViewModel roi)
-                propertyValue = roi.GetType().GetProperty(e.PropertyName).GetValue(roi).ToString();
-
-            if (property.GetValue(this) != null && property.GetValue(this).ToString().Equals(propertyValue))
-                return;
-
-            property.SetValue(this, propertyValue);
-        }
-
-
 
     }
 

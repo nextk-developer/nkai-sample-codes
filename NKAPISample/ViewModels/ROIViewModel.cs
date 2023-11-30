@@ -17,39 +17,18 @@ using System.Threading.Tasks;
 
 namespace NKAPISample.ViewModels
 {
-    public partial class ROIViewModel : ObservableObject, ICommnunication
+    public partial class ROIViewModel : ObservableObject
     {
 
+        private MainViewModel _mainVM;
 
-        private string postURI;
-        private string requestResult;
-        private string responseResult;
-        private string nodeID;
-        private string channelID;
-        private string hostURL;
-
-        public string PostURL { get => postURI; set => SetProperty(ref postURI, value); }
-        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
-        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
-        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
-        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
-        public string HostURL { get => hostURL; set => SetProperty(ref hostURL, value); }
+        public string NodeID { get => _mainVM.NodeID; set => _mainVM.NodeID = value; }
+        public string ChannelID { get => _mainVM.ChannelID; set => _mainVM.ChannelID = value; }
+        
 
         public ROIViewModel(MainViewModel mainViewModel)
         {
-            mainViewModel.PropertyChanged += MainViewModelPropertyChanged;
-        }
-
-        private void MainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var property = this.GetType().GetProperty(e.PropertyName);
-            if (property == null)
-                return;
-
-            var main = sender as MainViewModel;
-            var propertyValue = main.GetType().GetProperty(e.PropertyName).GetValue(main).ToString();
-
-            property.SetValue(this, propertyValue);
+            _mainVM = mainViewModel;
         }
 
         public void CreateObject()
@@ -78,17 +57,17 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest req)
         {
-            PostURL = $"{HostURL}{req.GetResource()}";
+            _mainVM.PostURL = $"{_mainVM.HostURL}{req.GetResource()}";
         }
 
         public void SetRequestResult(IRequest req)
         {
             if (req is RequestCreateROI createReq)
-                RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
             else if (req is RequestListROI getReq)
-                RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
             else if (req is RequestRemoveROI removeReq)
-                RequestResult = JsonConvert.SerializeObject(removeReq, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(removeReq, Formatting.Indented);
         }
 
         public async Task SetResponseResult(IRequest req)
@@ -100,7 +79,7 @@ namespace NKAPISample.ViewModels
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    ResponseResult = responseResult;
+                    _mainVM.ResponseResult = responseResult;
                 }
             }
         }
@@ -108,7 +87,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest req)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
 
             if (req is RequestCreateROI createReq)
                 return await service.Requset(createReq) as ResponseCreateROI;

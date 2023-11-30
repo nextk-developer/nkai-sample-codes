@@ -20,45 +20,22 @@ using System.Threading.Channels;
 
 namespace NKAPISample.ViewModels
 {
-    public partial class ComputingNodeViewModel : ObservableObject, ICommnunication
+    public partial class ComputingNodeViewModel : ObservableObject
     {
-
-        private string hostIP = "127.0.0.1";
-
-        public string HostIP { get => hostIP; set => SetProperty(ref hostIP, value); }
-
-        private string hostPort = "8880";
-
-        public string HostPort { get => hostPort; set => SetProperty(ref hostPort, value); }
-
+        private MainViewModel _mainVM;
         private string nodeName = "sample node";
-
-        public string NodeName { get => nodeName; set => SetProperty(ref nodeName, value); }
-
         private string license = "license-license-license-license";
+
+        public string HostIP { get => _mainVM.HostIP; set => _mainVM.HostIP = value; }
+        public string HostPort { get => _mainVM.HostPort; set => _mainVM.HostPort = value; }
+        public string NodeName { get => nodeName; set => SetProperty(ref nodeName, value); }
         public string License { get => license; set => SetProperty(ref license, value); }
 
-        private string requestResult;
-        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
 
-        private string responseResult;
-        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
-
-        private string postURI;
-        public string PostURL { get => postURI; set => SetProperty(ref postURI, value); }
-
-        private string nodeID;
-        public string NodeID { get => NodeID; set => SetProperty(ref nodeID, value); }
-
-        private string channelID;
-        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
-
-        private string hostURL;
-        public string HostURL { get => hostURL; set => SetProperty(ref hostURL, value); }
 
         public ComputingNodeViewModel(MainViewModel mainViewModel)
         {
-            mainViewModel.PropertyChanged += MainViewModelPropertyChanged;
+            _mainVM = mainViewModel;
         }
 
         private void MainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -79,12 +56,9 @@ namespace NKAPISample.ViewModels
         /// </summary>
         public void CreateObject()
         {
-            if (string.IsNullOrEmpty(HostURL))
-                HostURL = $"http://{hostIP}:{hostPort}";
-
             var requestNode = new RequestCreateComputingNode()
             {
-                Host = HostURL,
+                Host = _mainVM.HostURL,
                 NodeName = nodeName,
                 License = license
             } as RequestCreateComputingNode;
@@ -129,7 +103,7 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest node)
         {
-            PostURL = $"{HostURL}{node.GetResource()}";
+            _mainVM.PostURL = $"{_mainVM.HostURL}{node.GetResource()}";
         }
 
 
@@ -140,11 +114,11 @@ namespace NKAPISample.ViewModels
         public void SetRequestResult(IRequest node)
         {
             if (node is RequestCreateComputingNode createNode)
-                RequestResult = JsonConvert.SerializeObject(createNode, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(createNode, Formatting.Indented);
             else if (node is RequestGetComputingNode getNode)
-                RequestResult = JsonConvert.SerializeObject(getNode, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(getNode, Formatting.Indented);
             else if (node is RequestRemoveComputingNode removeNode)
-                RequestResult = JsonConvert.SerializeObject(removeNode, Formatting.Indented);
+                _mainVM.RequestResult = JsonConvert.SerializeObject(removeNode, Formatting.Indented);
         }
 
         /// <summary>
@@ -155,25 +129,31 @@ namespace NKAPISample.ViewModels
         public async Task SetResponseResult(IRequest node)
         {
             ErrorCode code = ErrorCode.REQUEST_TIMEOUT;
-            APIService service = APIService.Build().SetUrl(new Uri($"http://{hostIP}:{hostPort}"));
+            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
             ResponseBase? response = await GetResponse(node);
 
-            if (response != null)
+            if (response == null)
+                _mainVM.ResponseResult = "No Response";
+            else
             {
                 code = response.Code;
-                if (response.Code == ErrorCode.SUCCESS)
+                if (code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    ResponseResult = responseResult;
+                    _mainVM.ResponseResult = responseResult;
                 }
+                else
+                    _mainVM.ResponseResult = $"[{code}] {response.Message}";
             }
+
+
         }
 
         
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
             
-            APIService service = APIService.Build().SetUrl(new Uri(HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
 
             if (channel is RequestCreateComputingNode createReq)
                 return await service.Requset(createReq) as ResponseCreateComputingNode;
