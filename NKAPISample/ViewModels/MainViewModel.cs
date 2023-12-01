@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using NKAPISample.Views;
+using SharpGen.Runtime;
 using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace NKAPISample.ViewModels
@@ -18,6 +21,7 @@ namespace NKAPISample.ViewModels
         private string nodeID;
         private string channelID;
         private string channelURL = "rtsp://211.198.128.30/vod/line1";
+        private List<string> roiIDs;
 
         private RequestObjectType selectedObject;
 
@@ -31,7 +35,7 @@ namespace NKAPISample.ViewModels
 
         public string HostIP { get => hostIP; set => SetProperty(ref hostIP, value); }
         public string HostPort { get => hostPort; set => SetProperty(ref hostPort, value); }
-        public string HostURL { get => $"http://{hostIP}:{hostPort}/"; }
+        public string HostURL { get => $"http://{hostIP}:{hostPort}"; }
         public string PostURL { get => postURL; set => SetProperty(ref postURL, value); }
         public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
         public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
@@ -39,6 +43,7 @@ namespace NKAPISample.ViewModels
         public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
         public string ChannelURL { get => channelURL; set => SetProperty(ref channelURL, value); }
         public RequestObjectType SelectedObject { get => selectedObject; set => SetProperty(ref selectedObject, value); }
+        public List<string> RoiIDs { get => roiIDs; set => SetProperty(ref roiIDs, value); }
 
         
 
@@ -52,6 +57,7 @@ namespace NKAPISample.ViewModels
 
         public MainViewModel()
         {
+            roiIDs = new List<string>();
             NodeView = new ComputingNodeView();
             ChannelView = new ChannelView();
             RoIView = new ROIView();
@@ -81,103 +87,6 @@ namespace NKAPISample.ViewModels
     }
 
 
-    /// <summary>
-    /// 이벤트 및 커맨드 
-    /// </summary>
-    public partial class MainViewModel
-    {
-        private DelegateCommand createCommand;
-        private DelegateCommand getCommand;
-        private DelegateCommand removeCommand;
-        public ICommand CreateCommand => createCommand ??= new DelegateCommand(Create);
-        public ICommand GetCommand => getCommand ??= new DelegateCommand(Get);
-        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(Remove);
-
-
-
-        private void Create()
-        {
-            SetResponseResult($"Send Request [Create {SelectedObject}]");
-            switch(SelectedObject)
-            {
-                case RequestObjectType.Node:
-                    _nodeVM.CreateObject();
-                    break;
-
-                case RequestObjectType.Channel:
-                    _channelVM.CreateObject();
-                    break;
-
-                case RequestObjectType.RoI:
-                    _roiVM.CreateObject();
-                    break;
-
-                case RequestObjectType.Schedule:
-                    _scheduleVM.CreateObject();
-                    break;
-
-                case RequestObjectType.VA:
-                    _vaVM.CreateObject();
-                    break;
-            }
-        }
-
-
-        private void Get()
-        {
-            SetResponseResult($"Send Request [Get {SelectedObject}]");
-            switch (SelectedObject)
-            {
-                case RequestObjectType.Node:
-                    _nodeVM.GetObject();
-                    break;
-
-                case RequestObjectType.Channel:
-                    _channelVM.GetObject();
-                    break;
-
-                case RequestObjectType.RoI:
-                    _roiVM.GetObject();
-                    break;
-
-                case RequestObjectType.Schedule:
-                    _scheduleVM.GetObject();
-                    break;
-
-                case RequestObjectType.VA:
-                    _vaVM.GetObject();
-                    break;
-            }
-        }
-
-
-        private void Remove()
-        {
-            SetResponseResult($"Send Request [Remove {SelectedObject}]");
-            switch (SelectedObject)
-            {
-                case RequestObjectType.Node:
-                    _nodeVM.RemoveObject();
-                    break;
-
-                case RequestObjectType.Channel:
-                    _channelVM.RemoveObject();
-                    break;
-
-                case RequestObjectType.RoI:
-                    _roiVM.RemoveObject();
-                    break;
-
-                case RequestObjectType.Schedule:
-                    _scheduleVM.RemoveObject();
-                    break;
-
-                case RequestObjectType.VA:
-                    _vaVM.RemoveObject();
-                    break;
-            }
-        }
-    }
 
 
 }

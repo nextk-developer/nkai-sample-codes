@@ -6,6 +6,18 @@
              xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Margin="0,5,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Content="VA" VerticalAlignment="Center" Name="lbGroupHeader5"/>
+        <Button Content="Start" Command="{Binding StartCommand}" Grid.Row="1" Grid.Column="1"/>
+        <Button Content="Reset" Command="{Binding ResetCommand}" Grid.Column="3" Grid.Row="1" />
+        <Button Content="Stop" Command="{Binding StopCommand}" Grid.Column="5" Grid.Row="1" />
     </Grid>
 </UserControl>

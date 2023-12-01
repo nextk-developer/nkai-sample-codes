@@ -16,6 +16,9 @@
         <Style TargetType="{x:Type Button}">
             <Setter Property="Height" Value="25"/>
         </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        </Style>
         <conv:BoolToEnumConverter x:Key="BoolToEnumConverter"/>
         <Style TargetType="Border">
             <Setter Property="BorderThickness" Value="1"/>
@@ -29,12 +32,12 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="460"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
         <!--#region Row 0 Left -->
@@ -50,79 +53,19 @@
                 </Grid.RowDefinitions>
                 <Label Content="Settings" Foreground="DodgerBlue" FontSize="14" FontWeight="Light"/>
                 <GroupBox Grid.Row="1" Header="Computing Node">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="35"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <UserControl Content="{Binding NodeView}" Grid.ColumnSpan="4"/>
-                        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1" Margin="0,0,1.5,0"/>
-                        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="2" Grid.Row="1" Margin="1.5,0,1.5,0"/>
-                        <Button Content="Remove" Command="{Binding RemoveCommand}"  Grid.Column="3" Grid.Row="1" Margin="1.5,0,0,0"/>
-                    </Grid>
+                        <UserControl Content="{Binding NodeView}" />
                 </GroupBox>
-                <GroupBox Grid.Row="2" Height="40">
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Channel" VerticalAlignment="Center"/>
-                        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1" Margin="0,0,1.5,0" Tag="Channel"/>
-                        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="2" Grid.Row="1" Margin="1.5,0,1.5,0"/>
-                        <Button Content="Remove" Command="{Binding RemoveCommand}"  Grid.Column="3" Grid.Row="1" Margin="1.5,0,0,0"/>
-                    </Grid>
+                <GroupBox Grid.Row="2" Header="Channel">
+                    <UserControl Content="{Binding ChannelView}"/>
                 </GroupBox>
-                <GroupBox Grid.Row="3" Height="40">
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Schedule" VerticalAlignment="Center"/>
-                        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1" Margin="0,0,1.5,0"/>
-                        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="2" Grid.Row="1" Margin="1.5,0,1.5,0"/>
-                        <Button Content="Remove" Command="{Binding RemoveCommand}"  Grid.Column="3" Grid.Row="1" Margin="1.5,0,0,0"/>
-                    </Grid>
+                <GroupBox Grid.Row="3" Header="Schedule">
+                    <UserControl Content="{Binding ScheduleView}"/>
                 </GroupBox>
-                <GroupBox Grid.Row="4" Height="40">
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="RoI" VerticalAlignment="Center"/>
-                        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1" Margin="0,0,1.5,0"/>
-                        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="2" Grid.Row="1" Margin="1.5,0,1.5,0"/>
-                        <Button Content="Remove" Command="{Binding RemoveCommand}"  Grid.Column="3" Grid.Row="1" Margin="1.5,0,0,0"/>
-                    </Grid>
+                <GroupBox Grid.Row="4" Header="RoI">
+                    <UserControl Content="{Binding RoIView}"/>
                 </GroupBox>
-                <GroupBox Grid.Row="5" Height="40">
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="VA" VerticalAlignment="Center"/>
-                        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1" Margin="0,0,1.5,0"/>
-                        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="2" Grid.Row="1" Margin="1.5,0,1.5,0"/>
-                        <Button Content="Remove" Command="{Binding RemoveCommand}"  Grid.Column="3" Grid.Row="1" Margin="1.5,0,0,0"/>
-                    </Grid>
+                <GroupBox Grid.Row="5" Header="VA">
+                    <UserControl Content="{Binding VAView}"/>
                 </GroupBox>
             </Grid>
         </Border>
@@ -139,9 +82,12 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="70" />
                 <RowDefinition />
-                <RowDefinition />
             </Grid.RowDefinitions>
-            <Border>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Border Grid.ColumnSpan="2">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -158,17 +104,17 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Label Content="Request API"/>
-                    <TextBox Text="{Binding RequestResult}" AcceptsReturn="True" VerticalAlignment="Stretch" Grid.Row="1"/>
+                    <TextBox Text="{Binding RequestResult}" AcceptsReturn="True" Grid.Row="1" />
                 </Grid>
             </Border>
-            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Row="2">
+            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Row="1" Grid.Column="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="125"/>
+                        <RowDefinition />
                     </Grid.RowDefinitions >
                     <Label Content="Response API / Log"/>
-                    <TextBox Text="{Binding ResponseResult}" ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Stretch" Grid.Row="1"/>
+                    <TextBox Text="{Binding ResponseResult}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" TextChanged="TextBox_TextChanged" />
                 </Grid>
             </Border>
         </Grid>

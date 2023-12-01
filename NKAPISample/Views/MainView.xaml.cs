@@ -23,5 +23,10 @@ namespace NKAPISample.Views
         {
             InitializeComponent();
         }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            (sender as TextBox)?.ScrollToEnd();
+        }
     }
 }

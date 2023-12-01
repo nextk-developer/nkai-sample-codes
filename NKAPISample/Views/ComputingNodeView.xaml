@@ -13,12 +13,22 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
-            <RowDefinition />
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <ui:LabelledTextBox Header="Host IP" Text="{Binding HostIP, Mode=TwoWay}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ui:LabelledTextBox Header="Host IP" Text="{Binding HostIP, Mode=TwoWay}" Grid.ColumnSpan="6"/>
         <!--<TextBox Text="{Binding HostIP}"/>-->
-        <ui:LabelledTextBox Header="Host Port" Text="{Binding HostPort}" Grid.Row="1"/>
-        <ui:LabelledTextBox Header="Node Name" Text="{Binding NodeName}" Grid.Row="2"/>
-        
+        <ui:LabelledTextBox Header="Host Port" Text="{Binding HostPort}" Grid.Row="1" Grid.ColumnSpan="6"/>
+        <ui:LabelledTextBox Header="Node Name" Text="{Binding NodeName}" Grid.Row="2" Grid.ColumnSpan="6"/>
+        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="3" Grid.Column="1" Tag="Node"/>
+        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="3" Tag="Node"/>
+        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="3" Tag="Node"/>
     </Grid>
 </UserControl>

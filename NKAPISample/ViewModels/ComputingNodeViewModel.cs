@@ -5,6 +5,7 @@ using NKAPIService.API;
 using NKAPIService.API.ComputingNode;
 using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace NKAPISample.ViewModels
 {
@@ -13,25 +14,31 @@ namespace NKAPISample.ViewModels
         private MainViewModel _mainVM;
         private string nodeName = "sample node";
         private string license = "license-license-license-license";
+        private DelegateCommand createCommand;
+        private DelegateCommand getCommand;
+        private DelegateCommand removeCommand;
 
         public string HostIP { get => _mainVM.HostIP; set => _mainVM.HostIP = value; }
         public string HostPort { get => _mainVM.HostPort; set => _mainVM.HostPort = value; }
         public string NodeName { get => nodeName; set => SetProperty(ref nodeName, value); }
         public string License { get => license; set => SetProperty(ref license, value); }
+        public ICommand CreateCommand => createCommand ??= new DelegateCommand(CreateNode);
+        public ICommand GetCommand => getCommand ??= new DelegateCommand(GetNode);
+        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveNode);
 
-
+        
 
         public ComputingNodeViewModel(MainViewModel mainViewModel)
         {
             _mainVM = mainViewModel;
         }
 
-
         /// <summary>
         /// RestAPI 서버에 노드 객체 데이터 생성
         /// </summary>
-        public void CreateObject()
+        public void CreateNode()
         {
+            _mainVM.SetResponseResult("Send Request [Create Node]");
             var requestNode = new RequestCreateComputingNode()
             {
                 Host = _mainVM.HostURL,
@@ -48,8 +55,9 @@ namespace NKAPISample.ViewModels
         /// <summary>
         /// RestAPI 서버를 통해 노드 정보 가져오기
         /// </summary>
-        public void GetObject()
+        public void GetNode()
         {
+            _mainVM.SetResponseResult("Send Request [Get Node]");
             var requestNode = new RequestGetComputingNode()
             {
                 
@@ -63,8 +71,9 @@ namespace NKAPISample.ViewModels
         /// <summary>
         /// RestAPI 서버에서 노드 정보 지우기
         /// </summary>
-        public void RemoveObject()
+        public void RemoveNode()
         {
+            _mainVM.SetResponseResult("Send Request [Remove Node]");
             var requestNode = new RequestRemoveComputingNode()
             {
                 NodeId= _mainVM.NodeID
@@ -77,7 +86,6 @@ namespace NKAPISample.ViewModels
         /// 노드 객체 생성 RestAPI POST URI 값 세팅
         /// </summary>
         /// <param name="node">생성된 RequestCreateComputingNode 객체</param>
-
         public void SetPostURL(IRequest node)
         {
             _mainVM.PostURL = $"{_mainVM.HostURL}{node.GetResource()}";
@@ -114,20 +122,20 @@ namespace NKAPISample.ViewModels
                 if (node is RequestCreateComputingNode)
                 {
                     var sampleNode = new ResponseCreateComputingNode();
-                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                    responseResult = $"Error: NO RESPONSE\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
                 else if(node is RequestGetComputingNode)
                 {
                     var sampleNode = new ResponseGetComputingNode();
-                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                    responseResult = $"Error: NO RESPONSE\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
                 else if(node is RequestRemoveComputingNode)
                 {
                     var sampleNode = new ResponseRemoveComputingNode();
-                    responseResult = $"No Response!! \n\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+                    responseResult = $"Error: NO RESPONSE\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
 
-                _mainVM.SetResponseResult(responseResult);
+                _mainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
             }
             else
             {
@@ -140,7 +148,7 @@ namespace NKAPISample.ViewModels
                     else if (response is ResponseGetComputingNode getNode)
                         _mainVM.NodeID = getNode.Node.NodeId;
                     else if (response is ResponseRemoveComputingNode)
-                        _mainVM.NodeID = "";
+                        _mainVM.NodeID = null;
 
                     _mainVM.SetResponseResult(responseResult);
                 }
