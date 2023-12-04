@@ -37,47 +37,4 @@
         <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" />
         <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5"/>
     </Grid>
-    <!--<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <ui:LabelledTextBox Header="Node ID" Text="{Binding NodeID}"/>
-        <ui:LabelledTextBox Header="Channel ID" Text="{Binding ChannelID}" Grid.Row="1"/>
-
-        <ui:LabelledTextBox Header="Channel Name" Text="{Binding ChannelName}" Grid.Row="2"/>
-
-        <ui:LabelledTextBox Header="Channel URL" Text="{Binding ChannelURL}" Grid.Row="3"/>
-
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Content="Channel Type" Width="120" Foreground="#666666" FontSize="11" VerticalAlignment="Center"/>
-            <ComboBox SelectedItem="{Binding ChannelType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={StaticResource ChannelTypeSource}}" Height="24" HorizontalAlignment="Stretch" Grid.Column="1"/>
-        </Grid>
-        <ui:LabelledTextBox Header="Channel Group Name" Text="{Binding ChannelGroupName}" Grid.Row="5"/>
-
-        <ui:LabelledTextBox Header="Channel Description" Text="{Binding ChannelDescription}" Grid.Row="6"/>
-
-        <Grid Grid.Row="7">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Content="Auto Timeout" Width="120" Foreground="#666666" FontSize="11" VerticalAlignment="Center"/>
-            <CheckBox IsChecked="{Binding IsAutoTimeout}" Grid.Column="1" VerticalAlignment="Center"/>
-            
-        </Grid>
-        
-
-    </Grid>-->
 </UserControl>

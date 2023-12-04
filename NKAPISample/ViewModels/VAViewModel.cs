@@ -29,6 +29,7 @@ namespace NKAPISample.ViewModels
 
         internal void StartVA()
         {
+            _mainVM.SetResponseResult("Send Request [Start VA]");
             var req = new RequestControl()
             {
                 NodeId = _mainVM.NodeID,
@@ -43,6 +44,7 @@ namespace NKAPISample.ViewModels
 
         internal void ResetVA()
         {
+            _mainVM.SetResponseResult("Send Request [Reset VA]");
             var req = new RequestControl()
             {
                 NodeId = _mainVM.NodeID,
@@ -58,6 +60,7 @@ namespace NKAPISample.ViewModels
 
         internal void StopVA()
         {
+            _mainVM.SetResponseResult("Send Request [Stop VA]");
             var req = new RequestControl()
             {
                 NodeId = _mainVM.NodeID,
@@ -109,12 +112,17 @@ namespace NKAPISample.ViewModels
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
                     _mainVM.SetResponseResult(responseResult);
+                    _mainVM.VAStarted?.Invoke();
                 }
                 else
                     _mainVM.SetResponseResult($"[{response.Code}] {response.Message}");
             }
         }
 
+        private void StartMetaService(string hostURL)
+        {
+            
+        }
 
         public async Task<ResponseBase> GetResponse(IRequest req)
         {

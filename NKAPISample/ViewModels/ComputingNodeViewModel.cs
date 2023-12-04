@@ -11,15 +11,15 @@ namespace NKAPISample.ViewModels
 {
     public partial class ComputingNodeViewModel : ObservableObject
     {
-        private MainViewModel _mainVM;
+        private MainViewModel _MainVM;
         private string nodeName = "sample node";
         private string license = "license-license-license-license";
         private DelegateCommand createCommand;
         private DelegateCommand getCommand;
         private DelegateCommand removeCommand;
 
-        public string HostIP { get => _mainVM.HostIP; set => _mainVM.HostIP = value; }
-        public string HostPort { get => _mainVM.HostPort; set => _mainVM.HostPort = value; }
+        public string HostIP { get => _MainVM.HostIP; set => _MainVM.HostIP = value; }
+        public string HostPort { get => _MainVM.HostPort; set => _MainVM.HostPort = value; }
         public string NodeName { get => nodeName; set => SetProperty(ref nodeName, value); }
         public string License { get => license; set => SetProperty(ref license, value); }
         public ICommand CreateCommand => createCommand ??= new DelegateCommand(CreateNode);
@@ -30,7 +30,7 @@ namespace NKAPISample.ViewModels
 
         public ComputingNodeViewModel(MainViewModel mainViewModel)
         {
-            _mainVM = mainViewModel;
+            _MainVM = mainViewModel;
         }
 
         /// <summary>
@@ -38,10 +38,10 @@ namespace NKAPISample.ViewModels
         /// </summary>
         public void CreateNode()
         {
-            _mainVM.SetResponseResult("Send Request [Create Node]");
+            _MainVM.SetResponseResult("Send Request [Create Node]");
             var requestNode = new RequestCreateComputingNode()
             {
-                Host = _mainVM.HostURL,
+                Host = _MainVM.HostURL,
                 NodeName = nodeName,
                 License = license
             } as RequestCreateComputingNode;
@@ -57,7 +57,7 @@ namespace NKAPISample.ViewModels
         /// </summary>
         public void GetNode()
         {
-            _mainVM.SetResponseResult("Send Request [Get Node]");
+            _MainVM.SetResponseResult("Send Request [Get Node]");
             var requestNode = new RequestGetComputingNode()
             {
                 
@@ -73,10 +73,10 @@ namespace NKAPISample.ViewModels
         /// </summary>
         public void RemoveNode()
         {
-            _mainVM.SetResponseResult("Send Request [Remove Node]");
+            _MainVM.SetResponseResult("Send Request [Remove Node]");
             var requestNode = new RequestRemoveComputingNode()
             {
-                NodeId= _mainVM.NodeID
+                NodeId= _MainVM.NodeID
             } as RequestRemoveComputingNode;
             SetPostURL(requestNode);
             SetRequestResult(requestNode);
@@ -88,7 +88,7 @@ namespace NKAPISample.ViewModels
         /// <param name="node">생성된 RequestCreateComputingNode 객체</param>
         public void SetPostURL(IRequest node)
         {
-            _mainVM.PostURL = $"{_mainVM.HostURL}{node.GetResource()}";
+            _MainVM.PostURL = $"{_MainVM.HostURL}{node.GetResource()}";
         }
 
 
@@ -99,11 +99,11 @@ namespace NKAPISample.ViewModels
         public void SetRequestResult(IRequest node)
         {
             if (node is RequestCreateComputingNode createNode)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(createNode, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(createNode, Formatting.Indented);
             else if (node is RequestGetComputingNode getNode)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(getNode, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(getNode, Formatting.Indented);
             else if (node is RequestRemoveComputingNode removeNode)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(removeNode, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(removeNode, Formatting.Indented);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace NKAPISample.ViewModels
                     responseResult = $"Error: NO RESPONSE\nResponse sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
 
-                _mainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
+                _MainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
             }
             else
             {
@@ -144,16 +144,16 @@ namespace NKAPISample.ViewModels
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
                     if (response is ResponseCreateComputingNode createNode)
-                        _mainVM.NodeID = createNode.NodeId;
+                        _MainVM.NodeID = createNode.NodeId;
                     else if (response is ResponseGetComputingNode getNode)
-                        _mainVM.NodeID = getNode.Node.NodeId;
+                        _MainVM.NodeID = getNode.Node.NodeId;
                     else if (response is ResponseRemoveComputingNode)
-                        _mainVM.NodeID = null;
+                        _MainVM.NodeID = null;
 
-                    _mainVM.SetResponseResult(responseResult);
+                    _MainVM.SetResponseResult(responseResult);
                 }
                 else
-                    _mainVM.SetResponseResult($"[{code}] {response.Message}");
+                    _MainVM.SetResponseResult($"[{code}] {response.Message}");
             }
 
 
@@ -162,7 +162,7 @@ namespace NKAPISample.ViewModels
         
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
-            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.HostURL));
 
             if (channel is RequestCreateComputingNode createReq)
                 return await service.Requset(createReq) as ResponseCreateComputingNode;

@@ -1,45 +1,40 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using FFmpeg.AutoGen;
 using Newtonsoft.Json;
 using NKAPIService;
 using NKAPIService.API;
 using NKAPIService.API.Channel;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace NKAPISample.ViewModels
 {
     public partial class ScheduleViewModel : ObservableObject
     {
-        private MainViewModel _mainVM;
-        private DelegateCommand addCommand;
-        private DelegateCommand getCommand;
-        private DelegateCommand removeCommand;
-        private List<DateTime> _selectedDates = new List<DateTime>();
+        private MainViewModel _MainVM;
+        private DelegateCommand _AddCommand;
+        private DelegateCommand _GetCommand;
+        private DelegateCommand _RemoveCommand;
 
-        public ICommand AddCommand => addCommand ??= new DelegateCommand(AddSchedule);
-        public ICommand GetCommand => getCommand ??= new DelegateCommand(GetSchedule);
-        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveSchedule);
+        public ICommand AddCommand => _AddCommand ??= new DelegateCommand(AddSchedule);
+        public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetSchedule);
+        public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveSchedule);
         public ScheduleViewModel(MainViewModel mainVM)
         {
-            _mainVM = mainVM;
+            _MainVM = mainVM;
             
         }
 
         internal void AddSchedule()
         {
-            _mainVM.SetResponseResult("Send Request [Add Schedule]");
-            List<List<int>> schedule = getDailySchedule();
+            _MainVM.SetResponseResult("Send Request [Add Schedule]");
+            List<List<int>> schedule = GetDailySchedule();
             var req = new RequestVaSchedule()
             {
-                NodeId = _mainVM.NodeID,
+                NodeId = _MainVM.NodeID,
                 Schedule = schedule,
-                ChannelID = _mainVM.ChannelID,
+                ChannelID = _MainVM.ChannelID,
                 Except = null
             };
 
@@ -50,7 +45,7 @@ namespace NKAPISample.ViewModels
 
         private void SetRequestResult(IRequest req)
         {
-            _mainVM.RequestResult = JsonConvert.SerializeObject(req as RequestVaSchedule, Formatting.Indented);
+            _MainVM.RequestResult = JsonConvert.SerializeObject(req as RequestVaSchedule, Formatting.Indented);
         }
 
         private async Task SetResponseResultAsync(RequestVaSchedule req)
@@ -71,17 +66,17 @@ namespace NKAPISample.ViewModels
                     var sampleNode = new ResponseVaSchedule();
                     responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
-                _mainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
+                _MainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
             }
             else
             {
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _mainVM.SetResponseResult(responseResult);
+                    _MainVM.SetResponseResult(responseResult);
                 }
                 else
-                    _mainVM.SetResponseResult($"[{response.Code}] {response.Message}");
+                    _MainVM.SetResponseResult($"[{response.Code}] {response.Message}");
             }
         }
 
@@ -89,7 +84,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest schedule)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.HostURL));
             if (schedule is RequestVaSchedule req)
                 return await service.Requset(req) as ResponseVaSchedule;
 
@@ -98,10 +93,10 @@ namespace NKAPISample.ViewModels
 
         private void SetPostURL(RequestVaSchedule req)
         {
-            _mainVM.PostURL = $"{_mainVM.HostURL}{req.GetResource()}";
+            _MainVM.PostURL = $"{_MainVM.HostURL}{req.GetResource()}";
         }
 
-        private List<List<int>> getDailySchedule()
+        private List<List<int>> GetDailySchedule()
         {
             List<List<int>> schedule = new();
             for (int i = 0; i < 7; i++)
@@ -118,11 +113,11 @@ namespace NKAPISample.ViewModels
 
         internal void GetSchedule()
         {
-            _mainVM.SetResponseResult("Send Request [Get Schedule]");
+            _MainVM.SetResponseResult("Send Request [Get Schedule]");
             var req = new RequestVaSchedule()
             {
-                NodeId = _mainVM.NodeID,
-                ChannelID = _mainVM.ChannelID,
+                NodeId = _MainVM.NodeID,
+                ChannelID = _MainVM.ChannelID,
             };
 
             SetPostURL(req);
@@ -133,7 +128,19 @@ namespace NKAPISample.ViewModels
 
         internal void RemoveSchedule()
         {
-            _mainVM.SetResponseResult("Send Request [Remove Schedule]");
+            _MainVM.SetResponseResult("Send Request [Remove Schedule]");
+            List<List<int>> schedule = new List<List<int>>();
+            var req = new RequestVaSchedule()
+            {
+                NodeId = _MainVM.NodeID,
+                Schedule = schedule,
+                ChannelID = _MainVM.ChannelID,
+                Except = null
+            };
+
+            SetPostURL(req);
+            SetRequestResult(req);
+            SetResponseResultAsync(req);
         }
     }
 }

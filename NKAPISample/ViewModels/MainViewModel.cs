@@ -1,8 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using NKAPISample.Properties;
 using NKAPISample.Views;
+using PredefineConstant.Enum.Analysis;
+using PredefineConstant.Enum.Analysis.EventType;
+using PredefineConstant.Extenstion;
 using SharpGen.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,18 +26,18 @@ namespace NKAPISample.ViewModels
         private string responseResult;
         private string nodeID;
         private string channelID;
-        private string channelURL = "rtsp://211.198.128.30/vod/line1";
+        private string channelURL = Resources.RTSPDefaultAddress;
         private List<string> roiIDs;
 
-        private RequestObjectType selectedObject;
-
-        
-        private ComputingNodeViewModel _nodeVM;
-        private ChannelViewModel _channelVM;
-        private ScheduleViewModel _scheduleVM;
-        private ROIViewModel _roiVM;
-        private VAViewModel _vaVM;
-        private StringBuilder _builder;
+        private ComputingNodeViewModel _NodeVM;
+        private ChannelViewModel _ChannelVM;
+        private ScheduleViewModel _ScheduleVM;
+        private ROIViewModel _RoiVM;
+        private VAViewModel _VaVM;
+        private VideoViewModel _VideoVM;
+        private DrawingViewModel _DrawingVM;
+        private StringBuilder _Builder;
+        internal Action VAStarted;
 
         public string HostIP { get => hostIP; set => SetProperty(ref hostIP, value); }
         public string HostPort { get => hostPort; set => SetProperty(ref hostPort, value); }
@@ -42,16 +48,17 @@ namespace NKAPISample.ViewModels
         public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
         public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
         public string ChannelURL { get => channelURL; set => SetProperty(ref channelURL, value); }
-        public RequestObjectType SelectedObject { get => selectedObject; set => SetProperty(ref selectedObject, value); }
         public List<string> RoiIDs { get => roiIDs; set => SetProperty(ref roiIDs, value); }
-
         
+
 
         public ComputingNodeView NodeView { get; private set; }
         public ChannelView ChannelView { get; private set; }
         public ScheduleView ScheduleView { get; private set; }
         public ROIView RoIView { get; private set; }
         public VAView VAView { get; private set; }
+        public VideoView VideoView { get; private set; }
+        public DrawingView DrawingView { get; private set; }
 
 
 
@@ -63,27 +70,41 @@ namespace NKAPISample.ViewModels
             RoIView = new ROIView();
             ScheduleView = new ScheduleView();
             VAView = new VAView();
+            VideoView = new VideoView();
+            DrawingView = new DrawingView();
 
-            _nodeVM = new ComputingNodeViewModel(this);
-            _channelVM = new ChannelViewModel(this);
-            _scheduleVM = new ScheduleViewModel(this);
-            _roiVM = new ROIViewModel(this);
-            _vaVM = new VAViewModel(this);
+            _NodeVM = new ComputingNodeViewModel(this);
+            _ChannelVM = new ChannelViewModel(this);
+            _ScheduleVM = new ScheduleViewModel(this);
+            _RoiVM = new ROIViewModel(this);
+            _VaVM = new VAViewModel(this);
+            _VideoVM = new VideoViewModel(this);
+            _DrawingVM = new DrawingViewModel(this);
 
-            _builder = new StringBuilder();
-            NodeView.DataContext = _nodeVM;
-            ChannelView.DataContext = _channelVM;
-            ScheduleView.DataContext = _scheduleVM;
-            RoIView.DataContext = _roiVM;
-            VAView.DataContext = _vaVM;
+            _Builder = new StringBuilder();
+            NodeView.DataContext = _NodeVM;
+            ChannelView.DataContext = _ChannelVM;
+            ScheduleView.DataContext = _ScheduleVM;
+            RoIView.DataContext = _RoiVM;
+            VAView.DataContext = _VaVM;
+            VideoView.DataContext = _VideoVM;
+            DrawingView.DataContext = _DrawingVM;
+            VAStarted += StartVA;
+        }
+
+        private void StartVA()
+        {
+            _VideoVM.Start();
         }
 
         internal void SetResponseResult(string responseResult)
         {
-            _builder.AppendLine(responseResult);
-            _builder.AppendLine($"---------- {DateTime.Now.ToString("G")}");
-            ResponseResult = _builder.ToString();
+            _Builder.AppendLine(responseResult);
+            _Builder.AppendLine($"---------- {DateTime.Now.ToString("G")}");
+            ResponseResult = _Builder.ToString();
         }
+
+
     }
 
 

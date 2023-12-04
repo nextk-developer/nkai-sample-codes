@@ -27,8 +27,8 @@
         <!--<TextBox Text="{Binding HostIP}"/>-->
         <ui:LabelledTextBox Header="Host Port" Text="{Binding HostPort}" Grid.Row="1" Grid.ColumnSpan="6"/>
         <ui:LabelledTextBox Header="Node Name" Text="{Binding NodeName}" Grid.Row="2" Grid.ColumnSpan="6"/>
-        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="3" Grid.Column="1" Tag="Node"/>
-        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="3" Tag="Node"/>
-        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="3" Tag="Node"/>
+        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="3" Grid.Column="1" />
+        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="3" />
+        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="3" />
     </Grid>
 </UserControl>
