@@ -23,20 +23,26 @@ namespace NKAPISample.ViewModels
     {
 
         private MainViewModel _MainVM;
+        private List<string> _RoiIDs;
         private DelegateCommand _CreateCommand;
         private DelegateCommand _GetCommand;
         private DelegateCommand _RemoveCommand;
         private DrawingType _DrawingType;
         private string _RemoveTargetID;
 
+        
+
         public DrawingType DrawingType { get => _DrawingType; set => SetProperty(ref _DrawingType, value); }
         public ICommand CreateCommand => _CreateCommand ??= new DelegateCommand(CreateROI);
         public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetROI);
         public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveROI);
 
+        public List<string> RoiIDs { get => _RoiIDs; }
+
         public ROIViewModel(MainViewModel mainViewModel)
         {
             _MainVM = mainViewModel;
+            _RoiIDs = new List<string>();
         }
 
 
@@ -54,8 +60,8 @@ namespace NKAPISample.ViewModels
 
             var roi = new RequestCreateROI()
             {
-                NodeId = _MainVM.NodeID,
-                ChannelID = _MainVM.ChannelID,
+                NodeId = _MainVM.Node.NodeId,
+                ChannelID = _MainVM.Channel.ChannelUid,
                 EventType = PredefineConstant.Enum.Analysis.EventType.IntegrationEventType.AllDetect,
                 RoiDots = listRoi,
                 RoiDotsSub = listRoi,
@@ -81,8 +87,8 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Get ROI]");
             var roi = new RequestListROI()
             {
-                NodeId = _MainVM.NodeID,
-                ChannelID=_MainVM.ChannelID
+                NodeId = _MainVM.Node.NodeId,
+                ChannelID=_MainVM.Channel.ChannelUid
             };
 
             SetPostURL(roi);
@@ -95,16 +101,16 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Remove ROI]");
             List<string> ids = new List<string>();
 
-            if (_MainVM.RoiIDs != null && _MainVM.RoiIDs.Count > 0)
+            if (_MainVM.RoI.RoiIDs != null && _MainVM.RoI.RoiIDs.Count > 0)
             {
-                _RemoveTargetID = _MainVM.RoiIDs[0];
-                ids.Add(_MainVM.RoiIDs[0]);
+                _RemoveTargetID = _MainVM.RoI.RoiIDs[0];
+                ids.Add(_MainVM.RoI.RoiIDs[0]);
             }
 
             var roi = new RequestRemoveROI()
             {
-                NodeId = _MainVM.NodeID,
-                ChannelID = _MainVM.ChannelID,
+                NodeId = _MainVM.Node.NodeId,
+                ChannelID = _MainVM.Channel.ChannelUid,
                 ROIIds = ids
             };
 
@@ -116,7 +122,7 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest req)
         {
-            _MainVM.PostURL = $"{_MainVM.HostURL}{req.GetResource()}";
+            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{req.GetResource()}");
         }
 
         public void SetRequestResult(IRequest req)
@@ -137,21 +143,21 @@ namespace NKAPISample.ViewModels
             {
                 if (response is ResponseCreateROI createRoi)
                 {
-                    if (_MainVM.RoiIDs == null)
-                        _MainVM.RoiIDs = new List<string>();
+                    if (_RoiIDs == null)
+                        _RoiIDs = new List<string>();
 
-                    _MainVM.RoiIDs.Add(createRoi.ROIID);
+                    _MainVM.RoI.RoiIDs.Add(createRoi.ROIID);
                 }
                 else if (response is ResponseListROI listRoi)
                 {
                     var items = listRoi.RoiItems;
                     if (items != null)
-                        _MainVM.RoiIDs = items.Select(x => x.RoiId).ToList();
+                        _RoiIDs = items.Select(x => x.RoiId).ToList();
                 }
                 else if (response is ResponseBase)
                 {
                     if (_MainVM != null)
-                        _MainVM.RoiIDs.Remove(_RemoveTargetID);
+                        _RoiIDs.Remove(_RemoveTargetID);
                 }
 
                 string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
@@ -161,11 +167,11 @@ namespace NKAPISample.ViewModels
             {
                 string responseResult = ""; 
 
-                if (string.IsNullOrEmpty(_MainVM.NodeID))
+                if (string.IsNullOrEmpty(_MainVM.Node.NodeId))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\n";
-                else if (string.IsNullOrEmpty(_MainVM.ChannelID))
+                else if (string.IsNullOrEmpty(_MainVM.Channel.ChannelUid))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\n";
-                else if (_MainVM.RoiIDs == null || _MainVM.RoiIDs.Count == 0)
+                else if (_RoiIDs == null || _RoiIDs.Count == 0)
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_ROI_ID}\n";
                 else if (response == null)
                     responseResult = "Error: NO RESPONSE\n";
@@ -194,7 +200,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest req)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
 
             if (req is RequestCreateROI createReq)
                 return await service.Requset(createReq) as ResponseCreateROI;

@@ -24,7 +24,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <ui:LabelledTextBox Header="Host IP" Text="{Binding HostIP, Mode=TwoWay}" Grid.ColumnSpan="6"/>
-        <!--<TextBox Text="{Binding HostIP}"/>-->
         <ui:LabelledTextBox Header="Host Port" Text="{Binding HostPort}" Grid.Row="1" Grid.ColumnSpan="6"/>
         <ui:LabelledTextBox Header="Node Name" Text="{Binding NodeName}" Grid.Row="2" Grid.ColumnSpan="6"/>
         <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="3" Grid.Column="1" />

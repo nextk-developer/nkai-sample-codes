@@ -32,9 +32,9 @@ namespace NKAPISample.ViewModels
             List<List<int>> schedule = GetDailySchedule();
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.NodeID,
+                NodeId = _MainVM.Node.NodeId,
                 Schedule = schedule,
-                ChannelID = _MainVM.ChannelID,
+                ChannelID = _MainVM.Channel.ChannelUid,
                 Except = null
             };
 
@@ -84,7 +84,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest schedule)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
             if (schedule is RequestVaSchedule req)
                 return await service.Requset(req) as ResponseVaSchedule;
 
@@ -93,7 +93,7 @@ namespace NKAPISample.ViewModels
 
         private void SetPostURL(RequestVaSchedule req)
         {
-            _MainVM.PostURL = $"{_MainVM.HostURL}{req.GetResource()}";
+            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{req.GetResource()}");
         }
 
         private List<List<int>> GetDailySchedule()
@@ -116,8 +116,8 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Get Schedule]");
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.NodeID,
-                ChannelID = _MainVM.ChannelID,
+                NodeId = _MainVM.Node.NodeId,
+                ChannelID = _MainVM.Channel.ChannelUid,
             };
 
             SetPostURL(req);
@@ -132,9 +132,9 @@ namespace NKAPISample.ViewModels
             List<List<int>> schedule = new List<List<int>>();
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.NodeID,
+                NodeId = _MainVM.Node.NodeId,
                 Schedule = schedule,
-                ChannelID = _MainVM.ChannelID,
+                ChannelID = _MainVM.Channel.ChannelUid,
                 Except = null
             };
 

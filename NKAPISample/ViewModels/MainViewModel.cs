@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using NKAPISample.Models;
 using NKAPISample.Properties;
 using NKAPISample.Views;
 using PredefineConstant.Enum.Analysis;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,39 +19,32 @@ namespace NKAPISample.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        
-        private string hostURL;
-        private string hostIP = "127.0.0.1";
-        private string hostPort = "8880";
-        private string postURL;
+
         private string requestResult;
         private string responseResult;
-        private string nodeID;
-        private string channelID;
-        private string channelURL = Resources.RTSPDefaultAddress;
-        private List<string> roiIDs;
 
         private ComputingNodeViewModel _NodeVM;
+
         private ChannelViewModel _ChannelVM;
+
         private ScheduleViewModel _ScheduleVM;
         private ROIViewModel _RoiVM;
+        public ROIViewModel RoI { get => _RoiVM; } 
         private VAViewModel _VaVM;
         private VideoViewModel _VideoVM;
         private DrawingViewModel _DrawingVM;
         private StringBuilder _Builder;
         internal Action VAStarted;
+        internal Action VAStoped;
+        private string _PostURL;
 
-        public string HostIP { get => hostIP; set => SetProperty(ref hostIP, value); }
-        public string HostPort { get => hostPort; set => SetProperty(ref hostPort, value); }
-        public string HostURL { get => $"http://{hostIP}:{hostPort}"; }
-        public string PostURL { get => postURL; set => SetProperty(ref postURL, value); }
+        public NodeModel Node { get; set; }
+        public ChannelModel Channel { get; set; }
+        
+
         public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
         public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
-        public string NodeID { get => nodeID; set => SetProperty(ref nodeID, value); }
-        public string ChannelID { get => channelID; set => SetProperty(ref channelID, value); }
-        public string ChannelURL { get => channelURL; set => SetProperty(ref channelURL, value); }
-        public List<string> RoiIDs { get => roiIDs; set => SetProperty(ref roiIDs, value); }
-        
+        public string PostURL { get => _PostURL; set => SetProperty(ref _PostURL, value); }
 
 
         public ComputingNodeView NodeView { get; private set; }
@@ -64,7 +59,6 @@ namespace NKAPISample.ViewModels
 
         public MainViewModel()
         {
-            roiIDs = new List<string>();
             NodeView = new ComputingNodeView();
             ChannelView = new ChannelView();
             RoIView = new ROIView();
@@ -73,8 +67,12 @@ namespace NKAPISample.ViewModels
             VideoView = new VideoView();
             DrawingView = new DrawingView();
 
-            _NodeVM = new ComputingNodeViewModel(this);
-            _ChannelVM = new ChannelViewModel(this);
+            NodeModel node = new();
+            ChannelModel channel = new(node);
+            Node = node;
+            Channel = channel;
+            _NodeVM = new ComputingNodeViewModel(this, node) ;
+            _ChannelVM = new ChannelViewModel(this, channel);
             _ScheduleVM = new ScheduleViewModel(this);
             _RoiVM = new ROIViewModel(this);
             _VaVM = new VAViewModel(this);
@@ -90,11 +88,17 @@ namespace NKAPISample.ViewModels
             VideoView.DataContext = _VideoVM;
             DrawingView.DataContext = _DrawingVM;
             VAStarted += StartVA;
+            VAStoped += StopVA;
+        }
+
+        private void StopVA()
+        {
+            _VideoVM.Stop();
         }
 
         private void StartVA()
         {
-            _VideoVM.Start();
+            _VideoVM.Start(Channel.MediaUrl);
         }
 
         internal void SetResponseResult(string responseResult)
@@ -104,7 +108,36 @@ namespace NKAPISample.ViewModels
             ResponseResult = _Builder.ToString();
         }
 
+        internal void SetPostURL(string v)
+        {
+            PostURL = v;
+        }
 
+        internal void ClearChannel()
+        {
+            Channel.Clear();
+        }
+
+        internal void UpdateChannel(string channelId, string mediaServerUrl, string mediaServerUrlSub)
+        {
+            Channel.Update(channelId, mediaServerUrl, mediaServerUrlSub);
+        }
+
+        internal void ClearNode()
+        {
+            Node.Clear();
+        }
+
+        internal void UpdateNode(string nodeId, string hostIP, string hostPort, string nodeName, string license)
+        {
+            Node.Update(nodeId, hostIP, hostPort, nodeName, license);
+        }
+
+        internal void Close()
+        {
+            //_ChannelVM.RemoveChannel();
+            //_NodeVM.RemoveNode();
+        }
     }
 
 

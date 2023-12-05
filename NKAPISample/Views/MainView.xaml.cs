@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NKAPISample.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,12 @@ namespace NKAPISample.Views
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             (sender as TextBox)?.ScrollToEnd();
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as MainViewModel;
+            vm.Close();
         }
     }
 }

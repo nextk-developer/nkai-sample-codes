@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using NKAPISample.Models;
+using NKAPISample.Properties;
 using NKAPIService;
 using NKAPIService.API;
 using NKAPIService.API.Channel;
@@ -13,35 +15,38 @@ namespace NKAPISample.ViewModels
     public partial class ChannelViewModel : ObservableObject
     {
         private NKAPIService.API.Channel.Models.InputType channelType = 0;
-        private MainViewModel _mainVM;
+        private MainViewModel _MainVM;
         private DelegateCommand createCommand;
         private DelegateCommand getCommand;
         private DelegateCommand removeCommand;
+        private string _ChannelURL;
 
         public NKAPIService.API.Channel.Models.InputType ChannelType { get => channelType; set => SetProperty(ref channelType, value); }
         public ICommand CreateCommand => createCommand ??= new DelegateCommand(CreateChannel);
         public ICommand GetCommand => getCommand ??= new DelegateCommand(GetChannel);
         public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveChannel);
 
-        public ChannelViewModel(MainViewModel mainViewModel)
+        public string ChannelURL { get => _ChannelURL; set => SetProperty(ref _ChannelURL, value); }
+        public ChannelViewModel(MainViewModel mainViewModel, ChannelModel channel)
         {
-            _mainVM = mainViewModel;
+            _MainVM = mainViewModel;
+            ChannelURL = channel.InputUrl;
         }
 
 
         public void CreateChannel()
         {
-            _mainVM.SetResponseResult("Send Request [Create Channel]");
+            _MainVM.SetResponseResult("Send Request [Create Channel]");
             var channel = new RequestRegisterChannel()
             {
-                NodeId = _mainVM.NodeID,
+                NodeId = _MainVM.Node.NodeId,
                 ChannelId = "",
                 InputType = channelType,
                 GroupName = "NextK Group",
                 Description = "NextK",
                 ChannelName = "NextK Channel",
-                InputUrl = _mainVM.ChannelURL,
-                InputUrlSub = _mainVM.ChannelURL,
+                InputUrl = ChannelURL,
+                InputUrlSub = ChannelURL,
                 AutoTimeout = true
             };
 
@@ -53,10 +58,10 @@ namespace NKAPISample.ViewModels
 
         public void GetChannel()
         {
-            _mainVM.SetResponseResult("Send Request [Get Channel]");
+            _MainVM.SetResponseResult("Send Request [Get Channel]");
             var requestChannel = new RequestListChannels()
             {
-                NodeId = _mainVM.NodeID
+                NodeId = _MainVM.Node.NodeId
             } as RequestListChannels;
             SetPostURL(requestChannel);
             SetRequestResult(requestChannel);
@@ -65,11 +70,11 @@ namespace NKAPISample.ViewModels
 
         public void RemoveChannel()
         {
-            _mainVM.SetResponseResult("Send Request [Remove Channel]");
+            _MainVM.SetResponseResult("Send Request [Remove Channel]");
             var requestChannel = new RequestRemoveChannel()
             {
-                NodeId = _mainVM.NodeID,
-                ChannelId = _mainVM.ChannelID
+                NodeId = _MainVM.Node.NodeId,
+                ChannelId = _MainVM.Channel.ChannelUid
             } as RequestRemoveChannel;
             SetPostURL(requestChannel);
             SetRequestResult(requestChannel);
@@ -79,7 +84,7 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest channel)
         {
-            _mainVM.PostURL = $"{_mainVM.HostURL}{channel.GetResource()}";
+            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{channel.GetResource()}");
         }
 
 
@@ -90,11 +95,11 @@ namespace NKAPISample.ViewModels
         public void SetRequestResult(IRequest channel)
         {
             if (channel is RequestRegisterChannel createReq)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
             else if (channel is RequestListChannels getReq)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
             else if (channel is RequestRemoveChannel removeReq)
-                _mainVM.RequestResult = JsonConvert.SerializeObject(removeReq, Formatting.Indented);
+                _MainVM.RequestResult = JsonConvert.SerializeObject(removeReq, Formatting.Indented);
         }
 
         /// <summary>
@@ -130,7 +135,7 @@ namespace NKAPISample.ViewModels
                     var sampleNode = new ResponseRemoveChannel();
                     responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
-                _mainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
+                _MainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
             }
             else
             {
@@ -139,28 +144,30 @@ namespace NKAPISample.ViewModels
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
                     if (response is ResponseRegisterChannel createChannel)
                     {
-                        _mainVM.ChannelID = createChannel.ChannelId;
+                        _MainVM.UpdateChannel(createChannel.ChannelId, createChannel.MediaServerUrl, createChannel.MediaServerUrlSub);
                     }
                     else if (response is ResponseListChannels listChannel)
                     {
                         var item = listChannel.ChannelItems.FindLast(ch => !string.IsNullOrEmpty(ch.ChannelId));
                         if (item != null)
-                            _mainVM.ChannelID = item.ChannelId;
+                        {
+                            _MainVM.UpdateChannel(item.ChannelId, item.MediaServerUrl, item.MediaServerUrlSub);
+                        }
                     }
                     else if (response is ResponseRemoveChannel)
-                        _mainVM.ChannelID = "";
+                        _MainVM.ClearChannel();
 
-                    _mainVM.SetResponseResult(responseResult);
+                    _MainVM.SetResponseResult(responseResult);
                 }
                 else
-                    _mainVM.SetResponseResult($"[{response.Code}] {response.Message}");
+                    _MainVM.SetResponseResult($"[{response.Code}] {response.Message}");
             }
         }
 
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
             
-            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
 
             if (channel is RequestRegisterChannel createReq)
                 return await service.Requset(createReq) as ResponseRegisterChannel;

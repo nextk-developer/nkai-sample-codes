@@ -8,20 +8,9 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.Resources>
-        <ObjectDataProvider x:Key="ChannelTypeSource"
-                        ObjectType="{x:Type sys:Enum}"
-                        MethodName="GetNames">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="channelAPI:InputType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <Style TargetType="{x:Type ui:LabelledTextBox}">
-            <Setter Property="HeaderWidth" Value="120"/>
-        </Style>
-    </UserControl.Resources>
     <Grid Margin="0,5,0,0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -32,9 +21,9 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Content="Channel" VerticalAlignment="Center"/>
-        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Column="1" />
-        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" />
-        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5"/>
+        <ui:LabelledTextBox Header="Channel URL" Text="{Binding ChannelURL}" Grid.ColumnSpan="6"/>
+        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Column="1" Grid.Row="1"/>
+        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="1"/>
+        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="1"/>
     </Grid>
 </UserControl>

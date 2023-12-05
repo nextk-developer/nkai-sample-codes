@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
-    xmlns:conv="clr-namespace:NKAPISample.Views.Converter"
+    xmlns:conv="clr-namespace:NKAPISample.Views.Converter" Unloaded="UserControl_Unloaded"
     mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
         <ViewModels:MainViewModel/>
@@ -17,7 +17,11 @@
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         </Style>
-    
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="DodgerBlue"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
         <conv:BoolToEnumConverter x:Key="BoolToEnumConverter"/>
         <Style TargetType="Border">
             <Setter Property="BorderThickness" Value="1"/>
@@ -31,8 +35,9 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="460"/>
-            <RowDefinition />
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
@@ -41,32 +46,34 @@
 
         <!--#region Row 0 Left -->
         <Border>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Label Content="Settings" Foreground="DodgerBlue" FontSize="14" FontWeight="Light"/>
-                <GroupBox Grid.Row="1" Header="Computing Node">
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Settings" />
+                    <GroupBox Grid.Row="1" Header="Computing Node">
                         <UserControl Content="{Binding NodeView}" />
-                </GroupBox>
-                <GroupBox Grid.Row="2" Header="Channel">
-                    <UserControl Content="{Binding ChannelView}"/>
-                </GroupBox>
-                <GroupBox Grid.Row="3" Header="Schedule">
-                    <UserControl Content="{Binding ScheduleView}"/>
-                </GroupBox>
-                <GroupBox Grid.Row="4" Header="RoI">
-                    <UserControl Content="{Binding RoIView}"/>
-                </GroupBox>
-                <GroupBox Grid.Row="5" Header="VA">
-                    <UserControl Content="{Binding VAView}"/>
-                </GroupBox>
-            </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="2" Header="Channel">
+                        <UserControl Content="{Binding ChannelView}"/>
+                    </GroupBox>
+                    <GroupBox Grid.Row="3" Header="Schedule">
+                        <UserControl Content="{Binding ScheduleView}"/>
+                    </GroupBox>
+                    <GroupBox Grid.Row="4" Header="RoI">
+                        <UserControl Content="{Binding RoIView}"/>
+                    </GroupBox>
+                    <GroupBox Grid.Row="5" Header="VA">
+                        <UserControl Content="{Binding VAView}"/>
+                    </GroupBox>
+                </Grid>
+            </ScrollViewer>
         </Border>
         <!--#endregion-->
         <!--#region Row 0 Right -->
@@ -118,19 +125,21 @@
             </Border>
         </Grid>
         <!--#endregion-->
+        <GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="Auto" HorizontalAlignment="Stretch" Background="White"/>
         <!--#region Row 1 Left -->
-        <Border Grid.Row="1" BorderThickness="1" BorderBrush="LightGray">
+        <Border Grid.Row="2" BorderThickness="1" BorderBrush="LightGray">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Label Content="Video Analysis Setting"/>
-                <UserControl Content="{Binding DrawingView}" Grid.Row="1"/>
+                <Label Content="Streaming"/>
+                <UserControl Content="{Binding VideoView}" Grid.Row="1"/>
+       
             </Grid>
         </Border>
         <!--#endregion-->
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="2" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -141,8 +150,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Streaming"/>
-                    <UserControl Content="{Binding VideoView}" Grid.Row="1"/>
+                    <Label Content="Metadata Log"/>
+                    <TextBox Grid.Row="1" VerticalAlignment="Stretch"/>
                 </Grid>
             </Border>
             <Border BorderThickness="1" BorderBrush="LightGray" Grid.Column="1">
@@ -151,8 +160,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Metadata Log"/>
-                    <TextBox Grid.Row="1" VerticalAlignment="Stretch"/>
+             
+                    <Label Content="Video Analysis Setting"/>
+                    <UserControl Content="{Binding DrawingView}" Grid.Row="1"/>
                 </Grid>
             </Border>
         </Grid>
