@@ -4,12 +4,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="clr-namespace:NKAPISample.Views"
     xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
     xmlns:conv="clr-namespace:NKAPISample.Views.Converter" Unloaded="UserControl_Unloaded"
     mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.DataContext>
-        <ViewModels:MainViewModel/>
-    </UserControl.DataContext>
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Height" Value="25"/>
@@ -58,19 +56,19 @@
                     </Grid.RowDefinitions>
                     <Label Content="Settings" />
                     <GroupBox Grid.Row="1" Header="Computing Node">
-                        <UserControl Content="{Binding NodeView}" />
+                        <view:ComputingNodeView DataContext="{Binding NodeVM}"/>
                     </GroupBox>
                     <GroupBox Grid.Row="2" Header="Channel">
-                        <UserControl Content="{Binding ChannelView}"/>
+                        <view:ChannelView DataContext="{Binding ChannelVM}"/>
                     </GroupBox>
                     <GroupBox Grid.Row="3" Header="Schedule">
-                        <UserControl Content="{Binding ScheduleView}"/>
+                        <view:ScheduleView DataContext="{Binding ScheduleVM}"/>
                     </GroupBox>
                     <GroupBox Grid.Row="4" Header="RoI">
-                        <UserControl Content="{Binding RoIView}"/>
+                        <view:ROIView DataContext="{Binding ROIVM}"/>
                     </GroupBox>
                     <GroupBox Grid.Row="5" Header="VA">
-                        <UserControl Content="{Binding VAView}"/>
+                        <view:VAView DataContext="{Binding VAVM}"/>
                     </GroupBox>
                 </Grid>
             </ScrollViewer>
@@ -120,7 +118,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions >
                     <Label Content="Response API / Log"/>
-                    <TextBox Text="{Binding ResponseResult}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" TextChanged="TextBox_TextChanged" />
+                    <TextBox Text="{Binding ResponseResult, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" TextChanged="TextBox_TextChanged" />
                 </Grid>
             </Border>
         </Grid>
@@ -134,8 +132,8 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <Label Content="Streaming"/>
-                <UserControl Content="{Binding VideoView}" Grid.Row="1"/>
-       
+                <view:VideoView Grid.Row="1" DataContext="{Binding VideoVM}"/>
+
             </Grid>
         </Border>
         <!--#endregion-->
@@ -162,7 +160,7 @@
                     </Grid.RowDefinitions>
              
                     <Label Content="Video Analysis Setting"/>
-                    <UserControl Content="{Binding DrawingView}" Grid.Row="1"/>
+                    <view:DrawingView DataContext="{Binding DrawingVM}"/>
                 </Grid>
             </Border>
         </Grid>

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using NKAPIService;
 using NKAPIService.API;
@@ -39,9 +40,9 @@ namespace NKAPISample.ViewModels
 
         public List<string> RoiIDs { get => _RoiIDs; }
 
-        public ROIViewModel(MainViewModel mainViewModel)
+        public ROIViewModel()
         {
-            _MainVM = mainViewModel;
+            _MainVM = Ioc.Default.GetService<MainViewModel>();
             _RoiIDs = new List<string>();
         }
 
@@ -60,8 +61,8 @@ namespace NKAPISample.ViewModels
 
             var roi = new RequestCreateROI()
             {
-                NodeId = _MainVM.Node.NodeId,
-                ChannelID = _MainVM.Channel.ChannelUid,
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
                 EventType = PredefineConstant.Enum.Analysis.EventType.IntegrationEventType.AllDetect,
                 RoiDots = listRoi,
                 RoiDotsSub = listRoi,
@@ -87,8 +88,8 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Get ROI]");
             var roi = new RequestListROI()
             {
-                NodeId = _MainVM.Node.NodeId,
-                ChannelID=_MainVM.Channel.ChannelUid
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelID=_MainVM.CurrentNode.CurrentChannel.ChannelUid
             };
 
             SetPostURL(roi);
@@ -101,16 +102,16 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Remove ROI]");
             List<string> ids = new List<string>();
 
-            if (_MainVM.RoI.RoiIDs != null && _MainVM.RoI.RoiIDs.Count > 0)
+            if (_RoiIDs != null && _RoiIDs.Count > 0)
             {
-                _RemoveTargetID = _MainVM.RoI.RoiIDs[0];
-                ids.Add(_MainVM.RoI.RoiIDs[0]);
+                _RemoveTargetID = _RoiIDs[0];
+                ids.Add(_RoiIDs[0]);
             }
 
             var roi = new RequestRemoveROI()
             {
-                NodeId = _MainVM.Node.NodeId,
-                ChannelID = _MainVM.Channel.ChannelUid,
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
                 ROIIds = ids
             };
 
@@ -122,7 +123,7 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest req)
         {
-            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{req.GetResource()}");
+            _MainVM.SetPostURL($"{_MainVM.CurrentNode.HostURL}{req.GetResource()}");
         }
 
         public void SetRequestResult(IRequest req)
@@ -146,7 +147,7 @@ namespace NKAPISample.ViewModels
                     if (_RoiIDs == null)
                         _RoiIDs = new List<string>();
 
-                    _MainVM.RoI.RoiIDs.Add(createRoi.ROIID);
+                    _RoiIDs.Add(createRoi.ROIID);
                 }
                 else if (response is ResponseListROI listRoi)
                 {
@@ -167,9 +168,9 @@ namespace NKAPISample.ViewModels
             {
                 string responseResult = ""; 
 
-                if (string.IsNullOrEmpty(_MainVM.Node.NodeId))
+                if (string.IsNullOrEmpty(_MainVM.CurrentNode.NodeId))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\n";
-                else if (string.IsNullOrEmpty(_MainVM.Channel.ChannelUid))
+                else if (string.IsNullOrEmpty(_MainVM.CurrentNode.CurrentChannel.ChannelUid))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\n";
                 else if (_RoiIDs == null || _RoiIDs.Count == 0)
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_ROI_ID}\n";
@@ -200,7 +201,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest req)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
 
             if (req is RequestCreateROI createReq)
                 return await service.Requset(createReq) as ResponseCreateROI;

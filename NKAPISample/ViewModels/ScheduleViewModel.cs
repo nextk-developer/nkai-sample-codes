@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using NKAPIService;
 using NKAPIService.API;
@@ -20,10 +21,10 @@ namespace NKAPISample.ViewModels
         public ICommand AddCommand => _AddCommand ??= new DelegateCommand(AddSchedule);
         public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetSchedule);
         public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveSchedule);
-        public ScheduleViewModel(MainViewModel mainVM)
+        public ScheduleViewModel()
         {
-            _MainVM = mainVM;
-            
+            _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
+
         }
 
         internal void AddSchedule()
@@ -32,9 +33,9 @@ namespace NKAPISample.ViewModels
             List<List<int>> schedule = GetDailySchedule();
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.Node.NodeId,
+                NodeId = _MainVM.CurrentNode.NodeId,
                 Schedule = schedule,
-                ChannelID = _MainVM.Channel.ChannelUid,
+                ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
                 Except = null
             };
 
@@ -50,41 +51,48 @@ namespace NKAPISample.ViewModels
 
         private async Task SetResponseResultAsync(RequestVaSchedule req)
         {
-            ResponseBase? response = await GetResponse(req);
-
-            if (response == null || response.Code != ErrorCode.SUCCESS) // 서버 응답 없을 경우 샘플 표출.
+            string responseResult = "";
+            // node or channel id null일때 get request 보내면 서버 버그 있어서 아래와 같이 조건문을 통해 예외 처리
+            if (_MainVM.CurrentNode == null || string.IsNullOrEmpty(_MainVM.CurrentNode.NodeId))
             {
-                string responseResult = "";
-                if (response == null)
-                    responseResult = "Error: NO RESPONSE\n";
-                else
-                    responseResult = $"Error: {response.Code}\n";
-
-
-                if (req is RequestVaSchedule)
-                {
-                    var sampleNode = new ResponseVaSchedule();
-                    responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
-                }
-                _MainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
+                responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\nPlease get or create computing node first.\n";
+                SetErrorResponseResult(ref responseResult);
+            }
+            else if (_MainVM.CurrentNode.CurrentChannel == null || string.IsNullOrEmpty(_MainVM.CurrentNode.CurrentChannel.ChannelUid))
+            {
+                responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\nPlease get or create channel first.\n";
+                SetErrorResponseResult(ref responseResult);
             }
             else
             {
-                if (response.Code == ErrorCode.SUCCESS)
+                ResponseBase? response = await GetResponse(req);
+                
+                if (response == null || response.Code != ErrorCode.SUCCESS) // 서버 응답 없을 경우 샘플 표출.
                 {
-                    string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _MainVM.SetResponseResult(responseResult);
+                    if (response == null)
+                        responseResult = "Error: NO RESPONSE\n";
+                    else
+                        responseResult = $"Error: {response.Code}\n";
+
+                    SetErrorResponseResult(ref responseResult);
+                    
                 }
                 else
-                    _MainVM.SetResponseResult($"[{response.Code}] {response.Message}");
+                    responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);                
             }
+            _MainVM.SetResponseResult(responseResult);
         }
 
+        private void SetErrorResponseResult(ref string responseResult)
+        {
+            var sampleNode = new ResponseVaSchedule();
+            responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
+        }
 
         public async Task<ResponseBase> GetResponse(IRequest schedule)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
             if (schedule is RequestVaSchedule req)
                 return await service.Requset(req) as ResponseVaSchedule;
 
@@ -93,15 +101,18 @@ namespace NKAPISample.ViewModels
 
         private void SetPostURL(RequestVaSchedule req)
         {
-            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{req.GetResource()}");
+            _MainVM.SetPostURL($"{_MainVM.CurrentNode.HostURL}{req.GetResource()}");
         }
 
-        private List<List<int>> GetDailySchedule()
+        private List<List<int>> GetDailySchedule(bool isRemove = false)
         {
             List<List<int>> schedule = new();
             for (int i = 0; i < 7; i++)
             {
                 schedule.Add(new List<int> { });
+                if (isRemove)
+                    continue;
+
                 for (int j = 0; j < 24; j++)
                 {
                     schedule[i].Add(j);
@@ -116,8 +127,8 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Get Schedule]");
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.Node.NodeId,
-                ChannelID = _MainVM.Channel.ChannelUid,
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
             };
 
             SetPostURL(req);
@@ -129,13 +140,13 @@ namespace NKAPISample.ViewModels
         internal void RemoveSchedule()
         {
             _MainVM.SetResponseResult("Send Request [Remove Schedule]");
-            List<List<int>> schedule = new List<List<int>>();
+            List<List<int>> schedule = GetDailySchedule(true);
             var req = new RequestVaSchedule()
             {
-                NodeId = _MainVM.Node.NodeId,
+                NodeId = _MainVM.CurrentNode.NodeId,
                 Schedule = schedule,
-                ChannelID = _MainVM.Channel.ChannelUid,
-                Except = null
+                ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
+                Except = new()
             };
 
             SetPostURL(req);

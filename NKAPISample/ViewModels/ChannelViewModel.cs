@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using NKAPISample.Models;
-using NKAPISample.Properties;
 using NKAPIService;
 using NKAPIService.API;
 using NKAPIService.API.Channel;
-using NKAPIService.API.ComputingNode;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -27,19 +26,19 @@ namespace NKAPISample.ViewModels
         public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveChannel);
 
         public string ChannelURL { get => _ChannelURL; set => SetProperty(ref _ChannelURL, value); }
-        public ChannelViewModel(MainViewModel mainViewModel, ChannelModel channel)
-        {
-            _MainVM = mainViewModel;
-            ChannelURL = channel.InputUrl;
-        }
 
+        public ChannelViewModel()
+        {
+            _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
+            ChannelURL = _MainVM.CurrentNode.CurrentChannel.InputUrl;
+        }
 
         public void CreateChannel()
         {
             _MainVM.SetResponseResult("Send Request [Create Channel]");
             var channel = new RequestRegisterChannel()
             {
-                NodeId = _MainVM.Node.NodeId,
+                NodeId = _MainVM.CurrentNode.NodeId,
                 ChannelId = "",
                 InputType = channelType,
                 GroupName = "NextK Group",
@@ -61,7 +60,7 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Get Channel]");
             var requestChannel = new RequestListChannels()
             {
-                NodeId = _MainVM.Node.NodeId
+                NodeId = _MainVM.CurrentNode.NodeId
             } as RequestListChannels;
             SetPostURL(requestChannel);
             SetRequestResult(requestChannel);
@@ -73,8 +72,8 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Remove Channel]");
             var requestChannel = new RequestRemoveChannel()
             {
-                NodeId = _MainVM.Node.NodeId,
-                ChannelId = _MainVM.Channel.ChannelUid
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelId = _MainVM.CurrentNode.CurrentChannel.ChannelUid
             } as RequestRemoveChannel;
             SetPostURL(requestChannel);
             SetRequestResult(requestChannel);
@@ -84,7 +83,7 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest channel)
         {
-            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{channel.GetResource()}");
+            _MainVM.SetPostURL($"{_MainVM.CurrentNode.HostURL}{channel.GetResource()}");
         }
 
 
@@ -167,7 +166,7 @@ namespace NKAPISample.ViewModels
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
             
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
 
             if (channel is RequestRegisterChannel createReq)
                 return await service.Requset(createReq) as ResponseRegisterChannel;

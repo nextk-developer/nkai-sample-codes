@@ -1,4 +1,5 @@
-﻿using NKAPISample.ViewModels;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using NKAPISample.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace NKAPISample.Views
         public MainView()
         {
             InitializeComponent();
+            DataContext = Ioc.Default.GetRequiredService<MainViewModel>();
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)

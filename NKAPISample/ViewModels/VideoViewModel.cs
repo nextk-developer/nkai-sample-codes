@@ -1,5 +1,6 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
 using System;
@@ -19,9 +20,11 @@ namespace NKAPISample.ViewModels
 
         public Player Player { get => _Player; set => SetProperty(ref _Player, value); }
 
-        public VideoViewModel(MainViewModel mainVM)
+        public VideoViewModel()
         {
-            _MainVM = mainVM;
+            _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
+            _MainVM.VAStarted = Start;
+            _MainVM.VAStopped = Stop;
         }
 
 
@@ -58,8 +61,20 @@ namespace NKAPISample.ViewModels
             config.Video.BackgroundColor = Colors.DarkGray;
             config.Player.AutoPlay = true;
             Player = new Player(config);
+            _Player.OpenCompleted += _Player_OpenCompleted;
+            _Player.PlaybackStopped += _Player_PlaybackStopped;
             Player.OpenAsync(url);
             
+        }
+
+        private void _Player_PlaybackStopped(object sender, PlaybackStoppedArgs e)
+        {
+            ;
+        }
+
+        private void _Player_OpenCompleted(object sender, OpenCompletedArgs e)
+        {
+            ;
         }
 
         internal void Stop()

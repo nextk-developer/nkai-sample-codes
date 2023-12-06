@@ -10,30 +10,31 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using NKAPIService.API.Channel;
 using NKAPIService;
+using CommunityToolkit.Mvvm.DependencyInjection;
 
 namespace NKAPISample.ViewModels
 {
     public partial class VAViewModel
     {
-        private MainViewModel _mainVM;
+        private MainViewModel _MainVM;
         private DelegateCommand startCommand;
         private DelegateCommand resetCommand;
         private DelegateCommand stopCommand;
         public ICommand StartCommand => startCommand ??= new DelegateCommand(StartVA);
         public ICommand ResetCommand => resetCommand ??= new DelegateCommand(ResetVA);
         public ICommand StopCommand => stopCommand ??= new DelegateCommand(StopVA);
-        public VAViewModel(MainViewModel mainVM)
+        public VAViewModel()
         {
-            _mainVM = mainVM;
+            _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
         }
 
         internal void StartVA()
         {
-            _mainVM.SetResponseResult("Send Request [Start VA]");
+            _MainVM.SetResponseResult("Send Request [Start VA]");
             var req = new RequestControl()
             {
-                NodeId = _mainVM.Node.NodeId,
-                ChannelIDs = new List<string>() { _mainVM.Channel.ChannelUid },
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelIDs = new List<string>() { _MainVM.CurrentNode.CurrentChannel.ChannelUid },
                 Operation = Operations.VA_START
             };
 
@@ -44,11 +45,11 @@ namespace NKAPISample.ViewModels
 
         internal void ResetVA()
         {
-            _mainVM.SetResponseResult("Send Request [Reset VA]");
+            _MainVM.SetResponseResult("Send Request [Reset VA]");
             var req = new RequestControl()
             {
-                NodeId = _mainVM.Node.NodeId,
-                ChannelIDs = new List<string>() { _mainVM.Channel.ChannelUid },
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelIDs = new List<string>() { _MainVM.CurrentNode.CurrentChannel.ChannelUid },
                 Operation = Operations.VA_RST
             };
 
@@ -60,11 +61,11 @@ namespace NKAPISample.ViewModels
 
         internal void StopVA()
         {
-            _mainVM.SetResponseResult("Send Request [Stop VA]");
+            _MainVM.SetResponseResult("Send Request [Stop VA]");
             var req = new RequestControl()
             {
-                NodeId = _mainVM.Node.NodeId,
-                ChannelIDs = new List<string>() { _mainVM.Channel.ChannelUid },
+                NodeId = _MainVM.CurrentNode.NodeId,
+                ChannelIDs = new List<string>() { _MainVM.CurrentNode.CurrentChannel.ChannelUid },
                 Operation = Operations.VA_STOP
             };
 
@@ -77,12 +78,12 @@ namespace NKAPISample.ViewModels
 
         public void SetPostURL(IRequest req)
         {
-            _mainVM.SetPostURL($"{_mainVM.Node.HostURL}{req.GetResource()}");
+            _MainVM.SetPostURL($"{_MainVM.CurrentNode.HostURL}{req.GetResource()}");
         }
 
         public void SetRequestResult(IRequest req)
         {
-            _mainVM.RequestResult = JsonConvert.SerializeObject(req, Formatting.Indented);
+            _MainVM.RequestResult = JsonConvert.SerializeObject(req, Formatting.Indented);
         }
 
         public async Task SetResponseResult(IRequest req)
@@ -92,11 +93,11 @@ namespace NKAPISample.ViewModels
             if (response == null || response.Code != ErrorCode.SUCCESS) // 서버 응답 없을 경우 샘플 표출.
             {
                 string responseResult = "";
-                if (string.IsNullOrEmpty(_mainVM.Node.NodeId))
+                if (string.IsNullOrEmpty(_MainVM.CurrentNode.NodeId))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\n";
-                else if (string.IsNullOrEmpty(_mainVM.Channel.ChannelUid))
+                else if (string.IsNullOrEmpty(_MainVM.CurrentNode.CurrentChannel.ChannelUid))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\n";
-                else if (_mainVM.RoI.RoiIDs == null || _mainVM.RoI.RoiIDs.Count == 0)
+                else if (_MainVM.CurrentNode.CurrentChannel.RoIs == null || _MainVM.CurrentNode.CurrentChannel.RoIs.Count == 0)
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_ROI_ID}\n";
                 else if (response == null)
                     responseResult = "Error: NO RESPONSE\n";
@@ -104,35 +105,31 @@ namespace NKAPISample.ViewModels
                 var sampleNode = new ResponseControl();
                 responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
 
-                _mainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
+                _MainVM.SetResponseResult(responseResult.Replace("null", "\"\""));
             }
             else
             {
                 if (response.Code == ErrorCode.SUCCESS)
                 {
                     string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
-                    _mainVM.SetResponseResult(responseResult);
+                    _MainVM.SetResponseResult(responseResult);
 
                     RequestControl request = req as RequestControl;
                     if (request != null && request.Operation == Operations.VA_START)
-                        _mainVM.VAStarted?.Invoke();
+                        _MainVM.VAStarted?.Invoke(_MainVM.CurrentNode.CurrentChannel.MediaUrl);
                     else if (request != null && request.Operation == Operations.VA_STOP)
-                        _mainVM.VAStoped?.Invoke();
+                        _MainVM.VAStopped?.Invoke();
                 }
                 else
-                    _mainVM.SetResponseResult($"[{response.Code}] {response.Message}");
+                    _MainVM.SetResponseResult($"[{response.Code}] {response.Message}");
             }
         }
 
-        private void StartMetaService(string hostURL)
-        {
-            
-        }
 
         public async Task<ResponseBase> GetResponse(IRequest req)
         {
 
-            APIService service = APIService.Build().SetUrl(new Uri(_mainVM.Node.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
             return await service.Requset(req) as ResponseControl;
 
         }

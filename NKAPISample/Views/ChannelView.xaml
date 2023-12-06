@@ -7,6 +7,7 @@
              xmlns:channelAPI="clr-namespace:NKAPIService.API.Channel.Models;assembly=NKAPIService"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
+             xmlns:vm="clr-namespace:NKAPISample.ViewModels"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Margin="0,5,0,0">
         <Grid.RowDefinitions>

@@ -5,11 +5,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fl="clr-namespace:FlyleafLib.Controls.WPF;assembly=FlyleafLib"
              xmlns:vm="clr-namespace:NKAPISample.ViewModels"
+             xmlns:uc="clr-namespace:NKAPISample.Controls"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance vm:VideoViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <fl:FlyleafHost Player="{Binding Player}" />
+        <fl:FlyleafHost Player="{Binding Player}"/>
+        <ItemsControl>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <uc:RoiControl />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
 
+        <!--<ItemsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type uc:RoiControl}">
+                </Style>
+            </ItemsControl.ItemContainerStyle>-->
+        <!--<uc:RoiCanvas border/>-->
     </Grid>
 </UserControl>

@@ -4,9 +4,11 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.ServiceProcess;
-using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using FlyleafLib;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using NKAPISample.ViewModels;
 
 namespace NKAPISample
 {
@@ -18,7 +20,19 @@ namespace NKAPISample
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            
             ImportDlls();
+            Ioc.Default.ConfigureServices(new ServiceCollection()
+                .AddSingleton<MainViewModel>()
+                .AddSingleton<ComputingNodeViewModel>()
+                .AddSingleton<ChannelViewModel>()
+                .AddSingleton<ROIViewModel>()
+                .AddSingleton<ScheduleViewModel>()
+                .AddSingleton<VAViewModel>()
+                .AddSingleton<VideoViewModel>()
+                .AddSingleton<DrawingViewModel>()
+                .BuildServiceProvider()
+                );
            
         }
 

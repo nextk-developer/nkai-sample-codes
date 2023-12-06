@@ -1,6 +1,7 @@
 ﻿
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
 using System;
@@ -31,11 +32,9 @@ namespace NKAPISample.ViewModels
         public object SelectedEventType { get => selectedEventType; set => SetProperty(ref selectedEventType, value); }
         public ObservableCollection<string> EventList { get; } = new();
 
-
-
-        public DrawingViewModel(MainViewModel mainVM)
+        public DrawingViewModel()
         {
-            _MainVM = mainVM;
+            _MainVM = Ioc.Default.GetService<MainViewModel>();
         }
 
         private void SetEventProperty(ObjectType selectedObjectType)

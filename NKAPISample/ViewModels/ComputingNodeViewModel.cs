@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using NKAPISample.Models;
 using NKAPIService;
 using NKAPIService.API;
 using NKAPIService.API.ComputingNode;
 using System;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -34,14 +33,16 @@ namespace NKAPISample.ViewModels
         public ICommand GetCommand => getCommand ??= new DelegateCommand(GetNode);
         public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveNode);
 
-        
 
-        public ComputingNodeViewModel(MainViewModel mainViewModel, NodeModel node)
+
+        public ComputingNodeViewModel()
         {
-            _MainVM = mainViewModel;
-            HostIP = node.HostIP;
-            HostPort = node.HostPort;
+            _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
+            HostIP = _MainVM.CurrentNode.HostIP;
+            HostPort = _MainVM.CurrentNode.HostPort;
         }
+
+
 
         /// <summary>
         /// RestAPI 서버에 노드 객체 데이터 생성
@@ -86,7 +87,7 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Remove Node]");
             var requestNode = new RequestRemoveComputingNode()
             {
-                NodeId= _MainVM.Node.NodeId
+                NodeId= _MainVM.CurrentNode.NodeId
             } as RequestRemoveComputingNode;
             SetPostURL(requestNode);
             SetRequestResult(requestNode);
@@ -98,7 +99,7 @@ namespace NKAPISample.ViewModels
         /// <param name="node">생성된 RequestCreateComputingNode 객체</param>
         public void SetPostURL(IRequest node)
         {
-            _MainVM.SetPostURL($"{_MainVM.Node.HostURL}{node.GetResource()}");
+            _MainVM.SetPostURL($"{_MainVM.CurrentNode.HostURL}{node.GetResource()}");
         }
 
 
@@ -178,7 +179,7 @@ namespace NKAPISample.ViewModels
         
         public async Task<ResponseBase> GetResponse(IRequest channel)
         {
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.Node.HostURL));
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
 
             if (channel is RequestCreateComputingNode createReq)
                 return await service.Requset(createReq) as ResponseCreateComputingNode;
