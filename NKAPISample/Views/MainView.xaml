@@ -160,7 +160,7 @@
                     </Grid.RowDefinitions>
              
                     <Label Content="Video Analysis Setting"/>
-                    <view:DrawingView DataContext="{Binding DrawingVM}"/>
+                    <view:DrawingView DataContext="{Binding DrawingVM}" Grid.Row="1"/>
                 </Grid>
             </Border>
         </Grid>

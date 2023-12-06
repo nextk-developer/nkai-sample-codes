@@ -97,7 +97,7 @@ namespace NKAPISample.ViewModels
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\n";
                 else if (string.IsNullOrEmpty(_MainVM.CurrentNode.CurrentChannel.ChannelUid))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\n";
-                else if (_MainVM.CurrentNode.CurrentChannel.RoIs == null || _MainVM.CurrentNode.CurrentChannel.RoIs.Count == 0)
+                else if (string.IsNullOrEmpty(_MainVM.GetCurrentRoiID()))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_ROI_ID}\n";
                 else if (response == null)
                     responseResult = "Error: NO RESPONSE\n";

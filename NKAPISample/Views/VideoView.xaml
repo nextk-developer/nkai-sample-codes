@@ -6,6 +6,7 @@
              xmlns:fl="clr-namespace:FlyleafLib.Controls.WPF;assembly=FlyleafLib"
              xmlns:vm="clr-namespace:NKAPISample.ViewModels"
              xmlns:uc="clr-namespace:NKAPISample.Controls"
+             Loaded="VideoView_Loaded"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>

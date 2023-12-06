@@ -3,10 +3,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
+using Newtonsoft.Json;
+using NKAPISample.Models;
+using NKAPISample.Views;
+using NKMeta;
+using PredefineConstant;
 using System;
 using System.Drawing;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Security.Policy;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -17,8 +24,11 @@ namespace NKAPISample.ViewModels
         private Player _Player;
         private MainViewModel _MainVM;
         public ChannelViewModel ChannelComponent { get; }
-
+        private bool _IsInfo;
+        public bool IsInfo { get => _IsInfo; set => SetProperty(ref _IsInfo, value); }
         public Player Player { get => _Player; set => SetProperty(ref _Player, value); }
+
+
 
         public VideoViewModel()
         {
@@ -31,7 +41,9 @@ namespace NKAPISample.ViewModels
         internal void Start(string url)
         {
             if (_Player == null)
+            {
                 InitializePlayer(url);
+            }
             else
             {
                 Player.OpenAsync(url);
@@ -74,7 +86,18 @@ namespace NKAPISample.ViewModels
 
         private void _Player_OpenCompleted(object sender, OpenCompletedArgs e)
         {
-            ;
+            var player = sender as Player;
+            if (player == null) return;
+            
+            if (!e.Success)
+            {
+                RetryConnection(player, e.Url);
+            }
+        }
+
+        private void RetryConnection(Player player, string url)
+        {
+            player.OpenAsync(url);
         }
 
         internal void Stop()

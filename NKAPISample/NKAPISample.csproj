@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NKAPIService\NKAPIService.csproj" />
+    <ProjectReference Include="..\NKMeta\NKMeta.csproj" />
   </ItemGroup>
 
   <ItemGroup>

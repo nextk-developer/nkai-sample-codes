@@ -24,7 +24,6 @@ namespace NKAPISample.ViewModels
     {
 
         private MainViewModel _MainVM;
-        private List<string> _RoiIDs;
         private DelegateCommand _CreateCommand;
         private DelegateCommand _GetCommand;
         private DelegateCommand _RemoveCommand;
@@ -38,12 +37,10 @@ namespace NKAPISample.ViewModels
         public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetROI);
         public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveROI);
 
-        public List<string> RoiIDs { get => _RoiIDs; }
 
         public ROIViewModel()
         {
             _MainVM = Ioc.Default.GetService<MainViewModel>();
-            _RoiIDs = new List<string>();
         }
 
 
@@ -102,11 +99,9 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Remove ROI]");
             List<string> ids = new List<string>();
 
-            if (_RoiIDs != null && _RoiIDs.Count > 0)
-            {
-                _RemoveTargetID = _RoiIDs[0];
-                ids.Add(_RoiIDs[0]);
-            }
+            _RemoveTargetID = _MainVM.GetCurrentRoiID();
+            ids.Add(_RemoveTargetID);
+
 
             var roi = new RequestRemoveROI()
             {
@@ -144,21 +139,24 @@ namespace NKAPISample.ViewModels
             {
                 if (response is ResponseCreateROI createRoi)
                 {
-                    if (_RoiIDs == null)
-                        _RoiIDs = new List<string>();
-
-                    _RoiIDs.Add(createRoi.ROIID);
+                    var requestCreateROI = req as RequestCreateROI;
+                    _MainVM.AddRoi(requestCreateROI.NodeId, requestCreateROI.ChannelID, createRoi.ROIID, requestCreateROI.EventType, ObjectType.Person, requestCreateROI.RoiDots, requestCreateROI.RoiDotsSub,
+                        requestCreateROI.RoiName, requestCreateROI.RoiFeature, requestCreateROI.RoiNumber, requestCreateROI.RoiType, requestCreateROI.EventFilter);
                 }
                 else if (response is ResponseListROI listRoi)
                 {
                     var items = listRoi.RoiItems;
                     if (items != null)
-                        _RoiIDs = items.Select(x => x.RoiId).ToList();
+                    {
+                        var roi = listRoi.RoiItems.LastOrDefault();
+                        if (roi != null)
+                            _MainVM.SetCurrentRoi(roi);
+                    }
                 }
                 else if (response is ResponseBase)
                 {
                     if (_MainVM != null)
-                        _RoiIDs.Remove(_RemoveTargetID);
+                        _MainVM.RemoveRoi();
                 }
 
                 string responseResult = JsonConvert.SerializeObject(response, Formatting.Indented);
@@ -172,7 +170,7 @@ namespace NKAPISample.ViewModels
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_COMPUTING_NODE}\n";
                 else if (string.IsNullOrEmpty(_MainVM.CurrentNode.CurrentChannel.ChannelUid))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_CHANNEL_UID}\n";
-                else if (_RoiIDs == null || _RoiIDs.Count == 0)
+                else if (string.IsNullOrEmpty(_MainVM.GetCurrentRoiID()))
                     responseResult = $"Error: {ErrorCode.NOT_FOUND_ROI_ID}\n";
                 else if (response == null)
                     responseResult = "Error: NO RESPONSE\n";
