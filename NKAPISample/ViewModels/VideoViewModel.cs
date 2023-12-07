@@ -4,18 +4,32 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
 using Newtonsoft.Json;
+using NKAPISample.Controls;
 using NKAPISample.Models;
 using NKAPISample.Views;
 using NKMeta;
 using PredefineConstant;
+using PredefineConstant.Enum.Analysis;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Reflection.Metadata;
 using System.Security.Policy;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using Vortice.Mathematics;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace NKAPISample.ViewModels
 {
@@ -25,29 +39,32 @@ namespace NKAPISample.ViewModels
         private MainViewModel _MainVM;
         public ChannelViewModel ChannelComponent { get; }
         private bool _IsInfo;
+        private ConcurrentQueue<List<EventInfo>> _detectedQueue = new();
         public bool IsInfo { get => _IsInfo; set => SetProperty(ref _IsInfo, value); }
         public Player Player { get => _Player; set => SetProperty(ref _Player, value); }
-
-
+        private IMetaData _ReceivedDataSource;
+        public IMetaData ReceivedDataSource { get => _ReceivedDataSource; set => SetProperty(ref _ReceivedDataSource, value); }
 
         public VideoViewModel()
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
-            _MainVM.VAStarted = Start;
             _MainVM.VAStopped = Stop;
+            
         }
 
 
-        internal void Start(string url)
+        internal void Start(ChannelComponent cc)
         {
             if (_Player == null)
             {
-                InitializePlayer(url);
+                InitializePlayer(cc.MediaUrl);
             }
             else
             {
-                Player.OpenAsync(url);
+                Player.OpenAsync(cc.MediaUrl);
             }
+
+            ReceivedDataSource = cc.ObjectMetaClient;
         }
         
         private void InitializePlayer(string url)
@@ -70,19 +87,14 @@ namespace NKAPISample.ViewModels
             config.Audio.Enabled = false;
             config.Subtitles.Enabled = false;
             config.Video.AspectRatio = AspectRatio.Fill;
-            config.Video.BackgroundColor = Colors.DarkGray;
+            config.Video.BackgroundColor = System.Windows.Media.Colors.DarkGray;
             config.Player.AutoPlay = true;
             Player = new Player(config);
             _Player.OpenCompleted += _Player_OpenCompleted;
-            _Player.PlaybackStopped += _Player_PlaybackStopped;
             Player.OpenAsync(url);
             
         }
 
-        private void _Player_PlaybackStopped(object sender, PlaybackStoppedArgs e)
-        {
-            ;
-        }
 
         private void _Player_OpenCompleted(object sender, OpenCompletedArgs e)
         {
@@ -102,7 +114,19 @@ namespace NKAPISample.ViewModels
 
         internal void Stop()
         {
-            _Player.Stop();
+            if (_Player != null)
+                _Player.Stop();
+
+            ReceivedDataSource = null;
+        }
+
+        internal void AlertEventFromEdgeServer(IEnumerable<EventInfo> events)
+        {
+            foreach (EventInfo e in events)
+            {
+                _MainVM.SetMetadataLog(e.EventStatus, e.ClassID, e.ObjectID, e.EventType, e.RoiInfo.RoiName);
+            }
+            //_MainVM.SetMetadataLog()
         }
     }
 }

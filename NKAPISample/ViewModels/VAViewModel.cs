@@ -41,6 +41,7 @@ namespace NKAPISample.ViewModels
             SetPostURL(req);
             SetRequestResult(req);
             SetResponseResult(req);
+            
         }
 
         internal void ResetVA()
@@ -88,7 +89,8 @@ namespace NKAPISample.ViewModels
 
         public async Task SetResponseResult(IRequest req)
         {
-            ResponseBase? response = await GetResponse(req);
+            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
+            ResponseBase? response =  await service.Requset(req) as ResponseControl;
 
             if (response == null || response.Code != ErrorCode.SUCCESS) // 서버 응답 없을 경우 샘플 표출.
             {
@@ -116,7 +118,7 @@ namespace NKAPISample.ViewModels
 
                     RequestControl request = req as RequestControl;
                     if (request != null && request.Operation == Operations.VA_START)
-                        _MainVM.VAStarted?.Invoke(_MainVM.CurrentNode.CurrentChannel.MediaUrl);
+                        _MainVM.VAStarted?.Invoke(service);
                     else if (request != null && request.Operation == Operations.VA_STOP)
                         _MainVM.VAStopped?.Invoke();
                 }
@@ -126,12 +128,5 @@ namespace NKAPISample.ViewModels
         }
 
 
-        public async Task<ResponseBase> GetResponse(IRequest req)
-        {
-
-            APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
-            return await service.Requset(req) as ResponseControl;
-
-        }
     }
 }

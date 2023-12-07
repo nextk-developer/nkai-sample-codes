@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using NKAPISample.Models;
 using NKAPISample.Views;
+using NKAPIService;
 using NKAPIService.API.ComputingNode.Models;
 using NKAPIService.API.VideoAnalysisSetting.Models;
 using PredefineConstant.Enum.Analysis;
@@ -20,18 +21,21 @@ namespace NKAPISample.ViewModels
     public partial class MainViewModel : ObservableObject
     {
 
-        private string requestResult;
-        private string responseResult;
-
-        private StringBuilder _Builder;
-        internal Action<string> VAStarted;
-        internal Action VAStopped;
+        private string _RequestResult;
+        private string _ResponseResult;
+        private string _MetadataLog;
+        private StringBuilder _ResponseResultBuilder;
+        private StringBuilder _MetadataLogBuilder;
         private string _PostURL;
+        internal Action<APIService> VAStarted;
+        internal Action VAStopped;
+        
 
         public NodeComponent CurrentNode { get; set; }
         
-        public string RequestResult { get => requestResult; set => SetProperty(ref requestResult, value); }
-        public string ResponseResult { get => responseResult; set => SetProperty(ref responseResult, value); }
+        public string RequestResult { get => _RequestResult; set => SetProperty(ref _RequestResult, value); }
+        public string ResponseResult { get => _ResponseResult; set => SetProperty(ref _ResponseResult, value); }
+        public string MetadataLog { get => _MetadataLog; set => SetProperty(ref _MetadataLog, value); }
         public string PostURL { get => _PostURL; set => SetProperty(ref _PostURL, value); }
 
         #region viewmodels
@@ -58,27 +62,23 @@ namespace NKAPISample.ViewModels
         {
             NodeComponent node = new();
             CurrentNode = node;            
-            _Builder = new StringBuilder();
-            //VAStarted += StartVA;
-            //VAStopped += StopVA;
-
+            _ResponseResultBuilder = new StringBuilder();
+            _MetadataLogBuilder = new();
+            VAStarted += StartVA;
         }
 
-        private void StopVA()
-        {
-            throw new NotImplementedException();
-        }
 
-        private void StartVA(string obj)
+        private void StartVA(APIService service)
         {
-            
+            CurrentNode.CurrentChannel.VAControlStart(service);
+            VideoVM.Start(CurrentNode.CurrentChannel);
         }
 
         internal void SetResponseResult(string responseResult)
         {
-            _Builder.AppendLine(responseResult);
-            _Builder.AppendLine($"---------- {DateTime.Now.ToString("G")}");
-            ResponseResult = _Builder.ToString();
+            _ResponseResultBuilder.AppendLine(responseResult);
+            _ResponseResultBuilder.AppendLine($"---------- {DateTime.Now.ToString("G")}");
+            ResponseResult = _ResponseResultBuilder.ToString();
         }
 
         internal void SetPostURL(string v)
@@ -132,6 +132,12 @@ namespace NKAPISample.ViewModels
         internal void RemoveRoi()
         {
             CurrentNode.CurrentChannel.InitRoi();
+        }
+
+        internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, string roiName)
+        {
+            _MetadataLogBuilder.AppendLine($"[{eventStatus}] {classID} {eventID}, {eventType}, {roiName}");
+            MetadataLog = _MetadataLogBuilder.ToString();
         }
     }
 

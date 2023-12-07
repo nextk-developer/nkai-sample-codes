@@ -32,9 +32,9 @@ namespace NKAPISample.Models
 
         public NodeComponent ParentNode { get; private set; }
 
+        public RoiComponent CurrentROI { get; private set; }
 
-
-
+        public IMetaData ObjectMetaClient { get; private set; }
         #region Properties
         public string NodeID { get; private set; }
         public string ChannelUid { get; private set; }
@@ -46,10 +46,8 @@ namespace NKAPISample.Models
         public string MediaUrl { get; private set; }
         public string MediaUrlSub { get; private set; }
         public string SourceIP { get; private set; }
-
-        public RoiComponent CurrentROI { get; private set; }
-        public IMetaData ObjectMetaClient { get; private set; }
-        public List<MediaComponent> MediaComponents { get; private set; } = new();
+        
+        
 
 
         internal void Clear()
@@ -117,10 +115,8 @@ namespace NKAPISample.Models
             if (string.IsNullOrEmpty(host)) return;
 
             IMetaData metaClient = new NKMeta.Zmq.ObjectMetaClient(NodeID, ChannelUid, ChannelName, host);
-
             ObjectMetaClient = metaClient;
             metaClient?.StartTask();
-            //ParentNode.Repository.RaiseSetObjectMetaClient(this, metaClient, UpdateType.Add);
         }
 
         internal Task<ErrorCode> VAControlStart(NKAPIService.APIService service)
@@ -158,23 +154,6 @@ namespace NKAPISample.Models
             });
         }
 
-        public void InitMediaClient(string main, string sub, bool isLive = true)
-        {
-            if (MediaComponents.Any())
-            {
-                MediaComponents.ForEach(m => m.Dispose());
-                MediaComponents.Clear();
-            }
-
-
-            this.MediaUrl = main;
-            this.MediaUrlSub = sub;
-
-            MediaComponents.Add(new MediaComponent(this, StreamingType.Main, main, isLive));
-
-            if (!string.IsNullOrEmpty(sub) && main != sub)
-                MediaComponents.Add(new MediaComponent(this, StreamingType.Sub, sub, isLive));
-        }
         #endregion
     }
 }

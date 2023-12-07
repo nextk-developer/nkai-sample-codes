@@ -149,7 +149,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Label Content="Metadata Log"/>
-                    <TextBox Grid.Row="1" VerticalAlignment="Stretch"/>
+                    <TextBox Grid.Row="1" VerticalAlignment="Stretch" Text="{Binding MetadataLog}"/>
                 </Grid>
             </Border>
             <Border BorderThickness="1" BorderBrush="LightGray" Grid.Column="1">

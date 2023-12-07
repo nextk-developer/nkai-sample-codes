@@ -10,19 +10,43 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <fl:FlyleafHost Player="{Binding Player}"/>
-        <ItemsControl>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <uc:RoiControl />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-
-        <!--<ItemsControl.ItemContainerStyle>
-                <Style TargetType="{x:Type uc:RoiControl}">
-                </Style>
-            </ItemsControl.ItemContainerStyle>-->
-        <!--<uc:RoiCanvas border/>-->
+        <fl:FlyleafHost Player="{Binding Player}" >
+            <Grid Name="drawCanvas"/>
+            <!--<ItemsControl ItemsSource="{Binding ObjectList}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Rectangle Width="{Binding RectWidth}" 
+                                       Height="{Binding RectHeight}" 
+                                       StrokeThickness="{Binding StrokeThickness}" 
+                                       Stroke="{Binding StrokeColor}" 
+                                       Fill="{Binding Fill}"
+                                       />
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <Ellipse Fill="{Binding StrokeColor}"/>
+                                <TextBlock Text="{Binding Label}" FontSize="20" Foreground="White"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Top" Value="{Binding RectY, Mode=OneWay}"/>
+                        <Setter Property="Canvas.Left" Value="{Binding RectX, Mode=OneWay}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>-->
+        </fl:FlyleafHost>
+        
     </Grid>
 </UserControl>
