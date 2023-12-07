@@ -118,7 +118,14 @@ namespace NKAPISample.Views
                         if (beginOrEndEvents.Any())
                             this.Dispatcher.Invoke(() =>
                             {
-                                ViewModel?.AlertEventFromEdgeServer(beginOrEndEvents);
+                                var dirtyRect = new Int32Rect(0, 0, ViewModel.Player.renderer.ControlWidth, ViewModel.Player.renderer.ControlHeight);
+                                Dictionary<EventInfo, System.Drawing.Rectangle> positionPair = new();
+                                foreach (var detected in beginOrEndEvents)
+                                {
+                                    var rect = getActualRectangle(detected, dirtyRect);
+                                    positionPair.Add(detected, rect);
+                                }
+                                ViewModel?.AlertEventFromEdgeServer(positionPair);
                             });
                     });
                     _lastUpdateDetectionTime = DateTime.UtcNow;
@@ -154,8 +161,7 @@ namespace NKAPISample.Views
 
             foreach (var obj in firstDetectedList)
             {
-                var rect = new System.Drawing.Rectangle((int)(obj.ImageRect.X * dirtyRect.Width), (int)(obj.ImageRect.Y * dirtyRect.Height),
-                                                            (int)(obj.ImageRect.Width * dirtyRect.Width), (int)(obj.ImageRect.Height * dirtyRect.Height));
+                var rect = getActualRectangle(obj, dirtyRect);
 
                 if (rect.Width <= 0 || rect.X < 0 || rect.Y < 0 || rect.Height <= 0) continue;
 
@@ -181,5 +187,11 @@ namespace NKAPISample.Views
             }
         }
 
+        private System.Drawing.Rectangle getActualRectangle(EventInfo obj, Int32Rect dirtyRect)
+        {
+            var rect = new System.Drawing.Rectangle((int)(obj.ImageRect.X * dirtyRect.Width), (int)(obj.ImageRect.Y * dirtyRect.Height),
+                                                            (int)(obj.ImageRect.Width * dirtyRect.Width), (int)(obj.ImageRect.Height * dirtyRect.Height));
+            return rect;
+        }
     }
 }

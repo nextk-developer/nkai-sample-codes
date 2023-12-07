@@ -1,20 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using NKAPISample.Models;
-using NKAPISample.Views;
 using NKAPIService;
-using NKAPIService.API.ComputingNode.Models;
 using NKAPIService.API.VideoAnalysisSetting.Models;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Text;
-using System.Threading.Channels;
-using System.Windows.Forms;
-using Vortice.MediaFoundation;
 
 namespace NKAPISample.ViewModels
 {
@@ -64,14 +57,14 @@ namespace NKAPISample.ViewModels
             CurrentNode = node;            
             _ResponseResultBuilder = new StringBuilder();
             _MetadataLogBuilder = new();
-            VAStarted += StartVA;
+            VAStarted += StartVAAsync;
         }
 
 
-        private void StartVA(APIService service)
+        private void StartVAAsync(APIService service)
         {
-            CurrentNode.CurrentChannel.VAControlStart(service);
-            VideoVM.Start(CurrentNode.CurrentChannel);
+            if(CurrentNode.CurrentChannel.VAControlStart(service).Result == NKAPIService.API.ErrorCode.SUCCESS)
+                VideoVM.VAStart(CurrentNode.CurrentChannel);
         }
 
         internal void SetResponseResult(string responseResult)
@@ -94,6 +87,7 @@ namespace NKAPISample.ViewModels
         internal void UpdateChannel(string channelId, string mediaServerUrl, string mediaServerUrlSub)
         {
             CurrentNode.CurrentChannel.Update(CurrentNode, channelId, mediaServerUrl, mediaServerUrlSub);
+            VideoVM.VideoStart(mediaServerUrl);
         }
 
         internal void ClearNode()
@@ -134,9 +128,9 @@ namespace NKAPISample.ViewModels
             CurrentNode.CurrentChannel.InitRoi();
         }
 
-        internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, string roiName)
+        internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, string roiName, System.Drawing.Rectangle position)
         {
-            _MetadataLogBuilder.AppendLine($"[{eventStatus}] {classID} {eventID}, {eventType}, {roiName}");
+            _MetadataLogBuilder.AppendLine($"[{eventStatus}] {classID} {eventID}, {eventType}, X: {position.X}, Y: {position.Y}, Width: {position.Width}, Height: {position.Height}");
             MetadataLog = _MetadataLogBuilder.ToString();
         }
     }

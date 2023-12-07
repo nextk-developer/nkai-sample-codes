@@ -127,7 +127,6 @@ namespace NKAPISample.Models
 
                 if (CurrentROI != null)
                 {
-                    // 여기도 해야됨 ..
                     if (string.IsNullOrEmpty(ParentNode.NodeId))
                         return ErrorCode.NOT_FOUND_COMPUTING_NODE;
 

@@ -49,21 +49,22 @@ namespace NKAPISample.ViewModels
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
             _MainVM.VAStopped = Stop;
-            
         }
 
-
-        internal void Start(ChannelComponent cc)
+        internal void VideoStart(string url)
         {
             if (_Player == null)
             {
-                InitializePlayer(cc.MediaUrl);
+                InitializePlayer(url);
             }
             else
             {
-                Player.OpenAsync(cc.MediaUrl);
+                Player.OpenAsync(url);
             }
+        }
 
+        internal void VAStart(ChannelComponent cc)
+        {
             ReceivedDataSource = cc.ObjectMetaClient;
         }
         
@@ -114,19 +115,16 @@ namespace NKAPISample.ViewModels
 
         internal void Stop()
         {
-            if (_Player != null)
-                _Player.Stop();
-
             ReceivedDataSource = null;
         }
 
-        internal void AlertEventFromEdgeServer(IEnumerable<EventInfo> events)
+
+        internal void AlertEventFromEdgeServer(Dictionary<EventInfo, System.Drawing.Rectangle> positionPair)
         {
-            foreach (EventInfo e in events)
+            foreach(var pair in positionPair)
             {
-                _MainVM.SetMetadataLog(e.EventStatus, e.ClassID, e.ObjectID, e.EventType, e.RoiInfo.RoiName);
+                _MainVM.SetMetadataLog(pair.Key.EventStatus, pair.Key.ClassID, pair.Key.EventID, pair.Key.EventType, pair.Key.RoiInfo.RoiName, pair.Value);   
             }
-            //_MainVM.SetMetadataLog()
         }
     }
 }
