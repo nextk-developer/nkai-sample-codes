@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NKAPISample.Controls;
 using NKAPISample.Models;
 using NKAPISample.Views;
+using NKAPIService.API.VideoAnalysisSetting.Models;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
@@ -43,12 +44,26 @@ namespace NKAPISample.ViewModels
         public bool IsInfo { get => _IsInfo; set => SetProperty(ref _IsInfo, value); }
         public Player Player { get => _Player; set => SetProperty(ref _Player, value); }
         private IMetaData _ReceivedDataSource;
+
         public IMetaData ReceivedDataSource { get => _ReceivedDataSource; set => SetProperty(ref _ReceivedDataSource, value); }
+
+
+        private bool _IsDrawingMode;
+
+        public bool IsDrawingMode { get => _IsDrawingMode; set => SetProperty(ref _IsDrawingMode, value); }
 
         public VideoViewModel()
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
             _MainVM.VAStopped = Stop;
+            _MainVM.ROIEventTypeSelected = SetDrawingMode;
+        }
+
+        private void SetDrawingMode(DrawingType drawingType)
+        {
+            if (drawingType == DrawingType.Clear)
+                IsDrawingMode = false;
+            
         }
 
         internal void VideoStart(string url)
@@ -125,6 +140,30 @@ namespace NKAPISample.ViewModels
             {
                 _MainVM.SetMetadataLog(pair.Key.EventStatus, pair.Key.ClassID, pair.Key.EventID, pair.Key.EventType, pair.Key.RoiInfo.RoiName, pair.Value);   
             }
+        }
+
+        internal List<ROIDot> GetRange(DrawingType type)
+        {
+            if (type == DrawingType.All)
+            {
+                return new List<ROIDot>
+                {
+                new ROIDot { X = 0, Y = 0},
+                new ROIDot { X = 1.0, Y = 0},
+                new ROIDot { X = 1.0, Y = 1},
+                new ROIDot { X = 0, Y = 1},
+                };
+            }
+
+
+            // 임시
+            return new List<ROIDot>
+                {
+                new ROIDot { X = 0, Y = 0},
+                new ROIDot { X = 1.0, Y = 0},
+                new ROIDot { X = 1.0, Y = 1},
+                new ROIDot { X = 0, Y = 1},
+                };
         }
     }
 }

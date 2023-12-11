@@ -5,47 +5,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:fl="clr-namespace:FlyleafLib.Controls.WPF;assembly=FlyleafLib"
              xmlns:vm="clr-namespace:NKAPISample.ViewModels"
-             xmlns:uc="clr-namespace:NKAPISample.Controls"
+             xmlns:uc="clr-namespace:NKAPISample.Controls" d:DataContext="{d:DesignInstance Type=vm:VideoViewModel}"
              Loaded="VideoView_Loaded"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <fl:FlyleafHost Player="{Binding Player}" >
-            <Grid Name="drawCanvas"/>
-            <!--<ItemsControl ItemsSource="{Binding ObjectList}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid >
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            
-                            <Rectangle Width="{Binding RectWidth}" 
-                                       Height="{Binding RectHeight}" 
-                                       StrokeThickness="{Binding StrokeThickness}" 
-                                       Stroke="{Binding StrokeColor}" 
-                                       Fill="{Binding Fill}"
-                                       />
-                            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                <Ellipse Fill="{Binding StrokeColor}"/>
-                                <TextBlock Text="{Binding Label}" FontSize="20" Foreground="White"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Top" Value="{Binding RectY, Mode=OneWay}"/>
-                        <Setter Property="Canvas.Left" Value="{Binding RectX, Mode=OneWay}"/>
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-            </ItemsControl>-->
+            <Grid>
+                <Grid Name="drawCanvas"/>
+                <Grid Name="drawRange" Visibility="{Binding IsDrawingMode, Converter={StaticResource boolToVisibilityConverter}}" PreviewMouseDown="drawRange_PreviewMouseDown" PreviewMouseUp="drawRange_PreviewMouseUp"/>
+            </Grid>
         </fl:FlyleafHost>
         
     </Grid>

@@ -4,9 +4,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             xmlns:uc="clr-namespace:NKAPISample.Controls"
              xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
+             d:DataContext="{d:DesignInstance ViewModels:ROIViewModel}"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ObjectDataProvider
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:typeAlias="clr-namespace:PredefineConstant.Enum.Analysis;assembly=PredefineConstant"
+        x:Key="ObjectResources"
+        MethodName="GetValues"
+        ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="typeAlias:ObjectType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <Style TargetType="{x:Type Image}">
+            <Setter Property="Stretch" Value="None"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition/>
@@ -15,8 +39,54 @@
             <ColumnDefinition Width="5"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="1" Grid.Column="1"/>
-        <Button Content="Get" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="1" />
-        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="1" />
+        <uc:LabelledComboBox Header="Object" Grid.ColumnSpan="6"  ItemsSource="{Binding Source={StaticResource ObjectResources}}" Selection="{Binding SelectedObjectType}"/>
+        <uc:LabelledComboBox Header="Event" Grid.ColumnSpan="6" Grid.Row="1" ItemsSource="{Binding EventList}" Selection="{Binding SelectedEventType}"/>
+        <Label Content="Range" Grid.Row="2"/>
+        <Grid Grid.Row="2" Grid.ColumnSpan="5" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding AllRangeCommand}" IsEnabled="{Binding IsDrawingEnabled}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/icon_selectall.png" />
+                    <TextBlock Text="Select All"/>
+                </StackPanel>
+            </Button> 
+            <Button Grid.Column="2" Command="{Binding SelectRangeCommand}" IsEnabled="{Binding IsDrawingEnabled}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/icon_selectRange.png" />
+                    <TextBlock Text="Select Range"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="4" Command="{Binding PolygonCommand}" IsEnabled="{Binding IsDrawingEnabled}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/icon_polygon.png" />
+                    <TextBlock Text="Polygon"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="6" Command="{Binding LineCommand}" IsEnabled="{Binding IsLineEnabled}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/icon_line.png" />
+                    <TextBlock Text="Line" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="8" Command="{Binding DoubleLineCommand}" IsEnabled="{Binding IsMultiLineEnabled}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/icon_doubleLine.png" />
+                    <TextBlock Text="Multi Line"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+        <Button Content="Create" Command="{Binding CreateCommand}" Grid.Row="3" Grid.Column="1"/>
+        <Button Content="Get ROIs" Command="{Binding GetCommand}" Grid.Column="3" Grid.Row="3"  />
+        <Button Content="Remove" Command="{Binding RemoveCommand}" Grid.Column="5" Grid.Row="3"  />
     </Grid>
 </UserControl>

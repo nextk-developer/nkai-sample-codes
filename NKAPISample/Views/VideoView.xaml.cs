@@ -65,7 +65,11 @@ namespace NKAPISample.Views
             {
                 if (_ReceivedDataSource != null)
                     _ReceivedDataSource.OnReceivedMetaData -= OnReceivedData;
-
+            }
+            else if(e.PropertyName == "IsDrawingMode")
+            {
+                if (ViewModel.IsDrawingMode)
+                    ;
             }
         }
 
@@ -192,6 +196,16 @@ namespace NKAPISample.Views
             var rect = new System.Drawing.Rectangle((int)(obj.ImageRect.X * dirtyRect.Width), (int)(obj.ImageRect.Y * dirtyRect.Height),
                                                             (int)(obj.ImageRect.Width * dirtyRect.Width), (int)(obj.ImageRect.Height * dirtyRect.Height));
             return rect;
+        }
+
+        private void drawRange_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(this);
+        }
+
+        private void drawRange_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(this);
         }
     }
 }

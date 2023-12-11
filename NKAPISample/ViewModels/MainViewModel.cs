@@ -22,7 +22,7 @@ namespace NKAPISample.ViewModels
         private string _PostURL;
         internal Action<APIService> VAStarted;
         internal Action VAStopped;
-        
+        internal Action<DrawingType> ROIEventTypeSelected;
 
         public NodeComponent CurrentNode { get; set; }
         
@@ -32,9 +32,6 @@ namespace NKAPISample.ViewModels
         public string PostURL { get => _PostURL; set => SetProperty(ref _PostURL, value); }
 
         #region viewmodels
-
-
-        public DrawingViewModel DrawingVM { get => Ioc.Default.GetRequiredService<DrawingViewModel>(); }
 
         public VAViewModel VAVM { get => Ioc.Default.GetRequiredService<VAViewModel>(); }
 

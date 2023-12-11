@@ -30,7 +30,6 @@ namespace NKAPISample
                 .AddSingleton<ScheduleViewModel>()
                 .AddSingleton<VAViewModel>()
                 .AddSingleton<VideoViewModel>()
-                .AddSingleton<DrawingViewModel>()
                 .BuildServiceProvider()
                 );
            

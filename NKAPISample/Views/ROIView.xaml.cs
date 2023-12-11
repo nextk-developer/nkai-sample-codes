@@ -9,7 +9,7 @@ namespace NKAPISample.Views
     {
         public ROIView()
         {
-            InitializeComponent();
+           InitializeComponent();
         }
     }
 }

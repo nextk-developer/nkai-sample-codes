@@ -15,7 +15,7 @@
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         </Style>
-        <Style TargetType="Label">
+        <Style TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="DodgerBlue"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Light"/>
@@ -27,55 +27,70 @@
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Padding" Value="5"/>
         </Style>
-        <Style TargetType="GroupBox">
+        <Style TargetType="{x:Type GroupBox}">
             <Setter Property="Margin" Value="0,0,0,5"/>
         </Style>
     </UserControl.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="4*"/>
-            <RowDefinition Height="2"/>
-            <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
-        <!--#region Row 0 Left -->
-        <Border>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid>
-                <Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Settings" />
+                        <GroupBox Grid.Row="1" Header="Computing Node">
+                            <view:ComputingNodeView DataContext="{Binding NodeVM}"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="Channel">
+                            <view:ChannelView DataContext="{Binding ChannelVM}"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="3" Header="Schedule">
+                            <view:ScheduleView DataContext="{Binding ScheduleVM}"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="4" Header="RoI">
+                            <view:ROIView DataContext="{Binding ROIVM}"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="5" Header="VA">
+                            <view:VAView DataContext="{Binding VAVM}"/>
+                        </GroupBox>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+            <GridSplitter Grid.Row="1" Height="Auto" HorizontalAlignment="Stretch" Background="White"/>
+            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Row="2" >
+                <Grid>
+                    <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Settings" />
-                    <GroupBox Grid.Row="1" Header="Computing Node">
-                        <view:ComputingNodeView DataContext="{Binding NodeVM}"/>
-                    </GroupBox>
-                    <GroupBox Grid.Row="2" Header="Channel">
-                        <view:ChannelView DataContext="{Binding ChannelVM}"/>
-                    </GroupBox>
-                    <GroupBox Grid.Row="3" Header="Schedule">
-                        <view:ScheduleView DataContext="{Binding ScheduleVM}"/>
-                    </GroupBox>
-                    <GroupBox Grid.Row="4" Header="RoI">
-                        <view:ROIView DataContext="{Binding ROIVM}"/>
-                    </GroupBox>
-                    <GroupBox Grid.Row="5" Header="VA">
-                        <view:VAView DataContext="{Binding VAVM}"/>
-                    </GroupBox>
+                    <Label Content="Metadata Log"/>
+                    <TextBox Grid.Row="1" VerticalAlignment="Stretch" Text="{Binding MetadataLog}"/>
                 </Grid>
-            </ScrollViewer>
-        </Border>
-        <!--#endregion-->
-        <!--#region Row 0 Right -->
-        <Grid Grid.Column="1">
+            </Border>
+        </Grid>
+
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+
+        <Grid Grid.Column="2">
             <Grid.Resources>
                 <Style TargetType="{x:Type Label}">
                     <Setter Property="FontSize" Value="14"/>
@@ -85,7 +100,9 @@
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="70" />
-                <RowDefinition />
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -121,49 +138,20 @@
                     <TextBox Text="{Binding ResponseResult, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" TextChanged="TextBox_TextChanged" />
                 </Grid>
             </Border>
-        </Grid>
-        <!--#endregion-->
-        <GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="Auto" HorizontalAlignment="Stretch" Background="White"/>
-        <!--#region Row 1 Left -->
-        <Border Grid.Row="2" BorderThickness="1" BorderBrush="LightGray">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Label Content="Streaming"/>
-                <view:VideoView Grid.Row="1" DataContext="{Binding VideoVM}"/>
+            <GridSplitter Grid.Row="2" Height="Auto" HorizontalAlignment="Stretch" Background="White" Grid.ColumnSpan="2"/>
+            <Border Grid.Row="3" BorderThickness="1" BorderBrush="LightGray" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Content="Streaming"/>
+                    <view:VideoView Grid.Row="1" DataContext="{Binding VideoVM}"/>
 
-            </Grid>
-        </Border>
-        <!--#endregion-->
-        <Grid Grid.Row="2" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Border BorderThickness="1" BorderBrush="LightGray">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Label Content="Metadata Log"/>
-                    <TextBox Grid.Row="1" VerticalAlignment="Stretch" Text="{Binding MetadataLog}"/>
-                </Grid>
-            </Border>
-            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Column="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-             
-                    <Label Content="Video Analysis Setting"/>
-                    <view:DrawingView DataContext="{Binding DrawingVM}" Grid.Row="1"/>
                 </Grid>
             </Border>
         </Grid>
-    
+        
+      
     </Grid>
 </UserControl>
