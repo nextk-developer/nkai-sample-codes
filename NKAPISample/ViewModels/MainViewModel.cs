@@ -22,7 +22,6 @@ namespace NKAPISample.ViewModels
         private string _PostURL;
         internal Action<APIService> VAStarted;
         internal Action VAStopped;
-        internal Action<DrawingType> ROIEventTypeSelected;
 
         public NodeComponent CurrentNode { get; set; }
         

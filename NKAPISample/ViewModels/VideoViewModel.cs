@@ -48,23 +48,20 @@ namespace NKAPISample.ViewModels
         public IMetaData ReceivedDataSource { get => _ReceivedDataSource; set => SetProperty(ref _ReceivedDataSource, value); }
 
 
-        private bool _IsDrawingMode;
+        private bool _IsDrawingMode = false;
 
         public bool IsDrawingMode { get => _IsDrawingMode; set => SetProperty(ref _IsDrawingMode, value); }
+        private List<ROIDot> _currentRange = new();
+
+
+        public DrawingType CurrentDrawingType { get; private set; }
 
         public VideoViewModel()
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
             _MainVM.VAStopped = Stop;
-            _MainVM.ROIEventTypeSelected = SetDrawingMode;
         }
 
-        private void SetDrawingMode(DrawingType drawingType)
-        {
-            if (drawingType == DrawingType.Clear)
-                IsDrawingMode = false;
-            
-        }
 
         internal void VideoStart(string url)
         {
@@ -142,28 +139,51 @@ namespace NKAPISample.ViewModels
             }
         }
 
-        internal List<ROIDot> GetRange(DrawingType type)
+        internal List<ROIDot> GetRange()
         {
-            if (type == DrawingType.All)
+            return _currentRange;
+        }
+
+        internal void SetDrawingMode(DrawingType type)
+        {
+            CurrentDrawingType = type;
+            if (_IsDrawingMode)
+                _IsDrawingMode = false;
+
+            switch (type)
             {
-                return new List<ROIDot>
-                {
-                new ROIDot { X = 0, Y = 0},
-                new ROIDot { X = 1.0, Y = 0},
-                new ROIDot { X = 1.0, Y = 1},
-                new ROIDot { X = 0, Y = 1},
-                };
+                case DrawingType.All:
+                    IsDrawingMode = true;
+                    break;
+
+                case DrawingType.Rect:
+                    IsDrawingMode = true;
+                    break;
+
+                case DrawingType.Polygon:
+                    IsDrawingMode = true;
+                    break;
+
+                case DrawingType.Line:
+                    IsDrawingMode = true;
+                    break;
+
+                case DrawingType.MultiLine:
+                    IsDrawingMode = true;
+                    break;
+
             }
+        }
 
+        internal void SetRange(List<ROIDot> currentRange)
+        {
+            IsDrawingMode = false;
+            _currentRange = currentRange;
+        }
 
-            // 임시
-            return new List<ROIDot>
-                {
-                new ROIDot { X = 0, Y = 0},
-                new ROIDot { X = 1.0, Y = 0},
-                new ROIDot { X = 1.0, Y = 1},
-                new ROIDot { X = 0, Y = 1},
-                };
+        internal void ClearRange()
+        {
+            _currentRange.Clear();
         }
     }
 }

@@ -63,7 +63,7 @@
             <Button Grid.Column="2" Command="{Binding SelectRangeCommand}" IsEnabled="{Binding IsDrawingEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Resources/icon_selectRange.png" />
-                    <TextBlock Text="Select Range"/>
+                    <TextBlock Text="Rectangle"/>
                 </StackPanel>
             </Button>
             <Button Grid.Column="4" Command="{Binding PolygonCommand}" IsEnabled="{Binding IsDrawingEnabled}">
@@ -78,7 +78,7 @@
                     <TextBlock Text="Line" />
                 </StackPanel>
             </Button>
-            <Button Grid.Column="8" Command="{Binding DoubleLineCommand}" IsEnabled="{Binding IsMultiLineEnabled}">
+            <Button Grid.Column="8" Command="{Binding MultiLineCommand}" IsEnabled="{Binding IsMultiLineEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Resources/icon_doubleLine.png" />
                     <TextBlock Text="Multi Line"/>

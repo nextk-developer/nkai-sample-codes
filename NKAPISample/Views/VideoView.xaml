@@ -11,12 +11,34 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <Storyboard x:Key="AllRangeAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0"
+                     To="0.4"
+                     AutoReverse="True"
+                     BeginTime="0:0:0.2"
+                     Duration="0:0:0.1" />
+           
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0.4"
+                     To="0"
+                     AutoReverse="True"
+                     Duration="0:0:0.1" />
+        </Storyboard>
     </UserControl.Resources>
     <Grid>
         <fl:FlyleafHost Player="{Binding Player}" >
             <Grid>
                 <Grid Name="drawCanvas"/>
-                <Grid Name="drawRange" Visibility="{Binding IsDrawingMode, Converter={StaticResource boolToVisibilityConverter}}" PreviewMouseDown="drawRange_PreviewMouseDown" PreviewMouseUp="drawRange_PreviewMouseUp"/>
+                <Grid Name="drawComplete" Visibility="Visible"/>
+                <Grid Name="drawRange" Visibility="Collapsed" MouseDown="drawRange_MouseDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Green" Opacity="0.2"/>
+                <Grid Name="gridAllRange" Visibility="Collapsed" Background="Blue" Opacity="0.3">
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard Storyboard="{StaticResource AllRangeAnimation}"/>
+                        </EventTrigger>
+                    </Grid.Triggers>
+                </Grid>
             </Grid>
         </fl:FlyleafHost>
         

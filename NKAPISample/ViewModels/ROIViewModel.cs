@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using FlyleafLib.MediaPlayer;
 using Newtonsoft.Json;
 using NKAPISample;
 using NKAPIService;
@@ -36,8 +37,6 @@ namespace NKAPISample.ViewModels
         private string _RemoveTargetID;
         private ObjectType _SelectedObjectType;
         private object _SelectedEventType;
-        private DrawingType _CurrentDrawingType;
-        public DrawingType CurrentDrawingType { get => _CurrentDrawingType; private set => SetProperty(ref _CurrentDrawingType, value); }
 
         private bool _IsLineEnabled;
         public bool IsLineEnabled { get => _IsLineEnabled; private set => SetProperty(ref _IsLineEnabled, value); }
@@ -155,19 +154,24 @@ namespace NKAPISample.ViewModels
                     break;
             }
 
-            CurrentDrawingType = drawingType;
-            IsLineEnabled = _CurrentDrawingType == DrawingType.Line;
-            IsMultiLineEnabled = _CurrentDrawingType == DrawingType.MultiLine;
-            IsDrawingEnabled = _CurrentDrawingType == DrawingType.Rect;
-            _MainVM.ROIEventTypeSelected?.Invoke(drawingType);
+            DrawingType = drawingType;
+            IsLineEnabled = _DrawingType == DrawingType.Line;
+            IsMultiLineEnabled = _DrawingType == DrawingType.MultiLine;
+            IsDrawingEnabled = _DrawingType == DrawingType.Rect;
+
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            videoVM.ClearRange();
         }
 
 
         public void CreateROI()
         {
             _MainVM.SetResponseResult("Send Request [Create ROI]");
-            if (CurrentRangeList == null)
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            CurrentRangeList = videoVM.GetRange();
+            if (CurrentRangeList == null || CurrentRangeList.Count <= 1)
             {
+                DrawingType = DrawingType.All;
                 CurrentRangeList = new List<ROIDot>
                 {
                     new ROIDot { X = 0, Y = 0},
@@ -187,7 +191,6 @@ namespace NKAPISample.ViewModels
                 RoiDots = CurrentRangeList,
                 RoiDotsSub = CurrentRangeList,
                 RoiName = $"ROI",
-                RoiFeature = ROIFeature.All,
                 RoiNumber = RoiNumber.LANE1,
                 RoiType = DrawingType,
                 EventFilter = new EventFilter
@@ -341,15 +344,18 @@ namespace NKAPISample.ViewModels
         {
             // video view에 전체 영역 자동 컬러링했다가 3초후 꺼지기!
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
-            CurrentRangeList = videoVM.GetRange(DrawingType.All);
+            videoVM.SetDrawingMode(DrawingType.All);
         }
 
         private DelegateCommand selectRangeCommand;
-        public ICommand SelectRangeCommand => selectRangeCommand ??= new DelegateCommand(SelectRange);
+        public ICommand SelectRangeCommand => selectRangeCommand ??= new DelegateCommand(DrawRectangle);
 
-        private void SelectRange()
+        private void DrawRectangle()
         {
             // video view에서 사각형 영역 선택할 수 있게 mouse down, mouse up 이벤트 받아서 처리하기.
+            CurrentRangeList.Clear();
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            videoVM.SetDrawingMode(DrawingType.Rect);
         }
 
         private DelegateCommand polygonCommand;
@@ -358,27 +364,33 @@ namespace NKAPISample.ViewModels
         private void Polygon()
         {
             // video view에서 mouse up 이벤트로 좌표 받아서 좌표 리스트 폴리곤 만들기
+            CurrentRangeList.Clear();
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            videoVM.SetDrawingMode(DrawingType.Polygon);
+        }
+
+
+        private DelegateCommand lineCommand;
+        public ICommand LineCommand => lineCommand ??= new DelegateCommand(DrawSingleLine);
+
+        public List<ROIDot> CurrentRangeList { get; private set; } = new();
+
+        private void DrawSingleLine()
+        {
+            CurrentRangeList.Clear();
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            videoVM.SetDrawingMode(DrawingType.Line);
         }
 
         private DelegateCommand multiLineCommand;
-        public ICommand MultiLineCommand => multiLineCommand ??= new DelegateCommand(MultiLine);
+        public ICommand MultiLineCommand => multiLineCommand ??= new DelegateCommand(DrawMultiLine);
 
-        
-
-        private void MultiLine()
+        private void DrawMultiLine()
         {
-            // video view에서 mouse up 이벤트로 두 점씩 여러개 좌표 받기
-        }
-
-        private DelegateCommand lineCommand;
-        public ICommand LineCommand => lineCommand ??= new DelegateCommand(Line1);
-
-        public List<ROIDot> CurrentRangeList { get; private set; }
-
-        private void Line1()
-        {
+            CurrentRangeList.Clear();
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
-            var range = videoVM.GetRange(DrawingType.Line);
+            videoVM.SetDrawingMode(DrawingType.MultiLine);
         }
+
     }
 }
