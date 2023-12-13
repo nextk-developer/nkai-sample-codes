@@ -52,7 +52,7 @@
             Header="Event"
             ItemsSource="{Binding EventList}"
             Selection="{Binding SelectedEventType}" />
-        <Label Grid.Row="2" Content="Range" />
+        <Label Grid.Row="2" Content="Range" Foreground="#666666" FontSize="11"/>
         <Grid
             Grid.Row="2"
             Grid.Column="1"
