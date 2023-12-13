@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredefineConstant", "PredefineConstant\PredefineConstant.csproj", "{17BBBB93-F648-40EF-8E46-17748CADA042}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKAPISample", "NKAPISample\NKAPISample.csproj", "{E970903E-4546-41F8-B718-D4A64632EA31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PredefineConstant", "PredefineConstant\PredefineConstant.csproj", "{17BBBB93-F648-40EF-8E46-17748CADA042}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKAPIService", "NKAPIService\NKAPIService.csproj", "{13715572-06E6-4485-8465-B90786EEAB06}"
 EndProject
