@@ -55,6 +55,8 @@ namespace NKAPISample.ViewModels
 
 
         public DrawingType CurrentDrawingType { get; private set; }
+        private List<RoiModel> _RoiList;
+        public List<RoiModel> RoiList { get => _RoiList; private set => SetProperty(ref _RoiList, value); }
 
         public VideoViewModel()
         {
@@ -184,6 +186,13 @@ namespace NKAPISample.ViewModels
         internal void ClearRange()
         {
             _currentRange.Clear();
+        }
+
+
+
+        internal void AddRoiRange(List<RoiModel> items)
+        {
+            RoiList = items;
         }
     }
 }

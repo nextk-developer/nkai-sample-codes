@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using NKAPISample.Models;
 using NKAPIService;
@@ -18,9 +19,9 @@ namespace NKAPISample.ViewModels
 
         private string _NodeName = "sample node";
         private string _License = "license-license-license-license";
-        private DelegateCommand createCommand;
-        private DelegateCommand getCommand;
-        private DelegateCommand removeCommand;
+        private RelayCommand createCommand;
+        private RelayCommand getCommand;
+        private RelayCommand removeCommand;
 
         private string _HostIP;
         private string _HostPort;
@@ -29,9 +30,9 @@ namespace NKAPISample.ViewModels
         public string HostPort { get => _HostPort; set => SetProperty(ref _HostPort, value); }
         public string NodeName { get => _NodeName; set => SetProperty(ref _NodeName, value); }
         public string License { get => _License; set => SetProperty(ref _License, value); }
-        public ICommand CreateCommand => createCommand ??= new DelegateCommand(CreateNode);
-        public ICommand GetCommand => getCommand ??= new DelegateCommand(GetNode);
-        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveNode);
+        public IRelayCommand CreateCommand => createCommand ??= new RelayCommand(CreateNode);
+        public IRelayCommand GetCommand => getCommand ??= new RelayCommand(GetNode);
+        public IRelayCommand RemoveCommand => removeCommand ??= new RelayCommand(RemoveNode);
 
 
 
@@ -54,7 +55,6 @@ namespace NKAPISample.ViewModels
             {
                 Host = _HostIP,
                 NodeName = _NodeName,
-                License = _License
             } as RequestCreateComputingNode;
 
             SetPostURL(requestNode);

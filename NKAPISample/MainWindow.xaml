@@ -2,10 +2,11 @@
     x:Class="NKAPISample.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Views="clr-namespace:NKAPISample.Views"
-    Width="1280" Height="1024"
-    Title="NextK API Sample">
+    xmlns:view="clr-namespace:NKAPISample.Views"
+    Title="NextK API Sample"
+    Width="1280"
+    Height="1024">
     <Grid>
-        <Views:MainView/>
+        <view:MainView />
     </Grid>
 </Window>

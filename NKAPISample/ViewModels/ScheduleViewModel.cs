@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using NKAPIService;
 using NKAPIService.API;
@@ -14,13 +15,13 @@ namespace NKAPISample.ViewModels
     public partial class ScheduleViewModel : ObservableObject
     {
         private MainViewModel _MainVM;
-        private DelegateCommand _AddCommand;
-        private DelegateCommand _GetCommand;
-        private DelegateCommand _RemoveCommand;
+        private RelayCommand _AddCommand;
+        private RelayCommand _GetCommand;
+        private RelayCommand _RemoveCommand;
 
-        public ICommand AddCommand => _AddCommand ??= new DelegateCommand(AddSchedule);
-        public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetSchedule);
-        public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveSchedule);
+        public IRelayCommand AddCommand => _AddCommand ??= new RelayCommand(AddSchedule);
+        public IRelayCommand GetCommand => _GetCommand ??= new RelayCommand(GetSchedule);
+        public IRelayCommand RemoveCommand => _RemoveCommand ??= new RelayCommand(RemoveSchedule);
         public ScheduleViewModel()
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();

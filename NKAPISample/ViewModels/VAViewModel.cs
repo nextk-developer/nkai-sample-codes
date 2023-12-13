@@ -11,18 +11,19 @@ using System.Threading.Tasks;
 using NKAPIService.API.Channel;
 using NKAPIService;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 
 namespace NKAPISample.ViewModels
 {
     public partial class VAViewModel
     {
         private MainViewModel _MainVM;
-        private DelegateCommand startCommand;
-        private DelegateCommand resetCommand;
-        private DelegateCommand stopCommand;
-        public ICommand StartCommand => startCommand ??= new DelegateCommand(StartVA);
-        public ICommand ResetCommand => resetCommand ??= new DelegateCommand(ResetVA);
-        public ICommand StopCommand => stopCommand ??= new DelegateCommand(StopVA);
+        private RelayCommand startCommand;
+        private RelayCommand resetCommand;
+        private RelayCommand stopCommand;
+        public IRelayCommand StartCommand => startCommand ??= new RelayCommand(StartVA);
+        public IRelayCommand ResetCommand => resetCommand ??= new RelayCommand(ResetVA);
+        public IRelayCommand StopCommand => stopCommand ??= new RelayCommand(StopVA);
         public VAViewModel()
         {
             _MainVM = Ioc.Default.GetRequiredService<MainViewModel>();
@@ -41,7 +42,6 @@ namespace NKAPISample.ViewModels
             SetPostURL(req);
             SetRequestResult(req);
             SetResponseResult(req);
-            
         }
 
         internal void ResetVA()

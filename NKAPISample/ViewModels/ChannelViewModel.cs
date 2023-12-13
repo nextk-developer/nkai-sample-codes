@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using NKAPISample.Models;
 using NKAPIService;
@@ -15,15 +16,15 @@ namespace NKAPISample.ViewModels
     {
         private NKAPIService.API.Channel.Models.InputType channelType = 0;
         private MainViewModel _MainVM;
-        private DelegateCommand createCommand;
-        private DelegateCommand getCommand;
-        private DelegateCommand removeCommand;
+        private RelayCommand createCommand;
+        private RelayCommand getCommand;
+        private RelayCommand removeCommand;
         private string _ChannelURL;
 
         public NKAPIService.API.Channel.Models.InputType ChannelType { get => channelType; set => SetProperty(ref channelType, value); }
-        public ICommand CreateCommand => createCommand ??= new DelegateCommand(CreateChannel);
-        public ICommand GetCommand => getCommand ??= new DelegateCommand(GetChannel);
-        public ICommand RemoveCommand => removeCommand ??= new DelegateCommand(RemoveChannel);
+        public IRelayCommand CreateCommand => createCommand ??= new RelayCommand(CreateChannel);
+        public IRelayCommand GetCommand => getCommand ??= new RelayCommand(GetChannel);
+        public IRelayCommand RemoveCommand => removeCommand ??= new RelayCommand(RemoveChannel);
 
         public string ChannelURL { get => _ChannelURL; set => SetProperty(ref _ChannelURL, value); }
 

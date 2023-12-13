@@ -12,8 +12,6 @@ namespace NKAPIService.API.ComputingNode
         [JsonProperty("nodeName")]
         public string NodeName { get; set; }
 
-        [JsonProperty("license")]
-        public string License { get; set; }
 
         public RequestType RequsetType => RequestType.CreateComputingNode;
         public string GetResource() => Resource;

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
 using FlyleafLib.MediaPlayer;
 using Newtonsoft.Json;
 using NKAPISample;
@@ -30,13 +31,14 @@ namespace NKAPISample.ViewModels
     {
 
         private MainViewModel _MainVM;
-        private DelegateCommand _CreateCommand;
-        private DelegateCommand _GetCommand;
-        private DelegateCommand _RemoveCommand;
+        private RelayCommand _CreateCommand;
+        private RelayCommand _GetCommand;
+        private RelayCommand _RemoveCommand;
         private DrawingType _DrawingType;
         private string _RemoveTargetID;
         private ObjectType _SelectedObjectType;
         private object _SelectedEventType;
+        
 
         private bool _IsLineEnabled;
         public bool IsLineEnabled { get => _IsLineEnabled; private set => SetProperty(ref _IsLineEnabled, value); }
@@ -67,13 +69,14 @@ namespace NKAPISample.ViewModels
         }
 
         public ObservableCollection<string> EventList { get; } = new();
+        
 
         public DrawingType DrawingType { get => _DrawingType; set => SetProperty(ref _DrawingType, value); }
-        public ICommand CreateCommand => _CreateCommand ??= new DelegateCommand(CreateROI);
-        public ICommand GetCommand => _GetCommand ??= new DelegateCommand(GetROI);
-        public ICommand RemoveCommand => _RemoveCommand ??= new DelegateCommand(RemoveROI);
+        public IRelayCommand CreateCommand => _CreateCommand ??= new RelayCommand(CreateROI);
+        public IRelayCommand GetCommand => _GetCommand ??= new RelayCommand(GetROI);
+        public IRelayCommand RemoveCommand => _RemoveCommand ??= new RelayCommand(RemoveROI);
 
-
+        public List<ROIDot> CurrentRangeList { get; private set; } = new();
         public ROIViewModel()
         {
             _MainVM = Ioc.Default.GetService<MainViewModel>();
@@ -239,7 +242,7 @@ namespace NKAPISample.ViewModels
             SetPostURL(roi);
             SetRequestResult(roi);
             SetResponseResult(roi);
-            _RemoveTargetID = "";
+            _RemoveTargetID = _MainVM.GetCurrentRoiID();
         }
 
         public void SetPostURL(IRequest req)
@@ -266,22 +269,34 @@ namespace NKAPISample.ViewModels
                 if (response is ResponseCreateROI createRoi)
                 {
                     var requestCreateROI = req as RequestCreateROI;
-                    _MainVM.AddRoi(requestCreateROI.NodeId, requestCreateROI.ChannelID, createRoi.ROIID, requestCreateROI.EventType, ObjectType.Person, requestCreateROI.RoiDots, requestCreateROI.RoiDotsSub,
+                    ObjectType objType = _SelectedObjectType;
+                    _MainVM.AddRoi(requestCreateROI.NodeId, requestCreateROI.ChannelID, createRoi.ROIID, requestCreateROI.EventType, objType, requestCreateROI.RoiDots, requestCreateROI.RoiDotsSub,
                         requestCreateROI.RoiName, requestCreateROI.RoiFeature, requestCreateROI.RoiNumber, requestCreateROI.RoiType, requestCreateROI.EventFilter);
+                    //if(_Items.Any())
+                    //    _Items.Add(createRoi.)
                 }
                 else if (response is ResponseListROI listRoi)
                 {
-                    var items = listRoi.RoiItems;
-                    if (items != null)
+                    if (listRoi != null && listRoi.RoiItems.Any())
                     {
-                        var roi = listRoi.RoiItems.LastOrDefault();
-                        if (roi != null)
-                            _MainVM.SetCurrentRoi(roi);
+                        _Items = listRoi.RoiItems;
+                        _MainVM.SetRoi(listRoi.RoiItems);
+                    }
+                    else
+                    {
+                        _Items.Clear();
+                        var sampleNode = new ResponseListROI();
+                        _MainVM.SetResponseResult($"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}");
                     }
                 }
                 else if (response is ResponseBase)
                 {
-                    if (_MainVM != null)
+                    if (_Items != null && _Items.Any())
+                    {
+                        _Items.Remove(_Items.Last());
+                        _MainVM.SetRoi(_Items);
+                    }
+                    else
                         _MainVM.RemoveRoi();
                 }
 
@@ -337,57 +352,65 @@ namespace NKAPISample.ViewModels
             return null;
         }
 
-        private DelegateCommand allRangeCommand;
-        public ICommand AllRangeCommand => allRangeCommand ??= new DelegateCommand(AllRange);
+        private RelayCommand allRangeCommand;
+        public IRelayCommand AllRangeCommand => allRangeCommand ??= new RelayCommand(AllRange);
 
         private void AllRange()
         {
             // video view에 전체 영역 자동 컬러링했다가 3초후 꺼지기!
+            CurrentRangeList.Clear();
+            DrawingType = DrawingType.All;
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.SetDrawingMode(DrawingType.All);
         }
 
-        private DelegateCommand selectRangeCommand;
-        public ICommand SelectRangeCommand => selectRangeCommand ??= new DelegateCommand(DrawRectangle);
+        private RelayCommand selectRangeCommand;
+        public IRelayCommand SelectRangeCommand => selectRangeCommand ??= new RelayCommand(DrawRectangle);
 
         private void DrawRectangle()
         {
             // video view에서 사각형 영역 선택할 수 있게 mouse down, mouse up 이벤트 받아서 처리하기.
             CurrentRangeList.Clear();
+            DrawingType = DrawingType.Rect;
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.SetDrawingMode(DrawingType.Rect);
         }
 
-        private DelegateCommand polygonCommand;
-        public ICommand PolygonCommand => polygonCommand ??= new DelegateCommand(Polygon);
+        private RelayCommand polygonCommand;
+        public IRelayCommand PolygonCommand => polygonCommand ??= new RelayCommand(Polygon);
 
         private void Polygon()
         {
             // video view에서 mouse up 이벤트로 좌표 받아서 좌표 리스트 폴리곤 만들기
             CurrentRangeList.Clear();
+            DrawingType = DrawingType.Polygon;
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.SetDrawingMode(DrawingType.Polygon);
         }
 
 
-        private DelegateCommand lineCommand;
-        public ICommand LineCommand => lineCommand ??= new DelegateCommand(DrawSingleLine);
+        private RelayCommand lineCommand;
+        public IRelayCommand LineCommand => lineCommand ??= new RelayCommand(DrawSingleLine);
 
-        public List<ROIDot> CurrentRangeList { get; private set; } = new();
+        
 
         private void DrawSingleLine()
         {
             CurrentRangeList.Clear();
+            DrawingType = DrawingType.Line;
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.SetDrawingMode(DrawingType.Line);
         }
 
-        private DelegateCommand multiLineCommand;
-        public ICommand MultiLineCommand => multiLineCommand ??= new DelegateCommand(DrawMultiLine);
+        private RelayCommand multiLineCommand;
+        private List<RoiModel> _Items = new();
+
+        public IRelayCommand MultiLineCommand => multiLineCommand ??= new RelayCommand(DrawMultiLine);
 
         private void DrawMultiLine()
         {
             CurrentRangeList.Clear();
+            DrawingType = DrawingType.MultiLine;
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.SetDrawingMode(DrawingType.MultiLine);
         }

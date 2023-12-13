@@ -1,27 +1,19 @@
-﻿using FlyleafLib.MediaPlayer;
-using NKAPISample.Controls;
-using NKAPISample.ViewModels;
+﻿using NKAPISample.ViewModels;
+using NKAPIService.API.VideoAnalysisSetting.Models;
 using NKMeta;
 using PredefineConstant;
-using PredefineConstant.Enum.Analysis.EventType;
 using PredefineConstant.Enum.Analysis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Effects;
 using System.Windows.Media;
-using System.Diagnostics;
 using System.Windows.Shapes;
-using System.Net;
-using NKAPIService.API.VideoAnalysisSetting.Models;
-using System.Drawing.Printing;
 
 namespace NKAPISample.Views
 {
@@ -33,12 +25,10 @@ namespace NKAPISample.Views
         private ConcurrentQueue<List<EventInfo>> _detectedQueue = new();
         private CancellationTokenSource _updateMetaCancellation = new();
         public VideoViewModel ViewModel => DataContext as VideoViewModel;
-        private DateTime _lastUpdateDetectionTime = DateTime.MinValue;
         private IMetaData _ReceivedDataSource;
         private List<Point> _points = new();
         private List<ROIDot> _currentRange = new();
         private DrawingType _currentDrawingType;
-        private int _pointCount;
         private Shape _currentShape;
 
         public VideoView()
@@ -64,7 +54,7 @@ namespace NKAPISample.Views
                 }
                 
             }
-            else if (e.PropertyName == "IsDrawingMode")
+            else if (e.PropertyName == "IsDrawingMode") // rectangle, polygon, line등의 영역 생성 버튼을 눌렀을 때.
             {
                 if (ViewModel.IsDrawingMode)
                 {
@@ -106,6 +96,83 @@ namespace NKAPISample.Views
                     }
                 }
             }
+            else if(e.PropertyName == "RoiList") // get roi 했을때 현재 roi 영역 목록을 화면에 표시하기 위함
+            {
+                if (ViewModel.RoiList == null)
+                    return;
+
+                _points.Clear();
+                drawComplete.Children.Clear();
+                foreach (var roi in ViewModel.RoiList)
+                {
+                    if (roi == null)
+                        continue;
+
+                    switch (roi.RoiType)
+                    {
+                        case DrawingType.All:
+                            if (roi.RoiDots == null)
+                                continue;
+
+                            var point1 = new Point(roi.RoiDots[0].X * drawComplete.ActualWidth, roi.RoiDots[0].Y * drawComplete.ActualHeight);
+                            DrawRectangle(point1);
+
+                            var point2 = new Point(roi.RoiDots[2].X * drawComplete.ActualWidth, roi.RoiDots[2].Y * drawComplete.ActualHeight);
+                            DrawRectangle(point2);
+
+                            break;
+                        case DrawingType.Rect:
+                            if (roi.RoiDots == null)
+                                continue;
+
+                            var p1 = new Point(roi.RoiDots[0].X * drawComplete.ActualWidth, roi.RoiDots[0].Y * drawComplete.ActualHeight);
+                            DrawRectangle(p1);
+
+                            var p2 = new Point(roi.RoiDots[2].X * drawComplete.ActualWidth, roi.RoiDots[2].Y * drawComplete.ActualHeight);
+                            DrawRectangle(p2);
+
+                            break;
+                        case DrawingType.MultiLine:
+                            if (roi.RoiDots == null)
+                                continue;
+
+                            foreach (var dot in roi.RoiDots)
+                            {
+                                var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                                _points.Add(p);
+                            }
+
+                            CompleteMultiLine(_points.Last());
+                            break;
+                        case DrawingType.Line:
+                            if (roi.RoiDots == null)
+                                continue;
+                            foreach (var dot in roi.RoiDots)
+                            {
+                                var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                                DrawLine(p);
+                            }
+                            break;
+                        case DrawingType.Polygon:
+                            if (roi.RoiDots == null)
+                                continue;
+
+                            foreach (var dot in roi.RoiDots)
+                            {
+                                if (_points.Count() == roi.RoiDots.Count() - 1)
+                                    break;
+
+                                var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                                _points.Add(p);
+                            }
+
+                            ROIDot lastPolygonDot = roi.RoiDots.Last();
+                            var last = new Point(lastPolygonDot.X * drawComplete.ActualWidth, lastPolygonDot.Y * drawComplete.ActualHeight);
+                            CompletePolygon(last);
+                            break;
+                    }
+                }
+            }
         }
 
         private void ViewModel_PropertyChanging(object sender, System.ComponentModel.PropertyChangingEventArgs e)
@@ -139,8 +206,6 @@ namespace NKAPISample.Views
                             var foundDetection = UpdateDetection();
                             if (!foundDetection)
                                 await Task.Delay(25, _updateMetaCancellation.Token);
-
-                            //Dispatcher.Invoke(() => drawCanvas.Children.Clear());
                         }
                         catch (Exception)
                         {
@@ -179,7 +244,6 @@ namespace NKAPISample.Views
                                 ViewModel?.AlertEventFromEdgeServer(positionPair);
                             });
                     });
-                    _lastUpdateDetectionTime = DateTime.UtcNow;
                 }
                 catch (Exception ee)
                 {
@@ -262,7 +326,10 @@ namespace NKAPISample.Views
                     break;
                 case DrawingType.Polygon:
                     if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2))
+                    {
+                        drawComplete.Children.Clear();
                         CompletePolygon(p);
+                    }
                     else if (e.LeftButton == MouseButtonState.Pressed)
                         DrawPolygon(p);
                     
@@ -272,7 +339,10 @@ namespace NKAPISample.Views
                     break;
                 case DrawingType.MultiLine:
                     if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2))
+                    {
+                        drawComplete.Children.Clear();
                         CompleteMultiLine(p);
+                    }
                     else if (e.LeftButton == MouseButtonState.Pressed)
                         DrawMultiLine(p);
                     break;
@@ -285,7 +355,6 @@ namespace NKAPISample.Views
         private void CompletePolygon(Point p)
         {
             _points.Add(p);
-            drawComplete.Children.Clear();
             if (_points.Count() > 2)
             {
 
@@ -301,9 +370,9 @@ namespace NKAPISample.Views
                     Points = polygonPoints, 
                     HorizontalAlignment = HorizontalAlignment.Left, 
                     VerticalAlignment = VerticalAlignment.Top,
-                    Fill = Brushes.Green,
+                    Fill = Brushes.Blue,
                     Opacity = 0.4,
-                    Stroke = Brushes.DarkGreen,
+                    Stroke = Brushes.DarkBlue,
                     StrokeThickness = 2
                 };
 
@@ -316,10 +385,6 @@ namespace NKAPISample.Views
                 }
                 ViewModel.SetRange(dots);
                 drawRange.Visibility=Visibility.Collapsed;
-            }
-            else
-            {
-                drawComplete.Children.Clear();
             }
 
             _points.Clear();
@@ -353,26 +418,34 @@ namespace NKAPISample.Views
 
         private void CompleteMultiLine(Point p)
         {
-            if (_points.Count() % 2 == 1)
-            {
-                Point prevPoint = _points.Last();
-                var line = new Line()
-                {
-                    X1 = prevPoint.X,
-                    Y1 = prevPoint.Y,
-                    X2 = p.X,
-                    Y2 = p.Y,
-                    StrokeThickness = 5,
-                    Stroke = Brushes.DarkGreen,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
-                drawComplete.Children.Add(line);
+            List<Point> pointResult = new();
+            if(_points.Count() % 2 == 1)
                 _points.Add(p);
+            
+            for(int i = 0; i < _points.Count(); i++)
+            {
+                if(i%2 == 1)
+                {
+                    Point prevPoint = _points[i - 1];
+                    var line = new Line()
+                    {
+                        X1 = prevPoint.X,
+                        Y1 = prevPoint.Y,
+                        X2 = _points[i].X,
+                        Y2 = _points[i].Y,
+                        StrokeThickness = 5,
+                        Stroke = Brushes.DarkBlue,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        VerticalAlignment = VerticalAlignment.Top
+                    };
+                    drawComplete.Children.Add(line);
+                    pointResult.Add(prevPoint);
+                    pointResult.Add(_points[i]);
+                }
             }
             
             var dots = new List<ROIDot>();
-            foreach (Point point in _points)
+            foreach (Point point in pointResult)
             {
                 dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
             }
@@ -393,7 +466,7 @@ namespace NKAPISample.Views
                     X2 = p.X,
                     Y2 = p.Y,
                     StrokeThickness = 3,
-                    Stroke = Brushes.DarkGreen,
+                    Stroke = Brushes.DarkBlue,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top
                 };
@@ -451,9 +524,9 @@ namespace NKAPISample.Views
             {
                 _currentShape = new Rectangle()
                 {
-                    Fill = Brushes.Green,
+                    Fill = Brushes.Blue,
                     Opacity = 0.4,
-                    Stroke = Brushes.DarkGreen,
+                    Stroke = Brushes.DarkBlue,
                     StrokeThickness = 2
                 };
             }

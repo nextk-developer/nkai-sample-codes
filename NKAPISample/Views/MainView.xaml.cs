@@ -32,10 +32,5 @@ namespace NKAPISample.Views
             (sender as TextBox)?.ScrollToEnd();
         }
 
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as MainViewModel;
-            vm.Close();
-        }
     }
 }

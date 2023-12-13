@@ -5,8 +5,10 @@ using NKAPIService;
 using NKAPIService.API.VideoAnalysisSetting.Models;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
+using PredefineConstant.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NKAPISample.ViewModels
@@ -53,11 +55,11 @@ namespace NKAPISample.ViewModels
             CurrentNode = node;            
             _ResponseResultBuilder = new StringBuilder();
             _MetadataLogBuilder = new();
-            VAStarted += StartVAAsync;
+            VAStarted += StartVA;
         }
 
 
-        private void StartVAAsync(APIService service)
+        private void StartVA(APIService service)
         {
             if(CurrentNode.CurrentChannel.VAControlStart(service).Result == NKAPIService.API.ErrorCode.SUCCESS)
                 VideoVM.VAStart(CurrentNode.CurrentChannel);
@@ -96,11 +98,6 @@ namespace NKAPISample.ViewModels
             CurrentNode.Update(nodeId, hostIP, hostPort, nodeName, license);
         }
 
-        internal void Close()
-        {
-            //_ChannelVM.RemoveChannel();
-            //_NodeVM.RemoveNode();
-        }
 
         internal void AddRoi(string nodeId, string channelID, string rOIID, IntegrationEventType eventType, PredefineConstant.Enum.Analysis.ObjectType objectType, List<ROIDot> roiDots, List<ROIDot> roiDotsSub, 
             string roiName, ROIFeature roiFeature, RoiNumber roiNumber, DrawingType roiType, EventFilter eventFilter)
@@ -111,17 +108,21 @@ namespace NKAPISample.ViewModels
 
         internal string GetCurrentRoiID()
         {
-            return CurrentNode.CurrentChannel.CurrentROI.UID;
+            return CurrentNode.CurrentChannel.CurrentROI.UID ?? "";
         }
 
-        internal void SetCurrentRoi(RoiModel roi)
+
+        internal void SetRoi(List<RoiModel> items)
         {
-            CurrentNode.CurrentChannel.AddROI(CurrentNode.NodeId, CurrentNode.CurrentChannel.ChannelUid, roi.RoiId, roi.EventType, PredefineConstant.Enum.Analysis.ObjectType.Person, roi.RoiDots, roi.RoiDotsSub, roi.RoiName, roi.RoiFeature, roi.RoiNumber, roi.RoiType, roi.EventFilter);
+            CurrentNode.CurrentChannel.SetRoi(items);
+            VideoVM.AddRoiRange(items);
+
         }
 
         internal void RemoveRoi()
         {
             CurrentNode.CurrentChannel.InitRoi();
+            VideoVM.AddRoiRange(new());
         }
 
         internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, string roiName, System.Drawing.Rectangle position)

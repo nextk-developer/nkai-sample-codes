@@ -19,11 +19,15 @@ using Vortice.MediaFoundation;
 using NKMeta;
 using NKAPIService.API.ComputingNode.Models;
 using NKAPIService.API;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using ObjectType = PredefineConstant.Enum.Analysis.ObjectType;
 
 namespace NKAPISample.Models
 {
     public class ChannelComponent
     {
+        
+
         public ChannelComponent()
         {
             InputUrl = Resources.RTSPDefaultAddress;
@@ -31,6 +35,8 @@ namespace NKAPISample.Models
         }
 
         public NodeComponent ParentNode { get; private set; }
+        private List<RoiComponent> _RoiList = new();
+        public List<RoiComponent> RoiList { get => _RoiList; set => _RoiList = value; }
 
         public RoiComponent CurrentROI { get; private set; }
 
@@ -75,6 +81,29 @@ namespace NKAPISample.Models
         internal void InitRoi()
         {
             CurrentROI = new();
+            _RoiList.Clear();
+        }
+
+
+        internal void SetRoi(List<RoiModel> items)
+        {
+            _RoiList.Clear();
+            foreach (var roi in items)
+            {
+                PredefineConstant.Model.ROI roiModel = new PredefineConstant.Model.ROI()
+                {
+                    DrawingType = roi.RoiType,
+                    Points = roi.RoiDots?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
+                    PointsSub = roi.RoiDotsSub?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
+                };
+
+                ObjectType objType = roi.ClassTypes?.First().ToObjectType() ?? ObjectType.Etc;
+                RoiComponent rc = new(NodeID, ChannelUid, roi.RoiName, roi.RoiNumber, roi.RoiId, roi.EventType, objType, roiModel, roi.EventFilter);
+                _RoiList.Add(rc);
+            }
+
+
+            CurrentROI = _RoiList.LastOrDefault();
         }
 
 
@@ -89,17 +118,8 @@ namespace NKAPISample.Models
             };
 
             RoiComponent rc = new(nodeId, channelID, roiName, roiNumber, rOIID, eventType, objectType, roi, eventFilter);
+            _RoiList.Add(rc);
             CurrentROI = rc;
-            //if (RoIs.ContainsKey(rOIID))
-            //    UpdateROI(rc);
-            //else if (RoIs.Count == 1 && RoIs.First().Key == "")
-            //{
-            //    RoIs[""] = rc;
-            //}
-            //else
-            //{
-            //    RoIs.Add(rc.UID, rc);
-            //}
         }
 
         private void UpdateROI(RoiComponent rc)

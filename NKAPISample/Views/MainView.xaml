@@ -1,47 +1,50 @@
-﻿<UserControl 
+﻿<UserControl
     x:Class="NKAPISample.Views.MainView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:NKAPISample.Views.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="clr-namespace:NKAPISample.Views"
-    xmlns:ViewModels="clr-namespace:NKAPISample.ViewModels"
-    xmlns:conv="clr-namespace:NKAPISample.Views.Converter" Unloaded="UserControl_Unloaded"
-    mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300">
+    xmlns:vm="clr-namespace:NKAPISample.ViewModels"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Height" Value="25"/>
+            <Setter Property="Height" Value="25" />
         </Style>
         <Style TargetType="{x:Type TextBox}">
-            <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+            <Setter Property="TextWrapping" Value="WrapWithOverflow" />
         </Style>
         <Style TargetType="{x:Type Label}">
-            <Setter Property="Foreground" Value="DodgerBlue"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="Foreground" Value="DodgerBlue" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Light" />
         </Style>
-        <conv:BoolToEnumConverter x:Key="BoolToEnumConverter"/>
+        <conv:BoolToEnumConverter x:Key="BoolToEnumConverter" />
         <Style TargetType="Border">
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="LightGray"/>
-            <Setter Property="Margin" Value="3"/>
-            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Padding" Value="5" />
         </Style>
         <Style TargetType="{x:Type GroupBox}">
-            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="2"/>
-            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="2"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Border>
@@ -49,60 +52,74 @@
 
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Label Content="Settings" />
                         <GroupBox Grid.Row="1" Header="Computing Node">
-                            <view:ComputingNodeView DataContext="{Binding NodeVM}"/>
+                            <view:ComputingNodeView DataContext="{Binding NodeVM}" />
                         </GroupBox>
                         <GroupBox Grid.Row="2" Header="Channel">
-                            <view:ChannelView DataContext="{Binding ChannelVM}"/>
+                            <view:ChannelView DataContext="{Binding ChannelVM}" />
                         </GroupBox>
                         <GroupBox Grid.Row="3" Header="Schedule">
-                            <view:ScheduleView DataContext="{Binding ScheduleVM}"/>
+                            <view:ScheduleView DataContext="{Binding ScheduleVM}" />
                         </GroupBox>
                         <GroupBox Grid.Row="4" Header="RoI">
-                            <view:ROIView DataContext="{Binding ROIVM}"/>
+                            <view:ROIView DataContext="{Binding ROIVM}" />
                         </GroupBox>
                         <GroupBox Grid.Row="5" Header="VA">
-                            <view:VAView DataContext="{Binding VAVM}"/>
+                            <view:VAView DataContext="{Binding VAVM}" />
                         </GroupBox>
                     </Grid>
                 </ScrollViewer>
             </Border>
-            <GridSplitter Grid.Row="1" Height="Auto" HorizontalAlignment="Stretch" Background="White"/>
-            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Row="2" >
+            <GridSplitter
+                Grid.Row="1"
+                Height="Auto"
+                HorizontalAlignment="Stretch"
+                Background="White" />
+            <Border
+                Grid.Row="2"
+                BorderBrush="LightGray"
+                BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Label Content="Metadata Log"/>
-                    <TextBox Grid.Row="1" VerticalAlignment="Stretch" Text="{Binding MetadataLog}"/>
+                    <Label Content="Metadata Log" />
+                    <TextBox
+                        Grid.Row="1"
+                        VerticalAlignment="Stretch"
+                        Text="{Binding MetadataLog}" />
                 </Grid>
             </Border>
         </Grid>
 
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+        <GridSplitter
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="White" />
 
         <Grid Grid.Column="2">
             <Grid.Resources>
                 <Style TargetType="{x:Type Label}">
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="Foreground" Value="DodgerBlue"/>
-                    <Setter Property="FontWeight" Value="Light"/>
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="Foreground" Value="DodgerBlue" />
+                    <Setter Property="FontWeight" Value="Light" />
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="70" />
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="2"/>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -111,47 +128,70 @@
             <Border Grid.ColumnSpan="2">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Label Content="Post URL"/>
-                    <TextBox Text="{Binding PostURL}" Grid.Row="1" VerticalAlignment="Stretch"/>
+                    <Label Content="Post URL" />
+                    <TextBox
+                        Grid.Row="1"
+                        VerticalAlignment="Stretch"
+                        Text="{Binding PostURL}" />
                 </Grid>
             </Border>
             <Border Grid.Row="1">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Label Content="Request API"/>
-                    <TextBox Text="{Binding RequestResult}" AcceptsReturn="True" Grid.Row="1" />
-                </Grid>
-            </Border>
-            <Border BorderThickness="1" BorderBrush="LightGray" Grid.Row="1" Grid.Column="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                    </Grid.RowDefinitions >
-                    <Label Content="Response API / Log"/>
-                    <TextBox Text="{Binding ResponseResult, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" TextChanged="TextBox_TextChanged" />
-                </Grid>
-            </Border>
-            <GridSplitter Grid.Row="2" Height="Auto" HorizontalAlignment="Stretch" Background="White" Grid.ColumnSpan="2"/>
-            <Border Grid.Row="3" BorderThickness="1" BorderBrush="LightGray" Grid.ColumnSpan="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Label Content="Streaming"/>
-                    <view:VideoView Grid.Row="1" DataContext="{Binding VideoVM}"/>
+                    <Label Content="Request API" />
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Text="{Binding RequestResult}" />
+                </Grid>
+            </Border>
+            <Border
+                Grid.Row="1"
+                Grid.Column="1"
+                BorderBrush="LightGray"
+                BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Content="Response API / Log" />
+                    <TextBox
+                        Grid.Row="1"
+                        ScrollViewer.VerticalScrollBarVisibility="Visible"
+                        Text="{Binding ResponseResult, UpdateSourceTrigger=PropertyChanged}"
+                        TextChanged="TextBox_TextChanged" />
+                </Grid>
+            </Border>
+            <GridSplitter
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Height="Auto"
+                HorizontalAlignment="Stretch"
+                Background="White" />
+            <Border
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                BorderBrush="LightGray"
+                BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Content="Streaming" />
+                    <view:VideoView Grid.Row="1" DataContext="{Binding VideoVM}" />
 
                 </Grid>
             </Border>
         </Grid>
-        
-      
+
+
     </Grid>
 </UserControl>
