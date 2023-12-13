@@ -7,20 +7,24 @@ NK에서 제공하는 서비스 사용을 위한 예제 샘플 코드
 ***
 
 ## **사전 준비**
+* .NET SDK 7.0
+  - https://dotnet.microsoft.com/ko-kr/download/dotnet/7.0
+* Visual Studio 2022 설치
+  - https://visualstudio.microsoft.com/ko/vs/
 * NK Package
   - NKProcess 설치 및 실행
     - 지원 GPU : Nvidia 30xx Seriese, T4
     - 최신 드라이버 설치(https://www.nvidia.co.kr/Download/index.aspx?lang=en)
     - Support Cuda Gpus(https://en.wikipedia.org/wiki/CUDA)
-  - ffmpeg5 dll 설치
-    - 솔루션 경로/NKAPISample 폴더에 dlls 폴더 생성
-	- 생성한 dlls 폴더에 ffmpeg 폴더 생성
-	- 생성된 [솔루션 경로/NKAPISample/dlls/ffmpeg] 폴더에 ffmpeg5 dll 붙여넣기
-	  - avcodec-59.dll
-	  - avformat-59.dll
-	  - avutil-57.dll
-	  - swresample-4.dll
-	  - swscale-6.dll
+* ffmpeg5 dll 설치
+  - 솔루션 경로/NKAPISample 폴더에 dlls 폴더 생성
+  - 생성한 dlls 폴더에 ffmpeg 폴더 생성
+  - 생성된 [솔루션 경로/NKAPISample/dlls/ffmpeg] 폴더에 ffmpeg5 dll 붙여넣기
+	- avcodec-59.dll
+	- avformat-59.dll
+	- avutil-57.dll
+	- swresample-4.dll
+	- swscale-6.dll
 * NKAPISample 솔루션 빌드
 
 ## **직접 API 요청시**
