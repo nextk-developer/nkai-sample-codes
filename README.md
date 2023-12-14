@@ -42,3 +42,4 @@ https://nextk-developer.github.io/nkapi/
 
 ## **분석 결과 확인**
 영상 내 이벤트 발생시 결과 영상 Annotation 및 Text 출력
+<img src="doc/ui.jpg" title="검출 이벤트 결과"/>
