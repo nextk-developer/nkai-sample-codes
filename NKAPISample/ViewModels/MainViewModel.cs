@@ -108,7 +108,7 @@ namespace NKAPISample.ViewModels
 
         internal string GetCurrentRoiID()
         {
-            return CurrentNode.CurrentChannel.CurrentROI.UID ?? "";
+            return CurrentNode.CurrentChannel.CurrentROI?.UID ?? "";
         }
 
 
