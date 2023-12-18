@@ -10,6 +10,7 @@ namespace NKAPIService.API.System
         public RequestType RequsetType => RequestType.ApplyModels;
 
         public string GetResource() => "/v2/va/apply-models";
+        public string NodeId { get; set; }
         public List<ModelConfig> Models { get; set; }
     }
 }

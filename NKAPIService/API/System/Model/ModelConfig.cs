@@ -9,6 +9,7 @@ namespace NKAPIService.API.System.Model
     /// </summary>
     public class ModelConfig
     {
+        public string Uid { get; set; }
         public bool Enable { get; set; }
         public DetectorModelType NetType { get; set; }
         [JsonConverter(typeof(SubNetTypeConverter))]

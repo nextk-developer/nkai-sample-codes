@@ -5,30 +5,30 @@
         Unknown = 0,
         AllDetect = 1,
         Loitering = 2,
-        // 영역 ROI 개체진입(침입)
         Intrusion = 3,
-        //RoiEnter = 4,
 
-        //AbnormalPosture = 5,          // 자세이상(앉음, 쓰러짐)
-        Falldown = 6,
-        Violence = 7,                   // 싸움,폭력 (1) ??
-            
-        //RoiExit = 8,                  // 영역 ROI 개체진출(사라짐)
+        //AbnormalPosture = 4,          // 자세이상(앉음, 쓰러짐)
+        Falldown = 4,
+        Violence = 5,                   // 싸움,폭력 (1) ??
+        //AbnormalCongestion = 6,       // 영역 ROI 내 이동흐름 정체 (정상흐름 대비 상대적 정체도)
+        //AbandonedObject = 7,
 
-        //AbnormalCongestion = 9,       // 영역 ROI 내 이동흐름 정체 (정상흐름 대비 상대적 정체도)
-        //AbandonedObject = 10,
+        AbnormalObjectCount = 9,       // 영역 ROI 내 개체밀집 (정의된 개체수 이상의 객체 존재)
+        Longstay = 10,                  // 영역 ROI 내 장시간 체류(주정차)
 
-        AbnormalObjectCount = 12,       // 영역 ROI 내 개체밀집 (정의된 개체수 이상의 객체 존재)
-        Longstay = 13,                  // 영역 ROI 내 장시간 체류(주정차)
-        LineEnter = 14,                 // Line ROI를 지나가는 객체감지 (Enter 방향)
-        //LineExit = 15,                // Line ROI를 지나가는 객체감지 (Exit 방향)
+        ElderlyPeople = 20,
 
-        LineCrossing = 16,               // 양방향 라인 통과 (1)
+        PPE = 23,                       // LG 용접자 장구류 이벤트
+        HeatTreatmentAccident = 24,
+        CraneAccident = 25,
+        //Weapon = 26,
 
-        ElderlyPeople = 30,
-        Ppe = 33,                       // LG 용접자 장구류 이벤트
-        HeatTreatmentAccident = 34,
-        CraneAccident = 35,
-        NonDetectionArea = 100,
+        #region line event
+        LineEnter = 100,                 // Line ROI를 지나가는 객체감지 (Enter 방향)
+        //LineExit = 101,                // Line ROI를 지나가는 객체감지 (Exit 방향)
+        LineCrossing = 102,              // 양방향 라인 통과 (1) 
+        #endregion
+
+        NonDetectionArea = 1000,
     }
 }

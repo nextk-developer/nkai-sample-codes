@@ -1,17 +1,13 @@
-﻿using NKAPIService.API.VideoAnalysisSetting.Models;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json;
+using NKAPIService;
+using NKAPIService.API;
 using NKAPIService.API.VideoAnalysisSetting;
+using PredefineConstant.Enum.Analysis;
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
-using System.Threading.Channels;
-using FFmpeg.AutoGen;
-using NKAPIService.API;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
-using NKAPIService.API.Channel;
-using NKAPIService;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using CommunityToolkit.Mvvm.Input;
 
 namespace NKAPISample.ViewModels
 {

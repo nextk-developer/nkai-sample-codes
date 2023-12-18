@@ -5,15 +5,15 @@ namespace NKAPIService.API.VideoAnalysisSetting
 {
     public class RequestRemoveROI : IRequest
     {
-        public const string Resource = "/v2/va/remove-roi";
+        public const string Resource = "/v3/va/remove-roi";
 
 
-        [JsonProperty("nodeId")]
+        [JsonProperty("node_id")]
         public string NodeId { get; set; }
-        [JsonProperty("channelId")]
+        [JsonProperty("channel_id")]
         public string ChannelID { get; set; }
 
-        [JsonProperty("roiIds")]
+        [JsonProperty("roi_ids")]
         public List<string> ROIIds { get; set; }
 
 

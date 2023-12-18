@@ -2,13 +2,10 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using NKAPISample.Models;
 using NKAPIService;
-using NKAPIService.API.VideoAnalysisSetting.Models;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
-using PredefineConstant.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace NKAPISample.ViewModels
@@ -99,11 +96,9 @@ namespace NKAPISample.ViewModels
         }
 
 
-        internal void AddRoi(string nodeId, string channelID, string rOIID, IntegrationEventType eventType, PredefineConstant.Enum.Analysis.ObjectType objectType, List<ROIDot> roiDots, List<ROIDot> roiDotsSub, 
-            string roiName, ROIFeature roiFeature, RoiNumber roiNumber, DrawingType roiType, EventFilter eventFilter)
+        internal void AddRoi(RoiModel roi)
         {
-
-            CurrentNode.CurrentChannel.AddROI(nodeId, channelID, rOIID, eventType, objectType, roiDots, roiDotsSub, roiName, roiFeature, roiNumber, roiType, eventFilter);
+            CurrentNode.CurrentChannel.AddROI(roi);
         }
 
         internal string GetCurrentRoiID()
@@ -125,11 +120,12 @@ namespace NKAPISample.ViewModels
             VideoVM.AddRoiRange(new());
         }
 
-        internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, string roiName, System.Drawing.Rectangle position)
+        internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, System.Drawing.Rectangle position)
         {
             _MetadataLogBuilder.AppendLine($"[{eventStatus}] {classID} {eventID}, {eventType}, X: {position.X}, Y: {position.Y}, Width: {position.Width}, Height: {position.Height}");
             MetadataLog = _MetadataLogBuilder.ToString();
         }
+
     }
 
 

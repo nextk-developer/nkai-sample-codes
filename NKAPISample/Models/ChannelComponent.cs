@@ -1,25 +1,14 @@
 ﻿using NKAPISample.Properties;
-using NKAPIService.API.Channel;
-using NKAPIService.API.VideoAnalysisSetting.Models;
-using PredefineConstant.Enum.Analysis.EventType;
+using NKAPIService.API;
+using NKAPIService.API.VideoAnalysisSetting;
+using NKMeta;
 using PredefineConstant.Enum.Analysis;
-using PredefineConstant.Enum.Camera;
-using PredefineConstant.Model.Camera;
+using PredefineConstant.Enum.Analysis.EventType;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using NKAPIService.API.VideoAnalysisSetting;
-using Vortice.MediaFoundation;
-using NKMeta;
-using NKAPIService.API.ComputingNode.Models;
-using NKAPIService.API;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using ObjectType = PredefineConstant.Enum.Analysis.ObjectType;
 
 namespace NKAPISample.Models
@@ -90,15 +79,7 @@ namespace NKAPISample.Models
             _RoiList.Clear();
             foreach (var roi in items)
             {
-                PredefineConstant.Model.ROI roiModel = new PredefineConstant.Model.ROI()
-                {
-                    DrawingType = roi.RoiType,
-                    Points = roi.RoiDots?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
-                    PointsSub = roi.RoiDotsSub?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
-                };
-
-                ObjectType objType = roi.ClassTypes?.First().ToObjectType() ?? ObjectType.Etc;
-                RoiComponent rc = new(NodeID, ChannelUid, roi.RoiName, roi.RoiNumber, roi.RoiId, roi.EventType, objType, roiModel, roi.EventFilter);
+                RoiComponent rc = new(NodeID, ChannelUid, roi.RoiName, roi.RoiId, roi.EventType, roi.ObjectType, roi);
                 _RoiList.Add(rc);
             }
 
@@ -107,17 +88,9 @@ namespace NKAPISample.Models
         }
 
 
-        internal void AddROI(string nodeId, string channelID, string rOIID, IntegrationEventType eventType, PredefineConstant.Enum.Analysis.ObjectType objectType, List<ROIDot> roiDots, List<ROIDot> roiDotsSub,
-            string roiName, ROIFeature roiFeature, RoiNumber roiNumber, DrawingType roiType, EventFilter eventFilter)
+        internal void AddROI(RoiModel roi)
         {
-            PredefineConstant.Model.ROI roi = new PredefineConstant.Model.ROI()
-            {
-                DrawingType = roiType,
-                Points = roiDots?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
-                PointsSub = roiDotsSub?.Select(d => new PointF((float)d.X, (float)d.Y)).ToList(),
-            };
-
-            RoiComponent rc = new(nodeId, channelID, roiName, roiNumber, rOIID, eventType, objectType, roi, eventFilter);
+            RoiComponent rc = new(NodeID, ChannelUid, roi.RoiName, roi.RoiId, roi.EventType, roi.ObjectType, roi);
             _RoiList.Add(rc);
             CurrentROI = rc;
         }
@@ -172,6 +145,8 @@ namespace NKAPISample.Models
                 return errorCode;
             });
         }
+
+
 
         #endregion
     }

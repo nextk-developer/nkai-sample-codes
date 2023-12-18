@@ -1,13 +1,9 @@
-﻿using NKMeta.Converter;
-using PredefineConstant.Enum.Analysis.EventType;
+﻿using Newtonsoft.Json;
+using PredefineConstant.Converter;
 using PredefineConstant.Enum.Analysis;
+using PredefineConstant.Enum.Analysis.EventType;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using PredefineConstant.Converter;
 
 namespace PredefineConstant
 {

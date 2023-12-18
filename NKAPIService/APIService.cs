@@ -100,7 +100,7 @@ namespace NKAPIService
             #endregion
 
             #region Events
-            { RequestType.CreateROI, json => JsonConvert.DeserializeObject<ResponseCreateROI>(json) },
+            { RequestType.AddOrUpdate, json => JsonConvert.DeserializeObject<ResponseAddOrUpdateRoi>(json) },
             { RequestType.RemoveROI, json => JsonConvert.DeserializeObject<ResponseBase>(json) },
             { RequestType.UpdateROI, json => JsonConvert.DeserializeObject<ResponseBase>(json) },
             { RequestType.GetROI, json => JsonConvert.DeserializeObject<ResponseGetROI>(json) },
@@ -127,7 +127,7 @@ namespace NKAPIService
             #endregion
         };
 
-        public async Task<ResponseBase> Requset(IRequest requestBody)
+        public async Task<ResponseBase> Requset(IRequest requestBody, int? timeout = null)
         {
             ResponseBase rb = new() { Code = ErrorCode.REQUEST_TIMEOUT };
             var req = new RestRequest()
@@ -141,13 +141,15 @@ namespace NKAPIService
             req.AddHeader("Content-type", "application/json; charset=utf-8");
             req.AddHeader("Accept-Encoding", "gzip");
             req.AddJsonBody(body);
-
+            if (timeout != null)
+                req.Timeout = timeout.Value;
 
             var res = await _restClient.ExecutePostAsync(req);
             if (res.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 rb = _parsingMap[requestBody.RequsetType](res.Content);
             }
+
 
             return rb;
         }

@@ -19,7 +19,7 @@
         #endregion
 
         #region Events
-        CreateROI,
+        AddOrUpdate,
         GetROI,
         UpdateROI,
         RemoveROI,

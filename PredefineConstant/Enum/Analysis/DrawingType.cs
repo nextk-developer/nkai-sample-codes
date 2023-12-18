@@ -4,10 +4,12 @@
     {
         None = 0,
         Polygon = 1,
-        Rect = 2,
-        Line = 3,
-        MultiLine = 4,
-        All = 5,
-        Clear = 6,
+        MultiPolygon = 2,
+        Rect = 3,
+        Line = 4,
+        MultiLine = 5,
+        All = 6,
+        Complex = 7,
+        Clear = 8,
     }
 }

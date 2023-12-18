@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Resources\icon_line.png" />
+    <None Remove="Resources\icon_multiPolygon.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -58,6 +59,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<Resource Include="Resources\icon_line.png" />
+		<Resource Include="Resources\icon_multiPolygon.png" />
 		<Resource Include="Resources\icon_selectRange.png" />
 		<Resource Include="Resources\icon_doubleLine.png" />
 		<Resource Include="Resources\icon_polygon.png" />

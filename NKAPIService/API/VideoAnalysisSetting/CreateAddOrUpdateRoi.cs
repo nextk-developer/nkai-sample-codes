@@ -1,27 +1,23 @@
 ﻿using Newtonsoft.Json;
 using PredefineConstant.Enum.Analysis;
-using System.Collections.Generic;
 
 namespace NKAPIService.API.VideoAnalysisSetting
 {
-    public class RequestListROI : IRequest
+    public sealed class RequestAddOrUpdateRoi : RoiModel, IRequest
     {
-        public const string Resource = "/v3/va/list-roi";
+        public const string Resource = "/v3/va/add-or-update-roi";
 
         [JsonProperty("node_id")]
         public string NodeId { get; set; }
         [JsonProperty("channel_id")]
         public string ChannelID { get; set; }
-
-
-        public RequestType RequsetType => RequestType.ListROI;
-
+        public RequestType RequsetType => RequestType.AddOrUpdate;
         public string GetResource() => Resource;
     }
 
-    public class ResponseListROI : ResponseBase
+    public class ResponseAddOrUpdateRoi : ResponseBase
     {
-        [JsonProperty("roi_items")]
-        public List<RoiModel> RoiItems { get; set; }
+        [JsonProperty("roi")]
+        public RoiModel Roi { get; set; }
     }
 }

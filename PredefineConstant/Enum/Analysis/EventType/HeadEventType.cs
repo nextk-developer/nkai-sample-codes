@@ -4,7 +4,7 @@
     {
         Unknown = 0,
         AllDetect = 1,
-        NoHelmet = 25,            // 헬멧 미착용
-        NonDetectionArea = 100,
+        NoHelmet = 15,            // 헬멧 미착용
+        NonDetectionArea = 1000,
     }
 }

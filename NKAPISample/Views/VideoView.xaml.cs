@@ -1,5 +1,5 @@
-﻿using NKAPISample.ViewModels;
-using NKAPIService.API.VideoAnalysisSetting.Models;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using NKAPISample.ViewModels;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
@@ -24,10 +24,11 @@ namespace NKAPISample.Views
     {
         private ConcurrentQueue<List<EventInfo>> _detectedQueue = new();
         private CancellationTokenSource _updateMetaCancellation = new();
-        public VideoViewModel ViewModel => DataContext as VideoViewModel;
+        public VideoViewModel ViewModel => Ioc.Default.GetService<VideoViewModel>();
         private IMetaData _ReceivedDataSource;
         private List<Point> _points = new();
-        private List<ROIDot> _currentRange = new();
+        private List<RoiPoint> _currentRange = new();
+        private List<RoiPoint> _multiPoints = new();
         private DrawingType _currentDrawingType;
         private Shape _currentShape;
 
@@ -62,6 +63,7 @@ namespace NKAPISample.Views
                     _currentRange.Clear();
                     drawRange.Children.Clear();
                     drawComplete.Children.Clear();
+                    _multiPoints.Clear();
                     switch (_currentDrawingType)
                     {
                         case DrawingType.All:
@@ -72,12 +74,19 @@ namespace NKAPISample.Views
                                 Dispatcher.Invoke( () =>  gridAllRange.Visibility = Visibility.Collapsed);
                             });
 
-                            _currentRange = new List<ROIDot>
+                            _currentRange = new()
                             {
-                                new ROIDot { X = 0, Y = 0},
-                                new ROIDot { X = 1.0, Y = 0},
-                                new ROIDot { X = 1.0, Y = 1},
-                                new ROIDot { X = 0, Y = 1},
+                                new(){
+                                    RoiNumber=0,
+                                    RoiType = DrawingType.All,
+                                    Points = new List<ROIDot>()
+                                    {
+                                        new ROIDot { X = 0, Y = 0},
+                                        new ROIDot { X = 1.0, Y = 0},
+                                        new ROIDot { X = 1.0, Y = 1},
+                                        new ROIDot { X = 0, Y = 1},
+                                    }
+                                }
                             };
                             ViewModel.SetRange(_currentRange);
 
@@ -87,6 +96,7 @@ namespace NKAPISample.Views
                         case DrawingType.Line:
                         case DrawingType.Polygon:
                         case DrawingType.MultiLine:
+                        case DrawingType.MultiPolygon:
                             drawRange.Visibility = Visibility.Visible;
                             break;
 
@@ -105,75 +115,106 @@ namespace NKAPISample.Views
                 drawComplete.Children.Clear();
                 foreach (var roi in ViewModel.RoiList)
                 {
-                    if (roi == null)
+                    if (roi == null || !roi.RoiPoints.Any())
                         continue;
 
-                    switch (roi.RoiType)
+                    
+                    switch (roi.RoiPoints.First().RoiType)
                     {
                         case DrawingType.All:
-                            if (roi.RoiDots == null)
+                            if (roi.RoiPoints == null)
                                 continue;
 
-                            var point1 = new Point(roi.RoiDots[0].X * drawComplete.ActualWidth, roi.RoiDots[0].Y * drawComplete.ActualHeight);
+                            var point1 = new Point(0, 0);
                             DrawRectangle(point1);
 
-                            var point2 = new Point(roi.RoiDots[2].X * drawComplete.ActualWidth, roi.RoiDots[2].Y * drawComplete.ActualHeight);
+                            var point2 = new Point(drawComplete.ActualWidth, drawComplete.ActualHeight);
                             DrawRectangle(point2);
-
                             break;
                         case DrawingType.Rect:
-                            if (roi.RoiDots == null)
+                            if (roi.RoiPoints == null)
                                 continue;
 
-                            var p1 = new Point(roi.RoiDots[0].X * drawComplete.ActualWidth, roi.RoiDots[0].Y * drawComplete.ActualHeight);
-                            DrawRectangle(p1);
+                                var p1 = new Point(roi.RoiPoints[0].Points[0].X * drawComplete.ActualWidth, roi.RoiPoints[0].Points[0].Y * drawComplete.ActualHeight);
+                                DrawRectangle(p1);
 
-                            var p2 = new Point(roi.RoiDots[2].X * drawComplete.ActualWidth, roi.RoiDots[2].Y * drawComplete.ActualHeight);
-                            DrawRectangle(p2);
-
+                                var p2 = new Point(roi.RoiPoints[0].Points[2].X * drawComplete.ActualWidth, roi.RoiPoints[0].Points[2].Y * drawComplete.ActualHeight);
+                                DrawRectangle(p2);
                             break;
                         case DrawingType.MultiLine:
-                            if (roi.RoiDots == null)
+                            if (!roi.RoiPoints.Any())
                                 continue;
 
-                            foreach (var dot in roi.RoiDots)
+                            foreach (var point in roi.RoiPoints)
                             {
-                                var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
-                                _points.Add(p);
+                                foreach (var dot in point.Points)
+                                {
+                                    var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                                    _points.Add(p);
+                                }
                             }
 
                             CompleteMultiLine(_points.Last());
                             break;
                         case DrawingType.Line:
-                            if (roi.RoiDots == null)
+                            if (!roi.RoiPoints.Any())
                                 continue;
-                            foreach (var dot in roi.RoiDots)
+
+                            foreach (var dot in roi.RoiPoints[0].Points)
                             {
                                 var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
                                 DrawLine(p);
                             }
                             break;
                         case DrawingType.Polygon:
-                            if (roi.RoiDots == null)
+                            if (!roi.RoiPoints.Any())
                                 continue;
 
-                            foreach (var dot in roi.RoiDots)
+                            foreach (var dot in roi.RoiPoints.First().Points)
                             {
-                                if (_points.Count() == roi.RoiDots.Count() - 1)
+                                if (_points.Count() == roi.RoiPoints.First().Points.Count() - 1)
                                     break;
 
                                 var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
                                 _points.Add(p);
                             }
 
-                            ROIDot lastPolygonDot = roi.RoiDots.Last();
+                            ROIDot lastPolygonDot = roi.RoiPoints.First().Points.Last();
                             var last = new Point(lastPolygonDot.X * drawComplete.ActualWidth, lastPolygonDot.Y * drawComplete.ActualHeight);
                             CompletePolygon(last);
+                            break;
+
+                        case DrawingType.MultiPolygon:
+                            if (!roi.RoiPoints.Any())
+                                continue;
+
+                            foreach (var point in roi.RoiPoints)
+                            {
+                                foreach (var dot in point.Points)
+                                {
+                                    if (_points.Count() == point.Points.Count() - 1)
+                                        break;
+
+                                    var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                                    _points.Add(p);
+                                }
+
+
+                                ROIDot multiPolygonDot = point.Points.Last();
+                                var lastMultiPolygon = new Point(multiPolygonDot.X * drawComplete.ActualWidth, multiPolygonDot.Y * drawComplete.ActualHeight);
+
+                                if (point == roi.RoiPoints.Last())
+                                    CompleteMultiPolygon(lastMultiPolygon);
+                                else
+                                    ContinueMultiPolygon(lastMultiPolygon);
+                            }
+
                             break;
                     }
                 }
             }
         }
+
 
         private void ViewModel_PropertyChanging(object sender, System.ComponentModel.PropertyChangingEventArgs e)
         {
@@ -324,6 +365,7 @@ namespace NKAPISample.Views
                 case DrawingType.Rect:
                     DrawRectangle(p);
                     break;
+
                 case DrawingType.Polygon:
                     if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2))
                     {
@@ -334,9 +376,30 @@ namespace NKAPISample.Views
                         DrawPolygon(p);
                     
                     break;
+
+                case DrawingType.MultiPolygon:
+                    if (e.RightButton == MouseButtonState.Pressed)
+                    {
+                        ClearLine();
+                        ContinueMultiPolygon(p);
+                        
+                    }
+
+                    else if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
+                    {
+                        ClearLine();
+                        CompleteMultiPolygon(p);
+                    }
+
+                    else if (e.LeftButton == MouseButtonState.Pressed)
+                        DrawPolygon(p);
+
+                    break;
+
                 case DrawingType.Line:
                     DrawLine(p);
                     break;
+
                 case DrawingType.MultiLine:
                     if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2))
                     {
@@ -351,6 +414,17 @@ namespace NKAPISample.Views
 
         }
 
+        private void ClearLine()
+        {
+            UIElement[] elements = new UIElement[drawComplete.Children.Count];
+            drawComplete.Children.CopyTo(elements, 0);
+                
+            foreach (var child in elements)
+            {
+                if (child is Line)
+                    drawComplete.Children.Remove(child);
+            }
+        }
 
         private void CompletePolygon(Point p)
         {
@@ -383,13 +457,121 @@ namespace NKAPISample.Views
                 {
                     dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
                 }
-                ViewModel.SetRange(dots);
-                drawRange.Visibility=Visibility.Collapsed;
+
+                List<RoiPoint> points = new()
+                {
+                    new(){
+                        RoiNumber=0,
+                        RoiType = DrawingType.Polygon,
+                        Points = dots
+                    }
+                };
+                ViewModel.SetRange(points);
+                drawRange.Visibility = Visibility.Collapsed;
             }
 
             _points.Clear();
         }
-        
+
+
+
+        private void ContinueMultiPolygon(Point p)
+        {
+            _points.Add(p);
+            if (_points.Count() > 2)
+            {
+
+                var polygonPoints = new PointCollection();
+                foreach (var pp in _points)
+                {
+                    var polygonPoint = new Point(pp.X, pp.Y);
+                    polygonPoints.Add(polygonPoint);
+                }
+
+
+                _currentShape = new Polygon()
+                {
+                    Points = polygonPoints,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Fill = Brushes.Blue,
+                    Opacity = 0.4,
+                    Stroke = Brushes.DarkBlue,
+                    StrokeThickness = 2
+                };
+
+                drawComplete.Children.Add(_currentShape);
+
+                var dots = new List<ROIDot>();
+                foreach (Point point in _points)
+                {
+                    dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
+                }
+
+                RoiPoint polygon =
+
+                    new()
+                    {
+                        RoiNumber = (RoiNumber)_multiPoints.Count(),
+                        RoiType = DrawingType.MultiPolygon,
+                        Points = dots
+                    };
+
+                _multiPoints.Add(polygon);
+            }
+
+            _points.Clear();
+        }
+
+        private void CompleteMultiPolygon(Point p)
+        {
+            _points.Add(p);
+            if (_points.Count() > 2)
+            {
+
+                var polygonPoints = new PointCollection();
+                foreach (var pp in _points)
+                {
+                    var polygonPoint = new Point(pp.X, pp.Y);
+                    polygonPoints.Add(polygonPoint);
+                }
+
+
+                _currentShape = new Polygon()
+                {
+                    Points = polygonPoints,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Fill = Brushes.Blue,
+                    Opacity = 0.4,
+                    Stroke = Brushes.DarkBlue,
+                    StrokeThickness = 2
+                };
+
+                drawComplete.Children.Add(_currentShape);
+
+                var dots = new List<ROIDot>();
+                foreach (Point point in _points)
+                {
+                    dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
+                }
+
+                RoiPoint polygon =
+
+                    new()
+                    {
+                        RoiNumber = (RoiNumber)_multiPoints.Count(),
+                        RoiType = DrawingType.MultiPolygon,
+                        Points = dots
+                    };
+
+                _multiPoints.Add(polygon);
+            }
+
+            ViewModel.SetRange(_multiPoints);
+            _points.Clear();
+        }
+
 
         private void DrawMultiLine(Point p)
         {
@@ -444,19 +626,37 @@ namespace NKAPISample.Views
                 }
             }
             
-            var dots = new List<ROIDot>();
+            var dots = new Queue<ROIDot>();
             foreach (Point point in pointResult)
             {
-                dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
+                dots.Enqueue(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
             }
-            ViewModel.SetRange(dots);
+
+            List<RoiPoint> points = new List<RoiPoint>();
+            int roiIndex = 0;
+            while (dots.TryDequeue(out ROIDot result1))
+            {
+                while(dots.TryDequeue(out ROIDot result2))
+                {
+                    points.Add(new RoiPoint()
+                    {
+                        RoiNumber = (RoiNumber)roiIndex++,
+                        RoiType = DrawingType.MultiLine,
+                        Points = new List<ROIDot>() { result1, result2 }
+                    });
+                    break;
+                }
+            }
+            
+            
+            ViewModel.SetRange(points);
             drawRange.Visibility = Visibility.Collapsed;
             _points.Clear();
         }
 
         private void DrawLine(Point p)
         {
-            if(_points.Count() == 1)
+            if (_points.Count() == 1)
             {
                 Point prevPoint = _points.Last();
                 var line = new Line()
@@ -475,7 +675,18 @@ namespace NKAPISample.Views
                 var dotList = new List<ROIDot>();
                 dotList.Add(new ROIDot() { X = prevPoint.X / drawRange.ActualWidth, Y = prevPoint.Y / drawRange.ActualHeight });
                 dotList.Add(new ROIDot() { X = p.X / drawRange.ActualWidth, Y = p.Y / drawRange.ActualHeight });
-                ViewModel.SetRange(dotList);
+
+                var point = new List<RoiPoint>()
+                {
+                    new()
+                    {
+                        RoiType=DrawingType.Line,
+                        RoiNumber=0,
+                        Points=dotList
+                    }
+                };
+
+                ViewModel.SetRange(point);
                 drawRange.Visibility = Visibility.Collapsed;
                 _points.Clear();
             }
@@ -551,7 +762,7 @@ namespace NKAPISample.Views
                 dotList.Add(new ROIDot() { X = Math.Max(_points.First().X, _points.Last().X) / drawRange.ActualWidth, Y= yMargin / drawRange.ActualHeight });
                 dotList.Add(new ROIDot() { X = Math.Max(_points.First().X, _points.Last().X) / drawRange.ActualWidth, Y = Math.Max(_points.First().Y, _points.Last().Y) / drawRange.ActualHeight });
                 dotList.Add(new ROIDot() { X = xMargin / drawRange.ActualWidth, Y = Math.Max(_points.First().Y, _points.Last().Y) / drawRange.ActualHeight });
-                ViewModel.SetRange(dotList);
+                ViewModel.SetRange(new List<RoiPoint>() { new() { RoiNumber = 0, RoiType = DrawingType.Rect, Points = dotList } });
                 drawRange.Visibility = Visibility.Collapsed;
                 _points.Clear();
             }

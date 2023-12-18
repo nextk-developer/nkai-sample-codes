@@ -11,12 +11,6 @@ namespace NKAPIService.API.VideoAnalysisSetting
         [JsonIgnore]
         public RequestType RequsetType => RequestType.MatchingFace;
         public string GetResource() => Resource;
-
-        [JsonProperty("nodeId")]
-        public string NodeId { get; set; }
-
-        [JsonProperty("faceImages")]
-        public List<string> FaceImages { get; set; }
     }
 
     public class ResponseMatchingFace : ResponseBase

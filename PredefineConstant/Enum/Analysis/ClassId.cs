@@ -68,7 +68,10 @@
         Cane = 1005,
         BathChair = 1006,
         Stroller = 1007,
-        Leak = 1008
+        Leak = 1008,
+        FloodedRoad = 1009,
+        SnowRoad = 1010,
+        Road = 1011,
     }
 
     public static class ClassIdEx

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using NKAPIService.API.VideoAnalysisSetting.Models;
+using PredefineConstant.Enum.Analysis;
 
 namespace NKAPIService.API.VideoAnalysisSetting
 {

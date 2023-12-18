@@ -3,34 +3,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FlyleafLib;
 using FlyleafLib.MediaPlayer;
-using Newtonsoft.Json;
-using NKAPISample.Controls;
 using NKAPISample.Models;
-using NKAPISample.Views;
-using NKAPIService.API.VideoAnalysisSetting.Models;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Reflection.Metadata;
-using System.Security.Policy;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Media;
-using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using Vortice.Mathematics;
-using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace NKAPISample.ViewModels
 {
@@ -51,7 +30,7 @@ namespace NKAPISample.ViewModels
         private bool _IsDrawingMode = false;
 
         public bool IsDrawingMode { get => _IsDrawingMode; set => SetProperty(ref _IsDrawingMode, value); }
-        private List<ROIDot> _currentRange = new();
+        private List<RoiPoint> _currentRange = new();
 
 
         public DrawingType CurrentDrawingType { get; private set; }
@@ -137,11 +116,11 @@ namespace NKAPISample.ViewModels
         {
             foreach(var pair in positionPair)
             {
-                _MainVM.SetMetadataLog(pair.Key.EventStatus, pair.Key.ClassID, pair.Key.EventID, pair.Key.EventType, pair.Key.RoiInfo.RoiName, pair.Value);   
+                _MainVM.SetMetadataLog(pair.Key.EventStatus, pair.Key.ClassID, pair.Key.EventID, pair.Key.EventType, pair.Value);   
             }
         }
 
-        internal List<ROIDot> GetRange()
+        internal List<RoiPoint> GetRange()
         {
             return _currentRange;
         }
@@ -152,32 +131,10 @@ namespace NKAPISample.ViewModels
             if (_IsDrawingMode)
                 _IsDrawingMode = false;
 
-            switch (type)
-            {
-                case DrawingType.All:
-                    IsDrawingMode = true;
-                    break;
-
-                case DrawingType.Rect:
-                    IsDrawingMode = true;
-                    break;
-
-                case DrawingType.Polygon:
-                    IsDrawingMode = true;
-                    break;
-
-                case DrawingType.Line:
-                    IsDrawingMode = true;
-                    break;
-
-                case DrawingType.MultiLine:
-                    IsDrawingMode = true;
-                    break;
-
-            }
+            IsDrawingMode = true;
         }
 
-        internal void SetRange(List<ROIDot> currentRange)
+        internal void SetRange(List<RoiPoint> currentRange)
         {
             IsDrawingMode = false;
             _currentRange = currentRange;

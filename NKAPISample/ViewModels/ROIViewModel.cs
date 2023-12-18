@@ -1,27 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using FlyleafLib.MediaPlayer;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
-using NKAPISample;
 using NKAPIService;
 using NKAPIService.API;
-using NKAPIService.API.Channel;
 using NKAPIService.API.VideoAnalysisSetting;
-using NKAPIService.API.VideoAnalysisSetting.Models;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
 using PredefineConstant.Extenstion;
-using PredefineConstant.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Navigation;
 using Vortice.MediaFoundation;
 using ObjectType = PredefineConstant.Enum.Analysis.ObjectType;
 
@@ -48,6 +41,8 @@ namespace NKAPISample.ViewModels
 
         private bool _IsDrawingEnabled;
         public bool IsDrawingEnabled { get => _IsDrawingEnabled; private set => SetProperty(ref _IsDrawingEnabled, value); }
+        private bool _IsMultiPolygonEnabled;
+        public bool IsMultiPolygonEnabled { get => _IsMultiPolygonEnabled; private set => SetProperty(ref _IsMultiPolygonEnabled, value); }
 
         public ObjectType SelectedObjectType
         {
@@ -76,7 +71,7 @@ namespace NKAPISample.ViewModels
         public IRelayCommand GetCommand => _GetCommand ??= new RelayCommand(GetROI);
         public IRelayCommand RemoveCommand => _RemoveCommand ??= new RelayCommand(RemoveROI);
 
-        public List<ROIDot> CurrentRangeList { get; private set; } = new();
+        public List<RoiPoint> CurrentRangeList { get; private set; } = new();
         public ROIViewModel()
         {
             _MainVM = Ioc.Default.GetService<MainViewModel>();
@@ -138,9 +133,17 @@ namespace NKAPISample.ViewModels
             DrawingType drawingType;
             switch (eventTypeResult)
             {
+                case IntegrationEventType.FloodedOrSnowRoad:
+                    drawingType = DrawingType.MultiPolygon;
+                    break;
+
                 //line
                 case IntegrationEventType.LineCrossing:
                 case IntegrationEventType.LineEnter:
+                case IntegrationEventType.LineStraight:
+                case IntegrationEventType.LineRightTurn:
+                case IntegrationEventType.LineLeftTurn:
+                case IntegrationEventType.LineUTurn:
                     drawingType = DrawingType.Line;
                     break;
                 //multiline
@@ -161,6 +164,7 @@ namespace NKAPISample.ViewModels
             IsLineEnabled = _DrawingType == DrawingType.Line;
             IsMultiLineEnabled = _DrawingType == DrawingType.MultiLine;
             IsDrawingEnabled = _DrawingType == DrawingType.Rect;
+            IsMultiPolygonEnabled = _DrawingType == DrawingType.MultiPolygon;
 
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             videoVM.ClearRange();
@@ -172,41 +176,69 @@ namespace NKAPISample.ViewModels
             _MainVM.SetResponseResult("Send Request [Create ROI]");
             var videoVM = Ioc.Default.GetService<VideoViewModel>();
             CurrentRangeList = videoVM.GetRange();
-            if (CurrentRangeList == null || CurrentRangeList.Count <= 1)
+            if (!CurrentRangeList.Any())
             {
-                DrawingType = DrawingType.All;
-                CurrentRangeList = new List<ROIDot>
+                CurrentRangeList = new()
                 {
-                    new ROIDot { X = 0, Y = 0},
-                    new ROIDot { X = 1.0, Y = 0},
-                    new ROIDot { X = 1.0, Y = 1},
-                    new ROIDot { X = 0, Y = 1},
+                    new(){
+                        RoiNumber=0,
+                        RoiType = DrawingType.All,
+                        Points = new List<ROIDot>()
+                        {
+                            new ROIDot { X = 0, Y = 0},
+                            new ROIDot { X = 1.0, Y = 0},
+                            new ROIDot { X = 1.0, Y = 1},
+                            new ROIDot { X = 0, Y = 1},
+                        }
+                    }
                 };
             }
 
             IntegrationEventType eventTypeResult = (IntegrationEventType)Enum.Parse(typeof(IntegrationEventType), _SelectedEventType.ToString());
-
-            var roi = new RequestCreateROI()
+            Dictionary<string, string> param = getParam(DrawingType, eventTypeResult);
+            var roi = new RequestAddOrUpdateRoi()
             {
                 NodeId = _MainVM.CurrentNode.NodeId,
                 ChannelID = _MainVM.CurrentNode.CurrentChannel.ChannelUid,
+                RoiId = string.Empty,
                 EventType = eventTypeResult,
-                RoiDots = CurrentRangeList,
-                RoiDotsSub = CurrentRangeList,
-                RoiName = $"ROI",
-                RoiNumber = RoiNumber.LANE1,
                 RoiType = DrawingType,
-                EventFilter = new EventFilter
-                {
-                    MaxDetectSize = new RoiSize(1, 1),
-                    MinDetectSize = new RoiSize(0, 0),
-                    ObjectsTarget = _SelectedObjectType.ToClassIds(eventTypeResult)
-                }
+                MinMaxSize = new MinMaxSize() { MinDetectSize = new(0, 0), MaxDetectSize = new(1, 1) },
+                ObjectsFilter = _SelectedObjectType.ToClassIds(eventTypeResult),
+                ObjectType = _SelectedObjectType,
+                Params = param,
+                RoiName = string.Empty,
+                RoiPoints = CurrentRangeList
+
             };
 
             SetPostURL(roi);
             SetRequestResult(roi);
             SetResponseResult(roi);
+        }
+
+        private Dictionary<string, string> getParam(DrawingType drawingType, IntegrationEventType eventType)
+        {
+            double stayTime = 0;
+            InsideRoiType insideRoiType = InsideRoiType.CenterX_BottomY;
+            List<double> customPoints = new();
+            double intersection = 0;
+            string thumbnailRatio = "1, 1";
+            string threshold = string.Join(",", SelectedObjectType.ToClassIds(eventType).Select(c => $"{(int)c},0.5"));
+            string directional = "0, 0";
+            double maxExitTime = 2;
+
+            return new()
+            {
+                { ParamKeys.StayTimeSec, stayTime.ToString() },
+                { ParamKeys.InsideRoiType, ((int)insideRoiType).ToString() },
+                { ParamKeys.CustomReferencePoint, string.Join(",", customPoints) },
+                { ParamKeys.Intersection, intersection.ToString() },
+                { ParamKeys.ThumbnailRatio, thumbnailRatio },
+                { ParamKeys.Threshold, threshold },
+                { ParamKeys.Directional, directional },
+                { ParamKeys.MaxExitTime, maxExitTime.ToString() }
+            };
         }
 
         public void GetROI()
@@ -252,7 +284,7 @@ namespace NKAPISample.ViewModels
 
         public void SetRequestResult(IRequest req)
         {
-            if (req is RequestCreateROI createReq)
+            if (req is RequestAddOrUpdateRoi createReq)
                 _MainVM.RequestResult = JsonConvert.SerializeObject(createReq, Formatting.Indented);
             else if (req is RequestListROI getReq)
                 _MainVM.RequestResult = JsonConvert.SerializeObject(getReq, Formatting.Indented);
@@ -266,14 +298,10 @@ namespace NKAPISample.ViewModels
             var response = await GetResponse(req);
             if (response != null && response.Code == ErrorCode.SUCCESS)
             {
-                if (response is ResponseCreateROI createRoi)
+                if (response is ResponseAddOrUpdateRoi createRoi)
                 {
-                    var requestCreateROI = req as RequestCreateROI;
-                    ObjectType objType = _SelectedObjectType;
-                    _MainVM.AddRoi(requestCreateROI.NodeId, requestCreateROI.ChannelID, createRoi.ROIID, requestCreateROI.EventType, objType, requestCreateROI.RoiDots, requestCreateROI.RoiDotsSub,
-                        requestCreateROI.RoiName, requestCreateROI.RoiFeature, requestCreateROI.RoiNumber, requestCreateROI.RoiType, requestCreateROI.EventFilter);
-                    //if(_Items.Any())
-                    //    _Items.Add(createRoi.)
+                    _MainVM.AddRoi(createRoi.Roi);
+
                 }
                 else if (response is ResponseListROI listRoi)
                 {
@@ -317,9 +345,9 @@ namespace NKAPISample.ViewModels
                     responseResult = "Error: NO RESPONSE\n";
 
 
-                if (req is RequestCreateROI)
+                if (req is RequestAddOrUpdateRoi)
                 {
-                    var sampleNode = new ResponseCreateROI();
+                    var sampleNode = new RequestAddOrUpdateRoi();
                     responseResult += $"Response sample:\n{JsonConvert.SerializeObject(sampleNode, Formatting.Indented)}";
                 }
                 else if (req is RequestListROI)
@@ -342,8 +370,8 @@ namespace NKAPISample.ViewModels
 
             APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
 
-            if (req is RequestCreateROI createReq)
-                return await service.Requset(createReq) as ResponseCreateROI;
+            if (req is RequestAddOrUpdateRoi createReq)
+                return await service.Requset(createReq) as ResponseAddOrUpdateRoi;
             else if (req is RequestListROI getReq)
                 return await service.Requset(getReq) as ResponseListROI;
             else if (req is RequestRemoveROI removeReq) //else if (req is RequestRemoveROI removeReq)
@@ -415,5 +443,15 @@ namespace NKAPISample.ViewModels
             videoVM.SetDrawingMode(DrawingType.MultiLine);
         }
 
+        private RelayCommand multiPolygonCommand;
+        public ICommand MultiPolygonCommand => multiPolygonCommand ??= new RelayCommand(MultiPolygon);
+
+        private void MultiPolygon()
+        {
+            CurrentRangeList.Clear();
+            DrawingType = DrawingType.MultiPolygon;
+            var videoVM = Ioc.Default.GetService<VideoViewModel>();
+            videoVM.SetDrawingMode(DrawingType.MultiPolygon);
+        }
     }
 }

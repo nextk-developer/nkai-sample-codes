@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using NKAPIService.API.VideoAnalysisSetting.Models;
+using PredefineConstant.Enum.Analysis;
 using System.Collections.Generic;
 
 namespace NKAPIService.API.Channel
@@ -12,7 +12,7 @@ namespace NKAPIService.API.Channel
         public string NodeId { get; set; }
         [JsonProperty("channelId")]
         public string ChannelId { get; set; }
-                [JsonProperty("points")]
+        [JsonProperty("points")]
         public List<ROIDot> Points { get; set; }
 
         public RequestType RequsetType => RequestType.UpdateChannelLinkPoints;

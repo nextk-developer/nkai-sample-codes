@@ -9,6 +9,11 @@ namespace PredefineConstant.Extenstion
     {
         public static List<ClassId> ToClassIds(this ObjectType ot, IntegrationEventType eventType)
         {
+            var objType = ot.ToString().ToLower();
+            if (eventType == IntegrationEventType.FloodedOrSnowRoad)
+                objType = ObjectType.Vehicle.ToString().ToLower();
+
+
             List<ClassId> classIds = new();
             if (eventType == IntegrationEventType.Falldown)
             {
@@ -47,7 +52,7 @@ namespace PredefineConstant.Extenstion
                 System.Enum.GetValues(typeof(ClassId))
                            .OfType<ClassId>()
                            .Where(x => (int)x < (int)ClassId.NonTrackingObjectFromThis)
-                           .Where(x => x.ToString().ToLower().StartsWith(ot.ToString().ToLower()))
+                           .Where(x => x.ToString().ToLower().StartsWith(objType))
                            .ToList()
                            .ForEach(x => classIds.Add(x));
             }

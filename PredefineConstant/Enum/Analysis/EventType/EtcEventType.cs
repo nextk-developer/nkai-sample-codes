@@ -3,7 +3,8 @@
     public enum EtcEventType
     {
         Unknown = 0,
-        TidyUpWorkbench = 500,
-        Leak = 501,
+        TidyUpWorkbench = 1001,
+        Leak = 1002,
+        FloodedOrSnowRoad = 1003
     }
 }
