@@ -3,6 +3,7 @@ using NKAPISample.ViewModels;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
+using PredefineConstant.Model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -52,6 +53,13 @@ namespace NKAPISample.Views
                 {
                     StartUpdateMetaTask();
                     _ReceivedDataSource.OnReceivedMetaData += OnReceivedData;
+                    UIElement[] elements = new UIElement[drawComplete.Children.Count];
+                    drawComplete.Children.CopyTo(elements, 0);
+                    foreach (var child in elements)
+                    {
+                        if (child is Polygon polygon)
+                            drawComplete.Children.Remove(polygon);
+                    }
                 }
                 
             }
@@ -320,7 +328,15 @@ namespace NKAPISample.Views
             {
                 var rect = getActualRectangle(obj, dirtyRect);
 
-                if (rect.Width <= 0 || rect.X < 0 || rect.Y < 0 || rect.Height <= 0) continue;
+                if (rect.Width <= 0 || rect.X < 0 || rect.Y < 0 || rect.Height <= 0)
+                {
+                    if (obj.EventType == PredefineConstant.Enum.Analysis.EventType.IntegrationEventType.FloodedOrSnowRoad)
+                    {
+                        SetFloodedOrSnowLabel(obj);
+                    }
+
+                    continue;
+                }
 
                 System.Windows.Media.Color color = System.Windows.Media.Color.FromRgb(255, 20, 84);
                 var strokeColor = new SolidColorBrush(color);
@@ -347,6 +363,48 @@ namespace NKAPISample.Views
                 };
                 drawCanvas.Children.Add(shape);
                 drawCanvas.Children.Add(label);
+            }
+        }
+
+
+        /// <summary>
+        /// 침수/적설일 때 UI에 라벨 표시
+        /// </summary>
+        /// <param name="obj"></param>
+        private void SetFloodedOrSnowLabel(EventInfo obj)
+        {
+            foreach (var point in obj.RoiInfo.Roi.RoiPoints)
+            {
+                var firstPoint = point.Points.First();
+                if (string.IsNullOrEmpty(point.Description))
+                    continue;
+
+                foreach (var dot in point.Points)
+                {
+                    if (_points.Count() == point.Points.Count() - 1)
+                        break;
+
+                    var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
+                    _points.Add(p);
+                }
+
+
+                ROIDot multiPolygonDot = point.Points.Last();
+                var lastMultiPolygon = new Point(multiPolygonDot.X * drawComplete.ActualWidth, multiPolygonDot.Y * drawComplete.ActualHeight);
+
+                if (point == obj.RoiInfo.Roi.RoiPoints.Last())
+                    CompleteMultiPolygon(lastMultiPolygon, true);
+                else
+                    ContinueMultiPolygon(lastMultiPolygon, true);
+
+                TextBlock multiPolygonLabel = new()
+                {
+                    Text = $"{obj.ObjectID}({obj.EventID}) / [{(ClassId)Convert.ToInt32(point.Description)},{obj.ObjectProb:0.0}] Stay: {obj.StayTime:0.0}]",
+                    Margin = new Thickness(firstPoint.X * ViewModel.Player.renderer.ControlWidth, firstPoint.Y * ViewModel.Player.renderer.ControlHeight, 0, 0),
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+                drawCanvas.Children.Add(multiPolygonLabel);
             }
         }
 
@@ -476,7 +534,7 @@ namespace NKAPISample.Views
 
 
 
-        private void ContinueMultiPolygon(Point p)
+        private void ContinueMultiPolygon(Point p, bool isVA = false)
         {
             _points.Add(p);
             if (_points.Count() > 2)
@@ -501,7 +559,10 @@ namespace NKAPISample.Views
                     StrokeThickness = 2
                 };
 
-                drawComplete.Children.Add(_currentShape);
+                if (isVA)
+                    drawCanvas.Children.Add(_currentShape);
+                else
+                    drawComplete.Children.Add(_currentShape);
 
                 var dots = new List<ROIDot>();
                 foreach (Point point in _points)
@@ -524,7 +585,7 @@ namespace NKAPISample.Views
             _points.Clear();
         }
 
-        private void CompleteMultiPolygon(Point p)
+        private void CompleteMultiPolygon(Point p, bool isVA = false)
         {
             _points.Add(p);
             if (_points.Count() > 2)
@@ -549,7 +610,10 @@ namespace NKAPISample.Views
                     StrokeThickness = 2
                 };
 
-                drawComplete.Children.Add(_currentShape);
+                if (isVA)
+                    drawCanvas.Children.Add(_currentShape);
+                else
+                    drawComplete.Children.Add(_currentShape);
 
                 var dots = new List<ROIDot>();
                 foreach (Point point in _points)

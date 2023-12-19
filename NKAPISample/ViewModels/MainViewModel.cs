@@ -122,6 +122,7 @@ namespace NKAPISample.ViewModels
 
         internal void SetMetadataLog(Progress eventStatus, ClassId classID, int eventID, IntegrationEventType eventType, System.Drawing.Rectangle position)
         {
+            
             _MetadataLogBuilder.AppendLine($"[{eventStatus}] {classID} {eventID}, {eventType}, X: {position.X}, Y: {position.Y}, Width: {position.Width}, Height: {position.Height}");
             MetadataLog = _MetadataLogBuilder.ToString();
         }

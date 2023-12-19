@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="RTSPDefaultAddress" xml:space="preserve">
-    <value>rtsp://211.198.128.30/vod/line1</value>
+    <value>rtsp://211.198.128.30:554/vod/definest/shjung/snow_cut.30FHD</value>
     <comment>channel default address</comment>
   </data>
 </root>

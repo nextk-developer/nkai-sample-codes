@@ -10,6 +10,7 @@ using PredefineConstant.Enum.Analysis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace NKAPISample.ViewModels
 {
@@ -85,10 +86,18 @@ namespace NKAPISample.ViewModels
             config.Player.AutoPlay = true;
             Player = new Player(config);
             _Player.OpenCompleted += _Player_OpenCompleted;
+            _Player.PlaybackStopped += _Player_PlaybackStopped;
             Player.OpenAsync(url);
             
         }
 
+        private void _Player_PlaybackStopped(object sender, PlaybackStoppedArgs e)
+        {
+            var player = sender as Player;
+            if (player == null || !player.CanPlay) return;
+
+            RetryConnection(player, _MainVM.CurrentNode.CurrentChannel.MediaUrl);
+        }
 
         private void _Player_OpenCompleted(object sender, OpenCompletedArgs e)
         {

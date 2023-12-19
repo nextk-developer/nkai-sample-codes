@@ -13,7 +13,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <Style TargetType="{x:Type Button}">
-            <Setter Property="Height" Value="25" />
+            <Setter Property="Height" Value="28" />
         </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="TextWrapping" Value="WrapWithOverflow" />

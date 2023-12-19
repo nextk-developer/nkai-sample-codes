@@ -61,7 +61,7 @@ namespace NKAPISample.Properties {
         }
         
         /// <summary>
-        ///   rtsp://211.198.128.30/vod/line1과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   rtsp://211.198.128.30:554/vod/definest/shjung/snow_cut.30FHD과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string RTSPDefaultAddress {
             get {
