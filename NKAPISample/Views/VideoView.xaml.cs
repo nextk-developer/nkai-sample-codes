@@ -3,7 +3,6 @@ using NKAPISample.ViewModels;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
-using SharpGen.Runtime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using static System.Windows.Forms.LinkLabel;
 
 namespace NKAPISample.Views
 {
