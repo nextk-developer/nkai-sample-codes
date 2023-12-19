@@ -112,37 +112,12 @@ namespace NKAPISample.Models
             metaClient?.StartTask();
         }
 
-        internal Task<ErrorCode> VAControlStart(NKAPIService.APIService service)
+        internal Task<ErrorCode> VAControlStart(ResponseControl res)
         {
             return Task.Run(async () =>
             {
-                ErrorCode errorCode = ErrorCode.SUCCESS;
-
-                if (CurrentROI != null)
-                {
-                    if (string.IsNullOrEmpty(ParentNode.NodeId))
-                        return ErrorCode.NOT_FOUND_COMPUTING_NODE;
-
-                    errorCode = ErrorCode.REQUEST_TIMEOUT;
-                    // 시작 보내줘야함
-                    var responseControl = await service.Requset(new RequestControl()
-                    {
-                        NodeId = ParentNode.NodeId,
-                        ChannelIDs = new List<string>() { ChannelUid },
-                        Operation = Operations.VA_START,
-                    }) as ResponseControl;
-
-                    if (responseControl != null)
-                    {
-                        errorCode = responseControl.Code;
-
-                        if (responseControl.Code == ErrorCode.SUCCESS)
-                            StartMetaService($"{responseControl.SourceIp}:{responseControl.SourcePort}");
-                    }
-                }
-
-
-                return errorCode;
+                StartMetaService($"{res.SourceIp}:{res.SourcePort}");
+                return ErrorCode.SUCCESS;
             });
         }
 

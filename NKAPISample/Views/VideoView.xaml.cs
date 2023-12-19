@@ -67,6 +67,11 @@ namespace NKAPISample.Views
             {
                 if (ViewModel.IsDrawingMode)
                 {
+                    if (_ReceivedDataSource != null)
+                    {
+                        Ioc.Default.GetService<VAViewModel>().StopVA();
+                    }
+
                     _currentDrawingType = ViewModel.CurrentDrawingType;
                     _currentRange.Clear();
                     drawRange.Children.Clear();
@@ -376,8 +381,6 @@ namespace NKAPISample.Views
             foreach (var point in obj.RoiInfo.Roi.RoiPoints)
             {
                 var firstPoint = point.Points.First();
-                if (string.IsNullOrEmpty(point.Description))
-                    continue;
 
                 foreach (var dot in point.Points)
                 {
@@ -397,9 +400,13 @@ namespace NKAPISample.Views
                 else
                     ContinueMultiPolygon(lastMultiPolygon, true);
 
+                string classId = "";
+                if(!string.IsNullOrEmpty(point.Description))
+                    classId = ((ClassId)Convert.ToInt32(point.Description)).ToString();
+
                 TextBlock multiPolygonLabel = new()
                 {
-                    Text = $"{obj.ObjectID}({obj.EventID}) / [{(ClassId)Convert.ToInt32(point.Description)},{obj.ObjectProb:0.0}] Stay: {obj.StayTime:0.0}]",
+                    Text = $"{obj.ObjectID}({obj.EventID}) / [{classId},{obj.ObjectProb:0.0}] Stay: {obj.StayTime:0.0}]",
                     Margin = new Thickness(firstPoint.X * ViewModel.Player.renderer.ControlWidth, firstPoint.Y * ViewModel.Player.renderer.ControlHeight, 0, 0),
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top
@@ -596,8 +603,6 @@ namespace NKAPISample.Views
                     var polygonPoint = new Point(pp.X, pp.Y);
                     polygonPoints.Add(polygonPoint);
                 }
-
-                
 
                 _currentShape = new Polygon()
                 {

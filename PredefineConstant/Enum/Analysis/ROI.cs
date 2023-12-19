@@ -44,7 +44,7 @@ namespace PredefineConstant.Enum.Analysis
         public List<ROIDot> Points { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
-
+          
         public bool Equals(RoiPoint other)
         {
             if (other == null) return false;

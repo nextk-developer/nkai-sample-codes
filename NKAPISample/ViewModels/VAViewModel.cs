@@ -86,7 +86,7 @@ namespace NKAPISample.ViewModels
         public async Task SetResponseResult(IRequest req)
         {
             APIService service = APIService.Build().SetUrl(new Uri(_MainVM.CurrentNode.HostURL));
-            ResponseBase? response =  await service.Requset(req) as ResponseControl;
+            ResponseControl response =  await service.Requset(req) as ResponseControl;
 
             if (response == null || response.Code != ErrorCode.SUCCESS) // 서버 응답 없을 경우 샘플 표출.
             {
@@ -114,7 +114,7 @@ namespace NKAPISample.ViewModels
 
                     RequestControl request = req as RequestControl;
                     if (request != null && request.Operation == Operations.VA_START)
-                        _MainVM.VAStarted?.Invoke(service);
+                        _MainVM.VAStarted?.Invoke(response);
                     else if (request != null && request.Operation == Operations.VA_STOP)
                         _MainVM.VAStopped?.Invoke();
                 }

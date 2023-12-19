@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using NKAPISample.Models;
 using NKAPIService;
+using NKAPIService.API.VideoAnalysisSetting;
 using PredefineConstant.Enum.Analysis;
 using PredefineConstant.Enum.Analysis.EventType;
 using System;
@@ -19,7 +20,7 @@ namespace NKAPISample.ViewModels
         private StringBuilder _ResponseResultBuilder;
         private StringBuilder _MetadataLogBuilder;
         private string _PostURL;
-        internal Action<APIService> VAStarted;
+        internal Action<ResponseControl> VAStarted;
         internal Action VAStopped;
 
         public NodeComponent CurrentNode { get; set; }
@@ -56,10 +57,13 @@ namespace NKAPISample.ViewModels
         }
 
 
-        private void StartVA(APIService service)
+        private void StartVA(ResponseControl res)
         {
-            if(CurrentNode.CurrentChannel.VAControlStart(service).Result == NKAPIService.API.ErrorCode.SUCCESS)
+            if (res.Code == NKAPIService.API.ErrorCode.SUCCESS)
+            {
+                CurrentNode.CurrentChannel.VAControlStart(res);
                 VideoVM.VAStart(CurrentNode.CurrentChannel);
+            }
         }
 
         internal void SetResponseResult(string responseResult)
