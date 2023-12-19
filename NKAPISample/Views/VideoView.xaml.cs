@@ -553,9 +553,9 @@ namespace NKAPISample.Views
                     Points = polygonPoints,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Fill = Brushes.Blue,
-                    Opacity = 0.4,
-                    Stroke = Brushes.DarkBlue,
+                    Fill = isVA ? Brushes.Red : Brushes.Blue,
+                    Opacity = 0.3,
+                    Stroke = isVA ? Brushes.DarkRed : Brushes.DarkBlue,
                     StrokeThickness = 2
                 };
 
@@ -571,7 +571,6 @@ namespace NKAPISample.Views
                 }
 
                 RoiPoint polygon =
-
                     new()
                     {
                         RoiNumber = (RoiNumber)_multiPoints.Count(),
@@ -598,15 +597,16 @@ namespace NKAPISample.Views
                     polygonPoints.Add(polygonPoint);
                 }
 
+                
 
                 _currentShape = new Polygon()
                 {
                     Points = polygonPoints,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Fill = Brushes.Blue,
-                    Opacity = 0.4,
-                    Stroke = Brushes.DarkBlue,
+                    Fill = isVA ? Brushes.Red : Brushes.Blue,
+                    Opacity = 0.3,
+                    Stroke = isVA ? Brushes.DarkRed : Brushes.DarkBlue,
                     StrokeThickness = 2
                 };
 
