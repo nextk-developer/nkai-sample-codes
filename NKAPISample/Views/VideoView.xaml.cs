@@ -3,6 +3,7 @@ using NKAPISample.ViewModels;
 using NKMeta;
 using PredefineConstant;
 using PredefineConstant.Enum.Analysis;
+using SharpGen.Runtime;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using static System.Windows.Forms.LinkLabel;
 
 namespace NKAPISample.Views
 {
@@ -152,6 +154,7 @@ namespace NKAPISample.Views
                                     var p = new Point(dot.X * drawComplete.ActualWidth, dot.Y * drawComplete.ActualHeight);
                                     _points.Add(p);
                                 }
+                                break;
                             }
 
                             CompleteMultiLine(_points.Last());
@@ -401,12 +404,12 @@ namespace NKAPISample.Views
                     break;
 
                 case DrawingType.MultiLine:
-                    if (e.RightButton == MouseButtonState.Pressed || (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2))
+                    if (_points.Any() && _points.Count == 3)
                     {
                         drawComplete.Children.Clear();
                         CompleteMultiLine(p);
                     }
-                    else if (e.LeftButton == MouseButtonState.Pressed)
+                    else
                         DrawMultiLine(p);
                     break;
 
@@ -626,32 +629,48 @@ namespace NKAPISample.Views
                 }
             }
             
-            var dots = new Queue<ROIDot>();
+            var dots = new List<ROIDot>();
             foreach (Point point in pointResult)
             {
-                dots.Enqueue(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
+                dots.Add(new ROIDot() { X = point.X / drawRange.ActualWidth, Y = point.Y / drawRange.ActualHeight });
             }
 
             List<RoiPoint> points = new List<RoiPoint>();
-            int roiIndex = 0;
-            while (dots.TryDequeue(out ROIDot result1))
+            
+            var multiLinePoint = new RoiPoint()
             {
-                while(dots.TryDequeue(out ROIDot result2))
-                {
-                    points.Add(new RoiPoint()
-                    {
-                        RoiNumber = (RoiNumber)roiIndex++,
-                        RoiType = DrawingType.MultiLine,
-                        Points = new List<ROIDot>() { result1, result2 }
-                    });
-                    break;
-                }
-            }
-            
-            
+                RoiNumber = 0,
+                RoiType = DrawingType.MultiLine,
+                Points = dots
+            };
+
+            points.Add(multiLinePoint);
+            points.Add(getPolygonPoint(dots));
             ViewModel.SetRange(points);
             drawRange.Visibility = Visibility.Collapsed;
             _points.Clear();
+        }
+
+        private RoiPoint getPolygonPoint(List<ROIDot> dots)
+        {
+            var p = new RoiPoint();
+            p.RoiType = DrawingType.Polygon;
+            p.RoiNumber = 0;
+            
+            ROIDot endTmp = new()
+            {
+                X = (dots[1].X + dots[3].X) / 2,
+                Y = (dots[1].Y + dots[3].Y) / 2
+            };
+
+            ROIDot startTmp = new()
+            {
+                X = (dots[0].X + dots[2].X) / 2,
+                Y = (dots[0].Y + dots[2].Y) / 2
+            };
+
+            p.Points = new List<ROIDot>() { dots[0], dots[1], endTmp, dots[3], dots[2], startTmp, dots[0] };
+            return p;
         }
 
         private void DrawLine(Point p)
