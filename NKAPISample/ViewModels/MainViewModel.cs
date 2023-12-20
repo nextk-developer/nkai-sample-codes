@@ -58,13 +58,12 @@ namespace NKAPISample.ViewModels
         }
 
 
-        private async void StartVA(ResponseControl res)
+        private void StartVA(ResponseControl res)
         {
             if (res.Code == NKAPIService.API.ErrorCode.SUCCESS)
             {
-                var result = await CurrentNode.CurrentChannel.VAControlStart(res);
-                if(result == NKAPIService.API.ErrorCode.SUCCESS)
-                    VideoVM.VAStart(CurrentNode.CurrentChannel);
+                CurrentNode.CurrentChannel.VAControlStart(res);
+                VideoVM.VAStart(CurrentNode.CurrentChannel);
             }
         }
 
