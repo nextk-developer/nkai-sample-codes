@@ -40,7 +40,7 @@ https://nextk-developer.github.io/nkapi/
 			- [Streaming] 화면에서 n개의 점을 클릭하여 다각 영역 지정
 		- [Multi Polygon] : 다중 다각 영역
 			- [Streaming] 화면에서 n개의 점을 클릭하여 다각 영역을 지정하고, **마우스 우클릭**으로 하나의 다각형을 완성. 다각형 여러개를 그린 후 **더블클릭하면 영역 지정 완료**.
-			- 현재 버전에서는 ***침수/적설(Etc Object - FloodedOrSnowRoad Event)***에서만 적용 가능
+			- 현재 버전에서는 **침수/적설(Etc Object - FloodedOrSnowRoad Event)**에서만 적용 가능
 		- [Line] : 선 영역
 			- [Streaming] 화면에서 두 점을 클릭하여 하나의 선 영역 지정
 		- [Multi Line] : 다중 선 영역
