@@ -114,7 +114,7 @@ namespace NKAPISample.Models
 
         internal Task<ErrorCode> VAControlStart(ResponseControl res)
         {
-            return Task.Run(async () =>
+            return Task.Run(() =>
             {
                 StartMetaService($"{res.SourceIp}:{res.SourcePort}");
                 return ErrorCode.SUCCESS;

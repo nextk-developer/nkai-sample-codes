@@ -8,6 +8,7 @@ using PredefineConstant.Enum.Analysis.EventType;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NKAPISample.ViewModels
 {
@@ -57,12 +58,13 @@ namespace NKAPISample.ViewModels
         }
 
 
-        private void StartVA(ResponseControl res)
+        private async void StartVA(ResponseControl res)
         {
             if (res.Code == NKAPIService.API.ErrorCode.SUCCESS)
             {
-                CurrentNode.CurrentChannel.VAControlStart(res);
-                VideoVM.VAStart(CurrentNode.CurrentChannel);
+                var result = await CurrentNode.CurrentChannel.VAControlStart(res);
+                if(result == NKAPIService.API.ErrorCode.SUCCESS)
+                    VideoVM.VAStart(CurrentNode.CurrentChannel);
             }
         }
 
