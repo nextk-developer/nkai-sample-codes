@@ -30,32 +30,30 @@
                 Duration="0:0:0.1" />
         </Storyboard>
     </UserControl.Resources>
-    <Grid>
-        <fl:FlyleafHost Player="{Binding Player}" >
-            <Grid>
-                <Grid Name="drawCanvas" />
-                <Grid Name="drawComplete" Visibility="Visible" />
-                <Grid
-                    Name="drawRange"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Background="Green"
-                    MouseDown="drawRange_MouseDown"
-                    Opacity="0.2"
-                    Visibility="Collapsed" />
-                <Grid
-                    Name="gridAllRange"
-                    Background="Blue"
-                    Opacity="0.3"
-                    Visibility="Collapsed">
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard Storyboard="{StaticResource AllRangeAnimation}" />
-                        </EventTrigger>
-                    </Grid.Triggers>
-                </Grid>
+    <fl:FlyleafHost Player="{Binding Player}">
+        <Grid>
+            <Grid Name="drawCanvas" />
+            <Grid Name="drawComplete" Visibility="Visible" />
+            <Grid
+                Name="drawRange"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Green"
+                MouseDown="drawRange_MouseDown"
+                Opacity="0.2"
+                Visibility="Collapsed" />
+            <Grid
+                Name="gridAllRange"
+                Background="Blue"
+                Opacity="0.3"
+                Visibility="Collapsed">
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard Storyboard="{StaticResource AllRangeAnimation}" />
+                    </EventTrigger>
+                </Grid.Triggers>
             </Grid>
-        </fl:FlyleafHost>
+        </Grid>
+    </fl:FlyleafHost>
 
-    </Grid>
 </UserControl>

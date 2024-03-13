@@ -1,32 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Resources\icon_line.png" />
     <None Remove="Resources\icon_multiPolygon.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="FlyleafLib" Version="3.7.35" />
+    <PackageReference Include="FlyleafLib" Version="3.7.46" />
+    <PackageReference Include="FlyleafLib.Controls.WPF" Version="1.3.8" />
+    <PackageReference Include="RestSharp" Version="110.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="RestSharp" Version="110.2.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NKAPIService\NKAPIService.csproj" />
     <ProjectReference Include="..\NKMeta\NKMeta.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Controls\LabelledCombobox.xaml.cs">
       <SubType>Code</SubType>
@@ -37,33 +33,31 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Update="Properties\Resources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<None Update="dlls\ffmpeg\avcodec-59.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="dlls\ffmpeg\avformat-59.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="dlls\ffmpeg\avutil-57.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="dlls\ffmpeg\swresample-4.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="dlls\ffmpeg\swscale-6.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<Resource Include="Resources\icon_line.png" />
-		<Resource Include="Resources\icon_multiPolygon.png" />
-		<Resource Include="Resources\icon_selectRange.png" />
-		<Resource Include="Resources\icon_doubleLine.png" />
-		<Resource Include="Resources\icon_polygon.png" />
-		<Resource Include="Resources\icon_selectall.png" />
-
-	</ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Update="dlls\ffmpeg\avcodec-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\ffmpeg\avformat-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\ffmpeg\avutil-57.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\ffmpeg\swresample-4.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\ffmpeg\swscale-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Resource Include="Resources\icon_line.png" />
+    <Resource Include="Resources\icon_multiPolygon.png" />
+    <Resource Include="Resources\icon_selectRange.png" />
+    <Resource Include="Resources\icon_doubleLine.png" />
+    <Resource Include="Resources\icon_polygon.png" />
+    <Resource Include="Resources\icon_selectall.png" />
+  </ItemGroup>
 </Project>

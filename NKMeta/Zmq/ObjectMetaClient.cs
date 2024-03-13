@@ -3,7 +3,9 @@ using NetMQ.Sockets;
 using Newtonsoft.Json;
 using PredefineConstant;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,24 +59,25 @@ namespace NKMeta.Zmq
                             {
                                 while (!_cts.IsCancellationRequested)
                                 {
-                                    if (subSocket.TryReceiveFrameString(out string receivedTopic))
+                                    List<string> msgMultiParts = new();
+                                    if (subSocket.TryReceiveMultipartStrings(ref msgMultiParts) && msgMultiParts.Count == 2)
                                     {
-                                        if (subSocket.TryReceiveFrameString(out string receivedMsg))
-                                        {
-                                            ComputedFps();
-                                            var objMeta = JsonConvert.DeserializeObject<ObjectMeta>(receivedMsg);
+                                        var receivedTopic = msgMultiParts.First();
+                                        var receivedMsg = msgMultiParts.Last();
 
+                                        ComputedFps();
+                                        var objMeta = JsonConvert.DeserializeObject<ObjectMeta>(receivedMsg);
 #if DEBUG
-                                            ReceivedMetaTotal++;
+                                        ReceivedMetaTotal++;
 #endif
 
-                                            if (!_cts.IsCancellationRequested)
-                                            {
-                                                OnReceivedMetaData?.Invoke(this, objMeta);
-                                            }
-
-                                            LastRecivedTime = DateTime.UtcNow;
+                                        if (!_cts.IsCancellationRequested)
+                                        {
+                                            objMeta.EventList?.ForEach(x => x.TimeStamp = objMeta.TimeStamp);
+                                            OnReceivedMetaData?.Invoke(this, objMeta);
                                         }
+
+                                        LastRecivedTime = DateTime.UtcNow;
                                     }
 
                                     // 마지막 수신 시간과 3초 이상 차이나면 재연결 
